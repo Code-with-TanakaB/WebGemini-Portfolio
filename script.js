@@ -1,3 +1,39 @@
+// Project card flip logic
+document.addEventListener('DOMContentLoaded', function() {
+  document.querySelectorAll('.project-card').forEach(card => {
+    card.addEventListener('click', function(e) {
+      // Only flip if clicking the card or the learn more button
+      if (e.target.classList.contains('learn-more-btn') || e.currentTarget === e.target) {
+        card.classList.toggle('flipped');
+      }
+    });
+  });
+});
+// Typing animation for hero-block text
+document.addEventListener('DOMContentLoaded', function() {
+  const typedText = document.getElementById('typed-text');
+  if (!typedText) return;
+  const text = "WELCOME TO WEBGEMINI";
+  const typingSpeed = 100; // ms per character
+  const repeatDelay = 10000; // 10 seconds
+  function startTyping() {
+    let i = 0;
+    function type() {
+      if (i <= text.length) {
+        typedText.textContent = text.slice(0, i);
+        i++;
+        setTimeout(type, typingSpeed);
+      } else {
+        setTimeout(() => {
+          typedText.textContent = "";
+          startTyping();
+        }, repeatDelay - (text.length * typingSpeed));
+      }
+    }
+    type();
+  }
+  startTyping();
+});
 // Hero background slideshow logic
 document.addEventListener('DOMContentLoaded', function() {
 	var slides = document.querySelectorAll('.hero-bg-slide');

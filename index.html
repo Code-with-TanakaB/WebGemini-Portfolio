@@ -50,7 +50,8 @@
 	<link rel="preconnect" href="https://fonts.googleapis.com">
 	<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 	<link href="https://fonts.googleapis.com/css2?family=EB+Garamond:ital,wght@0,400..800;1,400..800&display=swap&text=abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789&font-display=swap" rel="stylesheet">
-	<script src="script.js" defer></script>
+  <script src="script.js" defer></script>
+  <script src="circular-bars.js" defer></script>
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Bitcount+Single:wght@100..900&display=swap&text=abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789&font-display=swap" rel="stylesheet">
 <link rel="preconnect" href="https://fonts.googleapis.com">
@@ -95,13 +96,14 @@
   <div class="hero-main-text-slideshow">
     <div class="hero-slide-text active">
       <h1>
-        <span class="hero-block">WELCOME TO WEBGEMINI
-			<p>
-        Your Business's Best Friend.<br>
-        South Africa's Best Web Design Agency. Crafting Stunning 3D Web Experiences.  
-      </p>
-	  <img src="image/Business.png" alt="" style="width: 85%; height: 50%;">
-		</span>
+        <span class="hero-block">
+          <span id="typed-text"></span>
+          <p>
+            Your Business's Best Friend.<br>
+            South Africa's Best Web Design Agency. Crafting Stunning 3D Web Experiences.  
+          </p>
+          <img src="image/Business.png" alt="" style="width: 85%; height: 50%;">
+        </span>
       </h1>
     </div>
     <div class="hero-slideshow-nav">
@@ -132,6 +134,7 @@
 <span title=GitHub><i class="fa-brands fa-github" style=color:#555></i></span>
 <span title=Figma><i class="fa-brands fa-figma" style=color:#555></i></span>
 </div>
+<div id="skills-circular-bars" class="skills-circular-bars"></div>
 </div>
 <div class=about-img>
 <img src=image/me.jpg alt="Tanaka Bvekerwa - Web Developer" loading=lazy>
@@ -143,25 +146,35 @@
 <section class=services id=services>
 <h2>My Services</h2>
 <div class=service-list>
-<div class=service-card>
-<i class="fas fa-laptop-code"></i>
-<h3>Web Development</h3>
-<p>Modern, responsive, and scalable websites using the latest technologies.</p>
+<div class="service-card">
+  <i class="fas fa-laptop-code service-icon"></i>
+  <h3>Web Development</h3>
+  <p>Modern, responsive, and scalable websites using the latest technologies.</p>
 </div>
-<div class=service-card>
-<i class="fas fa-cube"></i>
-<h3>3D & Interactive UI</h3>
-<p>Engaging 3D animations and interactive user interfaces for a wow effect.</p>
+<div class="service-card">
+  <i class="fas fa-cube service-icon"></i>
+  <h3>3D & Interactive UI</h3>
+  <p>Engaging 3D animations and interactive user interfaces for a wow effect.</p>
 </div>
-<div class=service-card>
-<i class="fas fa-mobile-alt"></i>
-<h3>Mobile Optimization</h3>
-<p>Seamless experiences across all devices and screen sizes.</p>
+<div class="service-card">
+  <i class="fas fa-mobile-alt service-icon"></i>
+  <h3>Mobile Optimization</h3>
+  <p>Seamless experiences across all devices and screen sizes.</p>
 </div>
-<div class=service-card>
-<i class="fas fa-search"></i>
-<h3>SEO Optimization</h3>
-<p>Boost your website's visibility and ranking with expert SEO strategies.</p>
+<div class="service-card">
+  <i class="fas fa-search service-icon"></i>
+  <h3>SEO Optimization</h3>
+  <p>Boost your website's visibility and ranking with expert SEO strategies.</p>
+</div>
+<div class="service-card">
+  <i class="fas fa-bug service-icon"></i>
+  <h3>Debugging</h3>
+  <p>Expert troubleshooting and bug fixing to ensure smooth website performance.</p>
+</div>
+<div class="service-card">
+  <i class="fas fa-envelope-open-text service-icon"></i>
+  <h3>Email Marketing</h3>
+  <p>Effective email campaigns to engage your audience and boost conversions.</p>
 </div>
 </div>
 </section>
@@ -170,7 +183,7 @@
 <section class=pricing id=pricing style="padding:3.5rem 0 3rem 0;background:url(image/backslide@.png)">
 <h2 style=text-align:center;font-size:2.3rem;margin-bottom:2.2rem>Pricing Plans</h2>
 <div class=pricing-plans style=display:flex;flex-wrap:wrap;justify-content:center;gap:2.5rem>
-<div class=pricing-card style="background:url(image/main2.png);border:2px solid #00c3ff;border-radius:18px;box-shadow:0 2px 18px #0001;padding:2.2rem 1.5rem;max-width:80%;flex:1 1 260px;text-align:center;box-shadow:0 2px 16px rgba(0,0,0,.15)">
+<div class=pricing-card style="border:2px solid #00c3ff;border-radius:18px;box-shadow:0 2px 18px #0001;padding:2.2rem 1.5rem;max-width:80%;flex:1 1 260px;text-align:center;box-shadow:0 2px 16px rgba(0,0,0,.15)">
 <h3 style=font-size:1.4rem;color:#00c3ff;margin-bottom:.7rem>Basic</h3>
 <div style=font-size:2.2rem;font-weight:700;color:#222;margin-bottom:.5rem>R1,500</div>
 <ul style="list-style:none;padding:0;margin:0 0 1.2rem 0;color:#444;font-size:1.05rem">
@@ -182,8 +195,8 @@
 </ul>
 <a href=#contact class=get-quote-btn style="background:#101820;color:#fff;border:none;border-radius:30px;font-size:1rem;font-weight:600;padding:.7rem 2.2rem;cursor:pointer;box-shadow:0 2px 8px #0002;display:inline-block;text-decoration:none">Get a Quote</a>
 </div>
-<div class=pricing-card style="background:url(image/main2.png);border-radius:18px;box-shadow:0 2px 18px #0001;padding:2.2rem 1.5rem;max-width:80%;flex:1 1 260px;text-align:center;border:2px solid #00c3ff;position:relative;box-shadow:0 2px 16px rgba(0,0,0,.15)">
-<div style="position:absolute;top:-18px;left:50%;transform:translateX(-50%);background:#101820;color:#fff;font-size:1rem;font-weight:700;padding:.3rem 1.2rem;border-radius:18px;box-shadow:0 2px 8px #0002;letter-spacing:1px;z-index:2">
+<div class=pricing-card style="border-radius:18px;box-shadow:0 2px 18px #0001;padding:2.2rem 1.5rem;max-width:80%;flex:1 1 260px;text-align:center;border:2px solid #00c3ff;position:relative;box-shadow:0 2px 16px rgba(0,0,0,.15)">
+<div style="position:relative;top: -18px;left:50%;transform:translateX(-50%);color:#fff;font-size:1rem;font-weight:700;padding:.3rem 1.2rem;background:#00c3ff;border-radius:48px;box-shadow:0 2px 8px #0002;letter-spacing:1px;z-index:2">
 Most Popular
 </div>
 <h3 style=font-size:1.4rem;color:#00c3ff;margin-bottom:.7rem;margin-top:1.2rem>Standard</h3>
@@ -198,7 +211,7 @@ Most Popular
 </ul>
 <a href=#contact class=get-quote-btn style="background:#101820;color:#fff;border:none;border-radius:30px;font-size:1rem;font-weight:600;padding:.7rem 2.2rem;cursor:pointer;box-shadow:0 2px 8px #0002;display:inline-block;text-decoration:none">Get a Quote</a>
 </div>
-<div class=pricing-card style="background:url(image/main2.png);border:2px solid #00c3ff;border-radius:18px;box-shadow:0 2px 18px #0001;padding:2.2rem 1.5rem;max-width:80%;flex:1 1 260px;text-align:center;box-shadow:0 2px 16px rgba(0,0,0,.15)">
+<div class=pricing-card style="border:2px solid #00c3ff;border-radius:18px;box-shadow:0 2px 18px #0001;padding:2.2rem 1.5rem;max-width:80%;flex:1 1 260px;text-align:center;box-shadow:0 2px 16px rgba(0,0,0,.15)">
 <h3 style=font-size:1.4rem;color:#00c3ff;margin-bottom:.7rem>Premium</h3>
 <div style=font-size:2.2rem;font-weight:700;color:#222;margin-bottom:.5rem>R4,000+</div>
 <ul style="list-style:none;padding:0;margin:0 0 1.2rem 0;color:#444;font-size:1.05rem">
@@ -217,22 +230,31 @@ Most Popular
 <!---Projects Section--->
 <section class=projects id=projects>
   <h2>Featured Projects</h2>
-  <div class=swipe-indicator>
-    <span class=swipe-icon>&#8592; Swipe &#8594;</span>
-  </div>
-  <div class=carousel-track>
+  <div class="projects-grid">
     <div class="project-card">
-      <img src="image/cool.png" alt="Project 1" loading=lazy>
-      <button class="learn-more-btn" type="button">Learn More</button>
-      <div class="project-desc" style="display:none;">
-        <p><strong>Project 1:</strong> A modern e-commerce platform with 3D product views, built for seamless shopping experiences and high conversion rates.</p>
+      <div class="project-card-inner">
+        <div class="project-card-front">
+          <img src="image/cool.png" alt="Project 1" loading=lazy>
+          <button class="learn-more-btn" type="button">Learn More</button>
+        </div>
+        <div class="project-card-back">
+          <div class="project-desc">
+            <p><strong>Project 1:</strong> A modern e-commerce platform with 3D product views, built for seamless shopping experiences and high conversion rates.</p>
+          </div>
+        </div>
       </div>
     </div>
     <div class="project-card">
-      <img src="image/gyms.png" alt="Project 2" loading=lazy>
-      <button class="learn-more-btn" type="button">Learn More</button>
-      <div class="project-desc" style="display:none;">
-        <p><strong>Project 2:</strong> A fitness center website featuring interactive class schedules, trainer profiles, and a dynamic booking system.</p>
+      <div class="project-card-inner">
+        <div class="project-card-front">
+          <img src="image/gyms.png" alt="Project 2" loading=lazy>
+          <button class="learn-more-btn" type="button">Learn More</button>
+        </div>
+        <div class="project-card-back">
+          <div class="project-desc">
+            <p><strong>Project 2:</strong> A fitness center website featuring interactive class schedules, trainer profiles, and a dynamic booking system.</p>
+          </div>
+        </div>
       </div>
     </div>
   </div>
@@ -449,52 +471,59 @@ By submitting, you agree to our <a href=terms.html style=color:#00f;text-decorat
 document.addEventListener('DOMContentLoaded', function() {
   // ScrollReveal animations
   ScrollReveal().reveal('.about-container', {
-    delay: 200,
-    distance: '40px',
-    origin: 'bottom',
+    delay: 100,
+    distance: '0px',
+    scale: 0.85,
+    opacity: 0,
     duration: 900,
-    easing: 'ease-in-out',
-    reset: false
+    easing: 'cubic-bezier(0.5, 1.5, 0.5, 1)',
+    reset: false,
+    rotate: { x: 0, y: 20, z: 0 }
   });
   ScrollReveal().reveal('.service-card', {
     interval: 120,
-    distance: '30px',
-    origin: 'bottom',
+    scale: 0.85,
+    opacity: 0,
     duration: 800,
-    easing: 'ease-in-out',
-    reset: false
+    easing: 'cubic-bezier(0.5, 1.5, 0.5, 1)',
+    reset: false,
+    rotate: { x: 0, y: 20, z: 0 }
   });
   ScrollReveal().reveal('.pricing-card', {
     interval: 120,
-    distance: '30px',
-    origin: 'bottom',
+    scale: 0.85,
+    opacity: 0,
     duration: 800,
-    easing: 'ease-in-out',
-    reset: false
+    easing: 'cubic-bezier(0.5, 1.5, 0.5, 1)',
+    reset: false,
+    rotate: { x: 0, y: 20, z: 0 }
   });
   ScrollReveal().reveal('.project-card', {
     interval: 120,
-    distance: '30px',
-    origin: 'bottom',
+    scale: 0.85,
+    opacity: 0,
     duration: 800,
-    easing: 'ease-in-out',
-    reset: false
+    easing: 'cubic-bezier(0.5, 1.5, 0.5, 1)',
+    reset: false,
+    rotate: { x: 0, y: 20, z: 0 }
   });
   ScrollReveal().reveal('.review-card', {
     interval: 120,
-    distance: '30px',
-    origin: 'bottom',
+    scale: 0.85,
+    opacity: 0,
     duration: 800,
-    easing: 'ease-in-out',
-    reset: false
+    easing: 'cubic-bezier(0.5, 1.5, 0.5, 1)',
+    reset: false,
+    rotate: { x: 0, y: 20, z: 0 }
   });
   ScrollReveal().reveal('.contact-container', {
-    delay: 200,
-    distance: '40px',
-    origin: 'bottom',
+    delay: 100,
+    scale: 0.85,
+    opacity: 0,
     duration: 900,
-    easing: 'ease-in-out',
-    reset: false
+    easing: 'cubic-bezier(0.5, 1.5, 0.5, 1)',
+    reset: false,
+    rotate: { x: 0, y: 20, z: 0 }
   });
 });
 </script> 

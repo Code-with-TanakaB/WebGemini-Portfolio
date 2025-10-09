@@ -22,7 +22,6 @@ document.addEventListener('DOMContentLoaded', function() {
     { label: 'JavaScript', percent: 95, color: '#f7df1e' },
     { label: 'HTML', percent: 90, color: '#e34c26' },
     { label: 'CSS', percent: 88, color: '#2965f1' },
-    { label: 'React.js', percent: 85, color: '#61dafb' },
     { label: '3D Web', percent: 80, color: '#00c3ff' }
   ];
   const barsContainer = document.getElementById('skills-circular-bars');

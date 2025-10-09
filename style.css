@@ -11,14 +11,14 @@
 }
 @media (max-width: 900px) {
   .contact-form-anim {
-    max-width: 98vw;
+    max-width: 90%;
     padding: 1.5rem .7rem 1.5rem .7rem;
   }
 }
 @media (max-width: 600px) {
   .contact-form-anim {
-    max-width: 100vw;
-    width: 98vw;
+    max-width: 90%;
+    width: 90%;
     min-width: 0;
     padding: 1rem .1rem 1rem .1rem;
     border-radius: 14px;
@@ -882,7 +882,7 @@ body {
 @media (max-width: 700px) {
   .hero-main-text-slideshow {
     padding: 1.5rem 0.5rem 1.2rem 0.5rem;
-    min-height: 120px;
+    min-height: 90%;
 	max-width: 100%;
   }
   .hero-slide-text h1 {

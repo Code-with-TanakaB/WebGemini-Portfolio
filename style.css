@@ -108,10 +108,29 @@
   50% { transform: translateY(-18px) scale(1.12); }
 }
 @media (max-width: 700px) {
-  .contact-form-anim {
-    padding: 1.2rem .5rem 1.5rem .5rem;
-    max-width: 98vw;
+  header.hero {
+    background-size: cover !important;
+    background-position: center center !important;
+    min-height: 80vh;
+    height: auto;
+    min-width: 100%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
   }
+  header.hero {
+    position: relative;
+    height: auto;
+    min-height: 65vh;
+    padding: 2rem 1rem;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+  }
+  .hero-content h1 { font-size: 3.5rem; }
+  .hero-content h2 { font-size: 1.8rem; }
+  .hero-content p { font-size: 1.1rem; }
+  .cta-btn { align-self: center; padding: .7rem 1.8rem; font-size: 1rem; }
   .mail-anim i {
     font-size: 2.2rem;
   }

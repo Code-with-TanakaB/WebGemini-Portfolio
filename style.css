@@ -39,6 +39,20 @@
     padding: .7rem 1rem;
   }
 }
+@media (max-width: 600px) {
+  .project-card-front {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: flex-start;
+  }
+  .project-card-front .learn-more-btn {
+    order: -1;
+    margin-bottom: 1rem;
+    margin-top: 0.2rem;
+    align-self: stretch;
+  }
+}
 .contact-form {
   display: flex;
   flex-direction: column;
@@ -881,6 +895,9 @@ body {
     width: 100vw !important;
     max-width: 100vw !important;
     padding: 0 !important;
+    margin: 0 !important;
+    background: rgba(0,195,255,0.13) !important;
+    box-sizing: border-box;
   }
 }
 

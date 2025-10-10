@@ -266,8 +266,8 @@ document.addEventListener('DOMContentLoaded', function() {
   container.style.position = 'absolute';
   container.style.top = 0;
   container.style.left = 0;
-  container.style.width = '100%';
-  container.style.height = '100%';
+  container.style.width = '100vw';
+  container.style.height = '100vh';
   container.style.zIndex = 0;
   container.style.pointerEvents = 'none';
 
@@ -279,23 +279,23 @@ document.addEventListener('DOMContentLoaded', function() {
   function getParticleSettings() {
     if (window.innerWidth <= 700) {
       return {
-        count: 90,
-        spreadX: 110,
+        count: 70,
+        spreadX: 90,
         spreadY: 60,
-        spreadZ: 90,
-        size: 2.2
+        spreadZ: 70,
+        size: 2.6
       };
     }
     return {
-      count: 160,
-      spreadX: 180,
-      spreadY: 80,
+      count: 120,
+      spreadX: 160,
+      spreadY: 90,
       spreadZ: 120,
-      size: 3.5
+      size: 4.2
     };
   }
 
-  let scene, camera, renderer, particles, geometry, material;
+  let scene, camera, renderer, particles, geometry, material, spheres = [], sphereGroup;
 
   function createParticles() {
     const settings = getParticleSettings();
@@ -308,6 +308,7 @@ document.addEventListener('DOMContentLoaded', function() {
     container.innerHTML = '';
     container.appendChild(renderer.domElement);
 
+    // Points cloud (colorful)
     geometry = new THREE.BufferGeometry();
     const positions = [];
     const colors = [];
@@ -317,7 +318,9 @@ document.addEventListener('DOMContentLoaded', function() {
         (Math.random() - 0.5) * settings.spreadY,
         (Math.random() - 0.5) * settings.spreadZ
       );
-      colors.push(0.01 + Math.random() * 0.99, 0.8, 1); // blue-cyan
+      // Vibrant color palette
+      const color = new THREE.Color(`hsl(${Math.floor(Math.random()*360)}, 80%, 60%)`);
+      colors.push(color.r, color.g, color.b);
     }
     geometry.setAttribute('position', new THREE.Float32BufferAttribute(positions, 3));
     geometry.setAttribute('color', new THREE.Float32BufferAttribute(colors, 3));
@@ -326,19 +329,57 @@ document.addEventListener('DOMContentLoaded', function() {
       size: settings.size,
       vertexColors: true,
       transparent: true,
-      opacity: 0.7
+      opacity: 0.8,
+      blending: THREE.AdditiveBlending
     });
 
     particles = new THREE.Points(geometry, material);
     scene.add(particles);
+
+    // Add floating spheres for extra 3D effect
+    sphereGroup = new THREE.Group();
+    spheres = [];
+    for (let i = 0; i < Math.floor(settings.count/8); i++) {
+      const sphereGeom = new THREE.SphereGeometry(Math.random()*2+1.2, 16, 16);
+      const sphereMat = new THREE.MeshStandardMaterial({
+        color: new THREE.Color(`hsl(${Math.floor(Math.random()*360)}, 80%, 55%)`),
+        transparent: true,
+        opacity: 0.55,
+        roughness: 0.5,
+        metalness: 0.7
+      });
+      const sphere = new THREE.Mesh(sphereGeom, sphereMat);
+      sphere.position.set(
+        (Math.random() - 0.5) * settings.spreadX,
+        (Math.random() - 0.5) * settings.spreadY,
+        (Math.random() - 0.5) * settings.spreadZ
+      );
+      sphereGroup.add(sphere);
+      spheres.push(sphere);
+    }
+    scene.add(sphereGroup);
+
+    // Add soft ambient and point light
+    const ambientLight = new THREE.AmbientLight(0xffffff, 0.7);
+    scene.add(ambientLight);
+    const pointLight = new THREE.PointLight(0x00c3ff, 1.2, 400);
+    pointLight.position.set(0, 0, 120);
+    scene.add(pointLight);
   }
 
   createParticles();
 
   function animate() {
     requestAnimationFrame(animate);
-    particles.rotation.y += 0.002;
+    particles.rotation.y += 0.003;
     particles.rotation.x += 0.001;
+    sphereGroup.rotation.y -= 0.002;
+    sphereGroup.rotation.x += 0.001;
+    // Animate spheres individually for floating effect
+    spheres.forEach((s, i) => {
+      s.position.y += Math.sin(Date.now()/900 + i) * 0.01;
+      s.position.x += Math.cos(Date.now()/1200 + i) * 0.008;
+    });
     renderer.render(scene, camera);
   }
   animate();
@@ -350,7 +391,7 @@ document.addEventListener('DOMContentLoaded', function() {
     camera.updateProjectionMatrix();
     renderer.setSize(container.offsetWidth, container.offsetHeight);
   });
-});
+});     
 
 // Newsletter form handling
 document.addEventListener('DOMContentLoaded', function () {

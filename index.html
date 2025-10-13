@@ -11,7 +11,10 @@
 			gtag('config', 'AW-17515429258');
 		</script>
 	<meta charset="UTF-8">
-	<meta name="viewport" content="width=device-width, initial-scale=1.0">
+	<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=5.0, user-scalable=yes">
+	<meta name="mobile-web-app-capable" content="yes">
+	<meta name="apple-mobile-web-app-capable" content="yes">
+	<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
 	<title>WebGemini | Get A Quote</title>
 	<meta name="description" content="WebGemini is a  South African cutting-edge web development agency specializing in modern, interactive, and responsive web experiences. Explore projects, services, reviews, and contact for collaborations.">
 	<meta name="keywords" content="web developer, web gemini, where is webgemini, AI website, interactive UI, how much is a website?, responsive design, JavaScript, webgemini services, Three.js, Tanaka, WebGemini, freelance, free website, free website builder, godaddy, hostinger, seo, bluehost, wordpress, web development">
@@ -45,7 +48,6 @@
     <link rel="icon" type="image/png" href="image/logo5.png">
 
 	<link rel="stylesheet" href="style.css">
-	<script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js" defer></script>
 	<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/7.0.0/css/all.min.css" integrity="sha512-DxV+EoADOkOygM4IR9yXP8Sb2qwgidEmeqAEmDKIOfPRQZOWbXCzLC6vjbZyy0vPisbH2SyW27+ddLVCN+OMzQ==" crossorigin="anonymous" referrerpolicy="no-referrer" />
 	<link rel="preconnect" href="https://fonts.googleapis.com">
 	<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -90,56 +92,231 @@
 		</div>
 	</nav>
 
-<!-- ...Hero section... -->
-<header class="hero"> 
-  <div id="particles-bg"></div>
-  <div class="hero-main-text-slideshow">
-    <div class="hero-slide-text active">
-      <h1>
-        <span class="hero-block">
-          <span id="typed-text"></span>
-          <p>
-            Your Business's Best Friend.<br>
-            South Africa's Best Web Design Agency. Crafting Stunning 3D Web Experiences.  
-          </p>
-          <img src="image/Business.png" alt="" style="width: 85%; height: 50%;">
-        </span>
-      </h1>
+<!-- Modern Hero Section with Dynamic Slideshow -->
+<section class="hero">
+    <!-- Promo Banner -->
+    <div class="hero-promo-banner">
+        <div class="promo-slideshow">
+            <div class="promo-slide active">
+                <div class="promo-content">
+                    <i class="fas fa-fire promo-icon"></i>
+                    <span class="promo-text"><strong>Limited Time:</strong> 50% OFF Premium Web Development Packages!</span>
+                    <a href="#contact" class="promo-cta">Claim Offer</a>
+                </div>
+            </div>
+            <div class="promo-slide">
+                <div class="promo-content">
+                    <i class="fas fa-gift promo-icon"></i>
+                    <span class="promo-text"><strong>FREE SEO Audit</strong> included with every new website project</span>
+                    <a href="#quote" onclick="openQuoteModal(this); return false;" class="promo-cta">Get Started</a>
+                </div>
+            </div>
+            <div class="promo-slide">
+                <div class="promo-content">
+                    <i class="fas fa-rocket promo-icon"></i>
+                    <span class="promo-text"><strong>Launch Your Business</strong> with a professional website in just 7 days</span>
+                    <a href="#pricing" class="promo-cta">View Plans</a>
+                </div>
+            </div>
+        </div>
     </div>
-    <div class="hero-slideshow-nav">
-      <span class="hero-dot active"></span>
-      <span class="hero-dot"></span>
-      <span class="hero-dot"></span>
-    </div>
-    <a href="#contact" class="cta-btn">Get Quote</a>
-  </div>
-</header>
 
-<!-- ...About Section... -->
-<section class=about id=about>
-<div class=about-container>
-<div class=about-text>
-<h2>About Me</h2>
-<p>Hello! I'm Tanaka, a passionate web developer with a love for building beautiful, interactive, and high-performance websites. With more than 2 years of experience, my expertise spans modern JavaScript frameworks, 3D web, and responsive design. I thrive on turning ideas into digital experiences that delight users and drive results.</p>
-<ul class=about-skills>
-<li><i class="fas fa-code"></i> JavaScript, HTML, CSS</li>
-<li><i class="fas fa-cubes"></i> React.js & 3D Web</li>
-<li><i class="fas fa-mobile-alt"></i> Responsive & Mobile-first</li>
-<li><i class="fas fa-bolt"></i> Fast & Optimized</li>
-</ul>
-<div class=about-icons style=margin-top:1.2rem;font-size:2.1rem;color:#555;display:flex;gap:1.2rem;align-items:center;flex-wrap:wrap>
-<span title=Google><i class="fab fa-google" style=color:#ea4335></i></span>
-<span title=WordPress><i class="fab fa-wordpress" style=color:#21759b></i></span>
-<span title=Shopify><i class="fab fa-shopify" style=color:#96bf48></i></span>
-<span title=GitHub><i class="fa-brands fa-github" style=color:#555></i></span>
-<span title=Figma><i class="fa-brands fa-figma" style=color:#555></i></span>
-</div>
-<div id="skills-circular-bars" class="skills-circular-bars"></div>
-</div>
-<div class=about-img>
-<img src=image/me.jpg alt="Tanaka Bvekerwa - Web Developer" loading=lazy>
-</div>
-</div>
+    <!-- Main Hero Slideshow -->
+    <div class="hero-slideshow">
+        <!-- Slide 1 -->
+        <div class="hero-slide active" style="background-image: linear-gradient(rgba(0,0,0,0.4), rgba(0,0,0,0.2)), url('image/hero-banner1.jpg');">
+            <div class="hero-overlay"></div>
+            <div class="hero-content">
+                <div class="hero-badge">
+                    <i class="fas fa-award"></i>
+                    <span class="badge-text">Award-Winning Web Development</span>
+                    <span class="badge-text-mobile">Award-Winning</span>
+                </div>
+                <h1 class="hero-title">
+                    <span class="title-line">Transform Your Business</span>
+                </h1>
+                <p class="hero-subtitle">Create stunning, high-performance websites that captivate your audience and drive business growth with cutting-edge technology and award-winning design.</p>
+                
+                <div class="hero-actions">
+                    <a href="#contact" onclick="openQuoteModal(this); return false;" class="btn-primary">
+                        <i class="fas fa-comment-dollar"></i>
+                        <span>Get Free Quote</span>
+                    </a>
+                    <a href="#projects" class="btn-secondary">
+                        <i class="fas fa-eye"></i>
+                        <span>View Our Projects</span>
+                    </a>
+                </div>
+            </div>
+        </div>
+
+        <!-- Slide 2 -->
+        <div class="hero-slide" style="background-image: linear-gradient(rgba(0,0,0,0.4), rgba(0,0,0,0.2)), url('image/hero-banner5.jpg');">
+            <div class="hero-overlay"></div>
+            <div class="hero-content">
+                <div class="hero-badge">
+                    <i class="fas fa-code"></i>
+                    <span class="badge-text">Modern Technology Stack</span>
+                    <span class="badge-text-mobile">Modern Tech</span>
+                </div>
+                <h1 class="hero-title">
+                    <span class="title-line">Sour High With Us</span>
+                </h1>
+                <p class="hero-subtitle">Leverage the latest technologies including React, AI integration, and responsive design to build future-proof digital solutions that scale with your business.</p>
+                
+                <div class="hero-actions">
+                    <a href="#contact" onclick="openQuoteModal(this); return false;" class="btn-primary">
+                        <i class="fas fa-comment-dollar"></i>
+                        <span>Get Free Quote</span>
+                    </a>
+                    <a href="#projects" class="btn-secondary">
+                        <i class="fas fa-eye"></i>
+                        <span>View Our Projects</span>
+                    </a>
+                </div>
+            </div>
+        </div>
+
+        <!-- Slide 3 -->
+        <div class="hero-slide" style="background-image: linear-gradient(rgba(0,0,0,0.5), rgba(0,0,0,0.3)), url('image/hero-banner3.jpg');">
+            <div class="hero-overlay"></div>
+            <div class="hero-content">
+                <div class="hero-badge">
+                    <i class="fas fa-trophy"></i>
+                    <span class="badge-text">Premium Business Solutions</span>
+                </div>
+                <h1 class="hero-title">
+                    <span class="title-line">Creative Business Solutions</span>
+                </h1>
+                <p class="hero-subtitle">Professional websites that convert visitors into customers. From e-commerce platforms to corporate sites, we deliver results that exceed expectations.</p>
+                
+                <div class="hero-actions">
+                    <a href="#contact" onclick="openQuoteModal(this); return false;" class="btn-primary">
+                        <i class="fas fa-comment-dollar"></i>
+                        <span>Get Free Quote</span>
+                    </a>
+                    <a href="#projects" class="btn-secondary">
+                        <i class="fas fa-eye"></i>
+                        <span>View Our Projects</span>
+                    </a>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Hero Navigation Controls -->
+    <div class="hero-navigation">
+        <button class="hero-nav-btn prev" aria-label="Previous slide">
+            <i class="fas fa-chevron-left"></i>
+        </button>
+        <div class="hero-dots">
+            <button class="hero-dot active" data-slide="0"></button>
+            <button class="hero-dot" data-slide="1"></button>
+            <button class="hero-dot" data-slide="2"></button>
+        </div>
+        <button class="hero-nav-btn next" aria-label="Next slide">
+            <i class="fas fa-chevron-right"></i>
+        </button>
+    </div>
+
+    <!-- Scroll Indicator -->
+    <div class="scroll-indicator">
+        <span class="scroll-text">Scroll to explore</span>
+        <div class="scroll-icon">
+            <i class="fas fa-chevron-down"></i>
+        </div>
+    </div>
+</section>
+
+<!-- Modern About Section -->
+<section class="about" id="about">
+    <div class="about-container">
+        <div class="about-header">
+            <h2>About Me</h2>
+            <p class="about-intro">Crafting digital experiences that make a difference</p>
+        </div>
+        
+        <div class="about-content">
+            <div class="about-text">
+                <div class="about-story">
+                    <h3>Hello! I'm Tanaka</h3>
+                    <p>A passionate web developer with a love for building beautiful, interactive, and high-performance websites. With more than 2 years of experience, my expertise spans modern JavaScript frameworks, 3D web, and responsive design.</p>
+                    <p>I thrive on turning ideas into digital experiences that delight users and drive results. Every project is an opportunity to push boundaries and create something extraordinary.</p>
+                </div>
+                
+                <div class="about-stats">
+                    <div class="stat-item">
+                        <span class="stat-number">50+</span>
+                        <span class="stat-label">Projects Completed</span>
+                    </div>
+                    <div class="stat-item">
+                        <span class="stat-number">2+</span>
+                        <span class="stat-label">Years Experience</span>
+                    </div>
+                    <div class="stat-item">
+                        <span class="stat-number">100%</span>
+                        <span class="stat-label">Client Satisfaction</span>
+                    </div>
+                </div>
+                
+                <div class="about-skills-modern">
+                    <h4>Technical Expertise</h4>
+                    <div class="skills-grid">
+                        <div class="skill-item">
+                            <i class="fas fa-code"></i>
+                            <span>JavaScript, HTML, CSS</span>
+                        </div>
+                        <div class="skill-item">
+                            <i class="fas fa-cubes"></i>
+                            <span>React.js & 3D Web</span>
+                        </div>
+                        <div class="skill-item">
+                            <i class="fas fa-mobile-alt"></i>
+                            <span>Responsive Design</span>
+                        </div>
+                        <div class="skill-item">
+                            <i class="fas fa-bolt"></i>
+                            <span>Performance Optimization</span>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="about-tools">
+                    <h4>Tools & Platforms</h4>
+                    <div class="tools-grid">
+                        <div class="tool-item" title="Google">
+                            <i class="fab fa-google"></i>
+                        </div>
+                        <div class="tool-item" title="WordPress">
+                            <i class="fab fa-wordpress"></i>
+                        </div>
+                        <div class="tool-item" title="Shopify">
+                            <i class="fab fa-shopify"></i>
+                        </div>
+                        <div class="tool-item" title="GitHub">
+                            <i class="fab fa-github"></i>
+                        </div>
+                        <div class="tool-item" title="Figma">
+                            <i class="fab fa-figma"></i>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="about-visual">
+                <div class="about-image-container">
+                    <img src="image/me.jpg" alt="Tanaka Bvekerwa - Web Developer" loading="lazy">
+                    <div class="image-overlay">
+                        <div class="overlay-content">
+                            <i class="fas fa-code"></i>
+                            <span>Web Developer</span>
+                        </div>
+                    </div>
+                </div>
+                <div id="skills-circular-bars" class="skills-circular-bars"></div>
+            </div>
+        </div>
+    </div>
 </section>
 
 <!---Services Section--->
@@ -227,167 +404,394 @@ Most Popular
 </div>
 </section>
 
-<!---Projects Section--->
-<section class=projects id=projects>
-  <h2>Featured Projects</h2>
-  <div class="projects-grid">
-    <div class="project-card">
-      <div class="project-card-inner">
-        <div class="project-card-front">
-          <img src="image/cool.png" alt="Project 1" loading=lazy>
-          <button class="learn-more-btn" type="button">Learn More</button>
+<!---Featured Projects Section--->
+<section class="featured-projects" id="projects">
+  <div class="projects-container">
+    <div class="projects-header">
+      <h2 class="projects-title">Featured Projects</h2>
+      <p class="projects-subtitle">Discover some of our most innovative and impactful web solutions</p>
+    </div>
+    
+    <div class="projects-showcase">
+      <!-- Project 1 -->
+      <div class="project-item" data-aos="fade-up" data-aos-delay="100">
+        <div class="project-image-wrapper">
+          <img src="image/cool.png" alt="E-commerce Platform" loading="lazy" class="project-image">
+          <div class="project-overlay">
+            <div class="project-tech">
+              <span class="tech-tag">React</span>
+              <span class="tech-tag">Three.js</span>
+              <span class="tech-tag">Node.js</span>
+            </div>
+          </div>
         </div>
-        <div class="project-card-back">
-          <div class="project-desc">
-            <p><strong>Project 1:</strong> A modern e-commerce platform with 3D product views, built for seamless shopping experiences and high conversion rates.</p>
+        <div class="project-content">
+          <div class="project-category">E-commerce</div>
+          <h3 class="project-name">Modern Shopping Platform</h3>
+          <p class="project-description">A cutting-edge e-commerce platform featuring 3D product visualization, seamless checkout experience, and AI-powered recommendations for enhanced user engagement.</p>
+          <div class="project-stats">
+            <div class="stat">
+              <span class="stat-number">300%</span>
+              <span class="stat-label">Conversion Boost</span>
+            </div>
+            <div class="stat">
+              <span class="stat-number">50ms</span>
+              <span class="stat-label">Load Time</span>
+            </div>
+          </div>
+          <div class="project-actions">
+            <button class="btn-primary project-btn" onclick="viewProject('ecommerce')" data-project="ecommerce">View Project</button>
+            <button class="btn-secondary project-btn" onclick="openLiveDemo('https://webgemini.co.za')" data-demo="ecommerce">Live Demo</button>
+          </div>
+        </div>
+      </div>
+
+      <!-- Project 2 -->
+      <div class="project-item project-reverse" data-aos="fade-up" data-aos-delay="200">
+        <div class="project-image-wrapper">
+          <img src="image/gyms.png" alt="Fitness Center Website" loading="lazy" class="project-image">
+          <div class="project-overlay">
+            <div class="project-tech">
+              <span class="tech-tag">Vue.js</span>
+              <span class="tech-tag">Express</span>
+              <span class="tech-tag">MongoDB</span>
+            </div>
+          </div>
+        </div>
+        <div class="project-content">
+          <div class="project-category">Health & Fitness</div>
+          <h3 class="project-name">Dynamic Fitness Hub</h3>
+          <p class="project-description">Interactive fitness center platform with real-time class scheduling, trainer booking system, and personalized workout tracking for an engaging fitness journey.</p>
+          <div class="project-stats">
+            <div class="stat">
+              <span class="stat-number">85%</span>
+              <span class="stat-label">User Retention</span>
+            </div>
+            <div class="stat">
+              <span class="stat-number">1000+</span>
+              <span class="stat-label">Active Users</span>
+            </div>
+          </div>
+          <div class="project-actions">
+            <button class="btn-primary project-btn" onclick="viewProject('fitness')" data-project="fitness">View Project</button>
+            <button class="btn-secondary project-btn" onclick="openLiveDemo('https://fitness-demo.webgemini.co.za')" data-demo="fitness">Live Demo</button>
+          </div>
+        </div>
+      </div>
+
+      <!-- Additional Project Showcase -->
+      <div class="project-item" data-aos="fade-up" data-aos-delay="300">
+        <div class="project-image-wrapper">
+          <img src="image/TryTruckNTrailer.png" alt="Business Solution" loading="lazy" class="project-image">
+          <div class="project-overlay">
+            <div class="project-tech">
+              <span class="tech-tag">Next.js</span>
+              <span class="tech-tag">TypeScript</span>
+              <span class="tech-tag">PostgreSQL</span>
+            </div>
+          </div>
+        </div>
+        <div class="project-content">
+          <div class="project-category">Business Solutions</div>
+          <h3 class="project-name">Enterprise Dashboard</h3>
+          <p class="project-description">Comprehensive business management platform with advanced analytics, real-time reporting, and automated workflows for streamlined operations.</p>
+          <div class="project-stats">
+            <div class="stat">
+              <span class="stat-number">40%</span>
+              <span class="stat-label">Efficiency Gain</span>
+            </div>
+            <div class="stat">
+              <span class="stat-number">24/7</span>
+              <span class="stat-label">Uptime</span>
+            </div>
+          </div>
+          <div class="project-actions">
+            <button class="btn-primary project-btn" onclick="viewProject('enterprise')" data-project="enterprise">View Project</button>
+            <button class="btn-secondary project-btn" onclick="openLiveDemo('https://business-demo.webgemini.co.za')" data-demo="enterprise">Live Demo</button>
           </div>
         </div>
       </div>
     </div>
-    <div class="project-card">
-      <div class="project-card-inner">
-        <div class="project-card-front">
-          <img src="image/gyms.png" alt="Project 2" loading=lazy>
-          <button class="learn-more-btn" type="button">Learn More</button>
-        </div>
-        <div class="project-card-back">
-          <div class="project-desc">
-            <p><strong>Project 2:</strong> A fitness center website featuring interactive class schedules, trainer profiles, and a dynamic booking system.</p>
-          </div>
-        </div>
-      </div>
+
+    <div class="projects-footer">
+      <p class="projects-cta-text">Ready to bring your vision to life?</p>
+      <button class="btn-gradient projects-cta-btn" onclick="openQuoteModal()">Start Your Project</button>
     </div>
   </div>
 </section>
 
-<!---Reviews Section--->
+<!-- Modern Reviews Section -->
 <section id="reviews" class="reviews">
-  <h2>What Clients Say</h2>
-  <div class="review-carousel">
-    <div class="review-card active">
-      <img src="image/review01.jpg" alt="Reviewer 1">
-      <blockquote>“Tanaka delivered a stunning website beyond our expectations. Fast, creative, and professional!”</blockquote>
-      <div class="review-stars">
-        <i class="fas fa-star"></i><i class="fas fa-star"></i><i class="fas fa-star"></i><i class="fas fa-star"></i><i class="fas fa-star"></i>
-      </div>
-      <cite>— Caroline M., Clothing Retail Startup Founder</cite>
+    <div class="reviews-container">
+        <div class="reviews-header">
+            <h2>What Our Clients Say</h2>
+            <p class="reviews-subtitle">Don't just take our word for it - hear from satisfied clients</p>
+        </div>
+        
+        <div class="reviews-grid">
+            <div class="review-card">
+                <div class="review-content">
+                    <div class="quote-icon">
+                        <i class="fas fa-quote-left"></i>
+                    </div>
+                    <blockquote>
+                        "Tanaka delivered a stunning website beyond our expectations. Fast, creative, and professional! The attention to detail and modern design approach exceeded what we hoped for."
+                    </blockquote>
+                    <div class="review-rating">
+                        <div class="stars">
+                            <i class="fas fa-star"></i>
+                            <i class="fas fa-star"></i>
+                            <i class="fas fa-star"></i>
+                            <i class="fas fa-star"></i>
+                            <i class="fas fa-star"></i>
+                        </div>
+                        <span class="rating-text">5.0</span>
+                    </div>
+                </div>
+                <div class="review-author">
+                    <div class="author-avatar">
+                        <img src="image/review01.jpg" alt="Caroline M." loading="lazy">
+                    </div>
+                    <div class="author-info">
+                        <h4>Caroline M.</h4>
+                        <p>Clothing Retail Startup Founder</p>
+                        <div class="verified-badge">
+                            <i class="fas fa-check-circle"></i>
+                            <span>Verified Client</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="review-card featured">
+                <div class="featured-label">
+                    <i class="fas fa-trophy"></i>
+                    <span>Top Review</span>
+                </div>
+                <div class="review-content">
+                    <div class="quote-icon">
+                        <i class="fas fa-quote-left"></i>
+                    </div>
+                    <blockquote>
+                        "The 3D effects and animations made our brand stand out. Highly recommended! The interactive elements brought our vision to life perfectly."
+                    </blockquote>
+                    <div class="review-rating">
+                        <div class="stars">
+                            <i class="fas fa-star"></i>
+                            <i class="fas fa-star"></i>
+                            <i class="fas fa-star"></i>
+                            <i class="fas fa-star"></i>
+                            <i class="fas fa-star-half-alt"></i>
+                        </div>
+                        <span class="rating-text">4.5</span>
+                    </div>
+                </div>
+                <div class="review-author">
+                    <div class="author-avatar">
+                        <img src="image/review02.jpg" alt="Alex S." loading="lazy">
+                    </div>
+                    <div class="author-info">
+                        <h4>Alex S.</h4>
+                        <p>Gym Owner & Fitness Coach</p>
+                        <div class="verified-badge">
+                            <i class="fas fa-check-circle"></i>
+                            <span>Verified Client</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="review-card">
+                <div class="review-content">
+                    <div class="quote-icon">
+                        <i class="fas fa-quote-left"></i>
+                    </div>
+                    <blockquote>
+                        "SEO results were amazing. Our traffic doubled in a month. Thank you! The technical expertise and ongoing support have been invaluable."
+                    </blockquote>
+                    <div class="review-rating">
+                        <div class="stars">
+                            <i class="fas fa-star"></i>
+                            <i class="fas fa-star"></i>
+                            <i class="fas fa-star"></i>
+                            <i class="fas fa-star"></i>
+                            <i class="fas fa-star"></i>
+                        </div>
+                        <span class="rating-text">5.0</span>
+                    </div>
+                </div>
+                <div class="review-author">
+                    <div class="author-avatar">
+                        <img src="image/dessie.jpg" alt="Dessie M." loading="lazy">
+                    </div>
+                    <div class="author-info">
+                        <h4>Dessie M.</h4>
+                        <p>Content Creator & YouTuber</p>
+                        <div class="verified-badge">
+                            <i class="fas fa-check-circle"></i>
+                            <span>Verified Client</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <div class="reviews-stats">
+            <div class="stat-item">
+                <div class="stat-number">4.9</div>
+                <div class="stat-label">Average Rating</div>
+                <div class="stat-stars">
+                    <i class="fas fa-star"></i>
+                    <i class="fas fa-star"></i>
+                    <i class="fas fa-star"></i>
+                    <i class="fas fa-star"></i>
+                    <i class="fas fa-star"></i>
+                </div>
+            </div>
+            <div class="stat-item">
+                <div class="stat-number">50+</div>
+                <div class="stat-label">Happy Clients</div>
+            </div>
+            <div class="stat-item">
+                <div class="stat-number">100%</div>
+                <div class="stat-label">Satisfaction Rate</div>
+            </div>
+        </div>
     </div>
-    <div class="review-card">
-      <img src="image/review02.jpg" alt="Reviewer 2">
-      <blockquote>“The 3D effects and animations made our brand stand out. Highly recommended!”</blockquote>
-      <div class="review-stars">
-        <i class="fas fa-star"></i><i class="fas fa-star"></i><i class="fas fa-star"></i><i class="fas fa-star"></i><i class="fas fa-star-half-alt"></i>
-      </div>
-      <cite>— Alex S., Gym owner</cite>
-    </div>
-    <div class="review-card">
-      <img src="image/dessie.jpg" alt="Reviewer 3">
-      <blockquote>“SEO results were amazing. Our traffic doubled in a month. Thank you!”</blockquote>
-      <div class="review-stars">
-        <i class="fas fa-star"></i><i class="fas fa-star"></i><i class="fas fa-star"></i><i class="fas fa-star"></i><i class="fas fa-star"></i>
-      </div>
-      <cite>— Dessie M., Youtuber</cite>
-    </div>
-  </div>
-  <div class="reviews-nav">
-    <button type="button" class="reviews-prev" aria-label="Previous review">‹</button>
-    <button type="button" class="reviews-next" aria-label="Next review">›</button>
-  </div>
 </section>
 
-<!--Contact section-->
-<section class=contact id=contact>
-<div class=contact-container>
-<h2>Get a Quote</h2>
-<p>Let's connect! Reach out for collaborations, freelance work, or just to say hi.</p>
-<div class=contact-form-anim>
-<div class=mail-anim>
-<i class="fas fa-envelope"></i>
-</div>
-<form class=contact-form action=https://formspree.io/f/mdklopae method=POST>
-<input name=name placeholder="Your Name" required>
-<input type=email name=email placeholder="Your Email" required>
-<div class="field">
-          <label for="q-type">Project Type</label>
-          <select id="q-type" name="project_type" required>
-            <option value="">Select one…</option>
-            <option>Business Website</option>
-            <option>E‑commerce</option>
-            <option>Portfolio/Landing</option>
-            <option>Redesign</option>
-            <option>Other</option>
-          </select>
-</div>
-<textarea name=message placeholder="Your Message" required></textarea>
-<label style="display:block;margin:.7rem 0 1.1rem 0;font-size:.98rem;color:#493c3c">
-<input type=checkbox name=agree_terms id=agree_terms required>
-I have read and agree to the <a href=terms.html target=_blank style=color:#00f;text-decoration:underline>Terms & Conditions</a>
-</label>
-<button type=submit>Send Message</button>
-<input type=hidden name=_subject value="New message from your portfolio!">
-</form>
-<div class=g-recaptcha data-sitekey=6LcoNrMrAAAAAOempOF7mqOVc5MNQpcVoS6VFlZY></div>
-<div style="margin:2.2rem auto 0 auto;max-width:340px;text-align:center">
-</a>
-</div>
-<div class=trustpilot-widget data-locale=en-US data-template-id=56278e9abfbbba0bdcd568bc data-businessunit-id=68af38c4e9dab32fe8f288ea data-style-height=52px data-style-width=100% data-token=af3cd265-e69e-4b7f-96e6-c5a99bdb2395>
-<a href=https://www.trustpilot.com/review/webgemini.co.za target=_blank rel=noopener>Trustpilot</a>
-</div>
-</div>
-<div style=margin-top:1rem;font-size:.98rem;text-align:center>
-By submitting, you agree to our <a href=terms.html style=color:#00f;text-decoration:underline>Terms &amp; Conditions</a>.
-</div>
-<div class=contact-socials>
-<a href=mailto:support@webgemini.co.za title=Email><i class="fas fa-envelope"></i></a>
-<a href=https://za.linkedin.com/in/tanaka-bvekerwa target=_blank title=LinkedIn><i class="fab fa-linkedin"></i></a>
-<a href=https://www.facebook.com/DaBoyTkZ/ target=_blank title=Facebook><i class="fab fa-facebook"></i></a>
-<a href=https://www.instagram.com/its.tanaka44/ target=_blank title=Instagram><i class="fab fa-instagram"></i></a>
-</div>
-</div>
-
-  <!-- Quote Modal -->
-  <div id="quote-modal" class="quote-modal" aria-hidden="true" role="dialog" aria-modal="true" aria-labelledby="quote-modal-title">
-    <div class="quote-modal__backdrop" data-quote-close></div>
-    <div class="quote-modal__dialog" role="document">
-      <button class="quote-modal__close" id="quote-modal-close" aria-label="Close quote form">×</button>
-      <h3 id="quote-modal-title">Get a Quote</h3>
-      <p class="quote-modal__subtitle">Tell me a bit about your project and I’ll get back to you.</p>
-      <form id="quote-modal-form" class="quote-form" action="https://formspree.io/f/mgvlepwb" method="POST" novalidate>
-        <div class="field">
-          <label for="q-name">Name</label>
-          <input id="q-name" name="name" required placeholder="Your name" />
-        </div>
-        <div class="field">
-          <label for="q-email">Email</label>
-          <input id="q-email" type="email" name="email" required placeholder="you@example.com" />
-        </div>
-        <div class="field">
-          <label for="q-type">Project Type</label>
-          <select id="q-type" name="project_type" required>
-            <option value="">Select one…</option>
-            <option>Business Website</option>
-            <option>E‑commerce</option>
-            <option>Portfolio/Landing</option>
-            <option>Redesign</option>
-            <option>Other</option>
-          </select>
-        </div>
-        <div class="field">
-          <label for="q-message">Project Details</label>
-          <textarea id="q-message" name="message" rows="4" placeholder="Goals, pages, deadline…"></textarea>
-        </div>
-        <label class="agree">
-          <input type="checkbox" id="q-agree" required />
-          I agree to the <a href="terms.html" target="_blank" rel="noopener">Terms</a>
-        </label>
-        <button type="submit" class="quote-submit">Request Quote</button>
-        <small class="quote-msg" aria-live="polite"></small>
-        <input type="hidden" name="_subject" value="New Quote Request">
-      </form>
-    </div>
-  </div>
-
-</section>
+<!-- Modern Contact Section -->
+<section id="contact" class="contact-section">
+            <div class="section-header">
+                <h2>Let's Work Together</h2>
+                <p class="section-subtitle">Reach out to us with any questions or to get a free quote</p>
+            </div>
+            
+            <div class="contact-container">
+                <div class="contact-form-container">
+                    <form id="contact-form" class="modern-contact-form" action="https://formspree.io/f/mdklopae" method="POST">
+                        <div class="form-row">
+                            <div class="form-group floating-label">
+                                <input type="text" id="name" name="name" required>
+                                <label for="name">Your Name</label>
+                                <div class="input-icon"><i class="fa fa-user"></i></div>
+                            </div>
+                            <div class="form-group floating-label">
+                                <input type="email" id="email" name="email" required>
+                                <label for="email">Email Address</label>
+                                <div class="input-icon"><i class="fa fa-envelope"></i></div>
+                            </div>
+                        </div>
+                        
+                        <div class="form-row">
+                            <div class="form-group floating-label">
+                                <input type="tel" id="phone" name="phone">
+                                <label for="phone">Phone Number</label>
+                                <div class="input-icon"><i class="fa fa-phone"></i></div>
+                            </div>
+                            <div class="form-group floating-label">
+                                <select id="inquiry-type" name="inquiry-type" required>
+                                    <option value="" disabled selected></option>
+                                    <option value="blog-website">Blog Website</option>
+                                    <option value="e-commerce">E-commerce</option>
+                                    <option value="landing-page">Landing Page</option>
+                                    <option value="other">Other</option>
+                                </select>
+                                <label for="inquiry-type">Inquiry Type</label>
+                                <div class="input-icon"><i class="fa fa-question-circle"></i></div>
+                            </div>
+                        </div>
+                        
+                        <div class="form-row">
+                            <div class="form-group floating-label">
+                                <select id="budget" name="budget">
+                                    <option value="" disabled selected></option>
+                                    <option value="under-2k">Under R2,000</option>
+                                    <option value="2k-5k">R2,000 - R5,000</option>
+                                    <option value="5k-10k">R5,000 - R10,000</option>
+                                    <option value="10k-20k">R10,000 - R20,000</option>
+                                    <option value="20k-plus">R20,000+</option>
+                                    <option value="discuss">Let's Discuss</option>
+                                </select>
+                                <label for="budget">Project Budget (Optional)</label>
+                                <div class="input-icon"><i class="fa fa-dollar-sign"></i></div>
+                            </div>
+                        </div>
+                        
+                        <div class="form-group floating-label">
+                            <textarea id="message" name="message" required rows="4"></textarea>
+                            <label for="message">Your Message</label>
+                            <div class="input-icon"><i class="fa fa-comment"></i></div>
+                        </div>
+                        
+                        <div class="form-action">
+                            <button type="submit" class="submit-btn">
+                                <span>Send Message</span>
+                                <i class="fa fa-paper-plane"></i>
+                            </button>
+                            <div class="form-note">We'll respond within 24 business hours</div>
+                        </div>
+                        
+                        <!-- Formspree hidden fields -->
+                        <input type="hidden" name="_subject" value="New contact form submission from WebGemini Portfolio">
+                        <input type="hidden" name="_next" value="thank-you.html">
+                        <input type="hidden" name="_captcha" value="false">
+                    </form>
+                </div>
+                
+                <div class="contact-info-container">
+                    <div class="contact-info-card">
+                        <h3>Get in Touch</h3>
+                        <div class="contact-info-item">
+                            <i class="fa fa-map-marker-alt"></i>
+                            <div>
+                                <h4>Our Location</h4>
+                                <p>123 N11 Road<br>Mokopane, Limpopo</p>
+                            </div>
+                        </div>
+                        <div class="contact-info-item">
+                            <i class="fa fa-phone-alt"></i>
+                            <div>
+                                <h4>Phone</h4>
+                                <p>+27 67-819-1766</p>
+                            </div>
+                        </div>
+                        <div class="contact-info-item">
+                            <i class="fa fa-envelope"></i>
+                            <div>
+                                <h4>Email</h4>
+                                <p>support@webgemini.co.za</p>
+                            </div>
+                        </div>
+                        <div class="contact-info-item">
+                            <i class="fa fa-clock"></i>
+                            <div>
+                                <h4>Business Hours</h4>
+                                <p>Monday-Friday: 8am - 6pm<br>Saturday: 9am - 4pm<br>Sunday: Closed</p>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="contact-map">
+                        <div class="map-placeholder">
+                            <img src="image/map-placeholder.jpg" alt="Map Location" class="map-image">
+                            <div class="map-overlay">
+                                <a href="https://maps.google.com" target="_blank" class="map-link">
+                                    <i class="fa fa-map"></i> Open in Google Maps
+                                </a>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="social-links">
+                        <a href="#" class="social-icon"><i class="fab fa-facebook-f"></i></a>
+                        <a href="#" class="social-icon"><i class="fab fa-instagram"></i></a>
+                        <a href="#" class="social-icon"><i class="fab fa-linkedin-in"></i></a>
+                        <a href="#" class="social-icon"><i class="fab fa-youtube"></i></a>
+                    </div>
+                </div>
+            </div>
+        </section>
 
 <!---Footer--->
 	<footer class="site-footer">

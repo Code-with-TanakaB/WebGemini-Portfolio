@@ -1157,3 +1157,22 @@ document.querySelectorAll('a[href^="#"]').forEach(anchor => {
         }
     });
 });
+
+// Function to scroll to contact form
+function scrollToContact() {
+    const contactSection = document.querySelector('#contact');
+    if (contactSection) {
+        contactSection.scrollIntoView({
+            behavior: 'smooth',
+            block: 'start'
+        });
+        
+        // Focus on the first input field after scrolling
+        setTimeout(() => {
+            const firstInput = contactSection.querySelector('input[name="name"]');
+            if (firstInput) {
+                firstInput.focus();
+            }
+        }, 800); // Wait for scroll animation to complete
+    }
+}

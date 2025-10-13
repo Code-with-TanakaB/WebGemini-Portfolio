@@ -1785,6 +1785,22 @@
         padding: 1rem;
     }
     
+    .trustpilot-cta {
+        margin-top: 1.5rem;
+        padding: 1.5rem;
+    }
+    
+    .trustpilot-text {
+        font-size: 1rem;
+        margin-bottom: 1rem;
+    }
+    
+    .trustpilot-btn {
+        padding: 0.8rem 1.5rem;
+        font-size: 0.95rem;
+        gap: 0.6rem;
+    }
+    
     .contact-header h2 {
         font-size: 2rem;
     }
@@ -2281,6 +2297,71 @@
 .stat-stars {
     color: #ffc107;
     font-size: 1rem;
+}
+
+/* Trustpilot CTA Section */
+.trustpilot-cta {
+    text-align: center;
+    margin-top: 2.5rem;
+    padding: 2rem;
+    background: rgba(255, 255, 255, 0.9);
+    border-radius: 16px;
+    border: 1px solid rgba(0, 195, 255, 0.15);
+    backdrop-filter: blur(10px);
+}
+
+.trustpilot-text {
+    font-size: 1.1rem;
+    color: #666;
+    margin-bottom: 1.5rem;
+    font-weight: 500;
+}
+
+.trustpilot-btn {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.8rem;
+    background: linear-gradient(135deg, #00c3ff 0%, #ff1c68 100%);
+    color: white;
+    text-decoration: none;
+    padding: 1rem 2rem;
+    border-radius: 30px;
+    font-size: 1rem;
+    font-weight: 600;
+    transition: all 0.3s ease;
+    box-shadow: 0 4px 15px rgba(0, 195, 255, 0.3);
+    position: relative;
+    overflow: hidden;
+}
+
+.trustpilot-btn::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: -100%;
+    width: 100%;
+    height: 100%;
+    background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.2), transparent);
+    transition: left 0.5s ease;
+}
+
+.trustpilot-btn:hover::before {
+    left: 100%;
+}
+
+.trustpilot-btn:hover {
+    transform: translateY(-3px);
+    box-shadow: 0 8px 25px rgba(0, 195, 255, 0.4);
+}
+
+.trustpilot-btn i:first-child {
+    color: #ffc107;
+    font-size: 1.1rem;
+}
+
+.trustpilot-btn i:last-child {
+    font-size: 0.9rem;
+    opacity: 0.8;
 }
 
 /* Modern Contact Section */
@@ -3844,6 +3925,12 @@ section h2{font-family:"EB Garamond",serif;font-size:2.5rem;margin-bottom:2rem;l
   -webkit-background-clip: text;
   -webkit-text-fill-color: transparent;
   background-clip: text;
+}
+
+/* Apply same styling to services and pricing titles */
+.services .projects-title,
+.pricing .projects-title {
+  text-align: center;
 }
 
 .projects-subtitle {

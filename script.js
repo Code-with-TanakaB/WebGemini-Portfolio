@@ -1176,3 +1176,159 @@ function scrollToContact() {
         }, 800); // Wait for scroll animation to complete
     }
 }
+
+// ============================================
+// Dynamic Pop-up Quote Modal Functionality
+// ============================================
+
+document.addEventListener('DOMContentLoaded', function() {
+    const modal = document.getElementById('quote-modal');
+    const closeBtn = document.querySelector('.quote-modal-close');
+    const overlay = document.querySelector('.quote-modal-overlay');
+    const form = document.getElementById('quote-modal-form');
+    
+    // Check if modal has been shown in this session
+    const modalShown = sessionStorage.getItem('quoteModalShown');
+    const modalDismissed = sessionStorage.getItem('quoteModalDismissed');
+    
+    // Show modal after 10 seconds if not shown or dismissed in this session
+    if (!modalShown && !modalDismissed) {
+        setTimeout(function() {
+            showQuoteModal();
+        }, 10000); // 10 seconds
+    }
+    
+    // Function to show modal
+    function showQuoteModal() {
+        if (modal) {
+            modal.classList.add('active');
+            document.body.style.overflow = 'hidden'; // Prevent background scrolling
+            sessionStorage.setItem('quoteModalShown', 'true');
+            
+            // Track modal view (optional analytics)
+            if (typeof gtag !== 'undefined') {
+                gtag('event', 'modal_view', {
+                    'event_category': 'engagement',
+                    'event_label': 'quote_modal_popup'
+                });
+            }
+        }
+    }
+    
+    // Function to close modal
+    function closeQuoteModal() {
+        if (modal) {
+            modal.classList.remove('active');
+            document.body.style.overflow = ''; // Restore scrolling
+            sessionStorage.setItem('quoteModalDismissed', 'true');
+            
+            // Track modal close (optional analytics)
+            if (typeof gtag !== 'undefined') {
+                gtag('event', 'modal_close', {
+                    'event_category': 'engagement',
+                    'event_label': 'quote_modal_dismissed'
+                });
+            }
+        }
+    }
+    
+    // Close button click
+    if (closeBtn) {
+        closeBtn.addEventListener('click', closeQuoteModal);
+    }
+    
+    // Overlay click to close
+    if (overlay) {
+        overlay.addEventListener('click', closeQuoteModal);
+    }
+    
+    // Escape key to close
+    document.addEventListener('keydown', function(e) {
+        if (e.key === 'Escape' && modal && modal.classList.contains('active')) {
+            closeQuoteModal();
+        }
+    });
+    
+    // Form submission
+    if (form) {
+        form.addEventListener('submit', function(e) {
+            // Optional: Add custom form validation or processing here
+            
+            // Track form submission (optional analytics)
+            if (typeof gtag !== 'undefined') {
+                gtag('event', 'form_submit', {
+                    'event_category': 'lead_generation',
+                    'event_label': 'quote_modal_form'
+                });
+            }
+            
+            // Show loading state
+            const submitBtn = form.querySelector('.quote-submit-btn');
+            if (submitBtn) {
+                const originalText = submitBtn.innerHTML;
+                submitBtn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Sending...';
+                submitBtn.disabled = true;
+                
+                // Re-enable after a delay (in case of errors)
+                setTimeout(function() {
+                    submitBtn.innerHTML = originalText;
+                    submitBtn.disabled = false;
+                }, 5000);
+            }
+            
+            // Form will submit to Formspree
+            // Close modal after a brief delay
+            setTimeout(function() {
+                closeQuoteModal();
+            }, 1000);
+        });
+    }
+    
+    // Optional: Reopen modal on certain user actions
+    // Example: When user clicks "Get a Quote" buttons
+    const quoteButtons = document.querySelectorAll('.get-quote-btn, [href="#quote"]');
+    quoteButtons.forEach(button => {
+        button.addEventListener('click', function(e) {
+            // Only show modal if the button doesn't have a specific action
+            const href = this.getAttribute('href');
+            if (href === '#quote' || this.classList.contains('trigger-quote-modal')) {
+                e.preventDefault();
+                sessionStorage.removeItem('quoteModalDismissed'); // Allow reopening
+                showQuoteModal();
+            }
+        });
+    });
+    
+    // Optional: Show modal again if user is about to leave (exit intent)
+    let hasShownExitModal = false;
+    document.addEventListener('mouseleave', function(e) {
+        if (!hasShownExitModal && e.clientY <= 0 && !modal.classList.contains('active')) {
+            hasShownExitModal = true;
+            
+            // Only show if not dismissed recently
+            const dismissTime = sessionStorage.getItem('quoteModalDismissTime');
+            const currentTime = new Date().getTime();
+            
+            if (!dismissTime || (currentTime - parseInt(dismissTime)) > 300000) { // 5 minutes
+                showQuoteModal();
+            }
+        }
+    });
+    
+    // Store dismiss time when modal is closed
+    const originalCloseFunction = closeQuoteModal;
+    closeQuoteModal = function() {
+        sessionStorage.setItem('quoteModalDismissTime', new Date().getTime().toString());
+        originalCloseFunction();
+    };
+});
+
+// Optional: Public function to manually trigger the modal
+function openQuoteModal() {
+    const modal = document.getElementById('quote-modal');
+    if (modal) {
+        modal.classList.add('active');
+        document.body.style.overflow = 'hidden';
+        sessionStorage.removeItem('quoteModalDismissed');
+    }
+}

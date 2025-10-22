@@ -1,0 +1,338 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Affiliate Dashboard - WebGemini</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.min.js"></script>
+</head>
+<body class="bg-gray-50">
+    <!-- Navigation -->
+    <nav class="bg-white shadow-sm">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="flex justify-between h-16">
+                <div class="flex items-center">
+                    <h1 class="text-2xl font-bold text-blue-600">WebGemini Affiliate</h1>
+                </div>
+                <div class="flex items-center space-x-4">
+                    <span id="affiliate-name" class="text-gray-700"></span>
+                    <button onclick="logout()" class="text-sm text-gray-600 hover:text-gray-900">
+                        <i class="fas fa-sign-out-alt"></i> Logout
+                    </button>
+                </div>
+            </div>
+        </div>
+    </nav>
+
+    <!-- Login Modal -->
+    <div id="login-modal" class="fixed inset-0 bg-gray-900 bg-opacity-50 flex items-center justify-center z-50">
+        <div class="bg-white rounded-lg p-8 max-w-md w-full mx-4">
+            <h2 class="text-2xl font-bold mb-6 text-center">Affiliate Login</h2>
+            <form id="login-form" class="space-y-4">
+                <div>
+                    <label class="block text-sm font-medium text-gray-700 mb-2">Your Coupon Code</label>
+                    <input type="text" id="login-coupon" required
+                           placeholder="YOURCODE@wg" maxlength="10"
+                           class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent">
+                    <p class="text-xs text-gray-500 mt-1">Enter your unique coupon code</p>
+                </div>
+                <button type="submit" 
+                        class="w-full bg-blue-600 text-white py-2 rounded-lg hover:bg-blue-700 transition">
+                    Access Dashboard
+                </button>
+            </form>
+        </div>
+    </div>
+
+    <!-- Main Content -->
+    <main id="dashboard-content" class="hidden max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
+        <!-- Stats Cards -->
+        <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-8">
+            <!-- Total Referrals -->
+            <div class="bg-white rounded-lg shadow p-6">
+                <div class="flex items-center justify-between mb-2">
+                    <h3 class="text-gray-500 text-sm font-medium">Total Referrals</h3>
+                    <i class="fas fa-users text-blue-500 text-xl"></i>
+                </div>
+                <p id="total-referrals" class="text-3xl font-bold text-gray-900">0</p>
+                <p class="text-xs text-gray-500 mt-1">All time</p>
+            </div>
+
+            <!-- Pending Commission -->
+            <div class="bg-white rounded-lg shadow p-6">
+                <div class="flex items-center justify-between mb-2">
+                    <h3 class="text-gray-500 text-sm font-medium">Pending</h3>
+                    <i class="fas fa-clock text-yellow-500 text-xl"></i>
+                </div>
+                <p id="pending-commission" class="text-3xl font-bold text-gray-900">R0.00</p>
+                <p class="text-xs text-gray-500 mt-1">Awaiting conversion</p>
+            </div>
+
+            <!-- Total Earned -->
+            <div class="bg-white rounded-lg shadow p-6">
+                <div class="flex items-center justify-between mb-2">
+                    <h3 class="text-gray-500 text-sm font-medium">Total Earned</h3>
+                    <i class="fas fa-chart-line text-green-500 text-xl"></i>
+                </div>
+                <p id="total-earned" class="text-3xl font-bold text-gray-900">R0.00</p>
+                <p class="text-xs text-gray-500 mt-1">Confirmed commissions</p>
+            </div>
+
+            <!-- Paid Out -->
+            <div class="bg-white rounded-lg shadow p-6">
+                <div class="flex items-center justify-between mb-2">
+                    <h3 class="text-gray-500 text-sm font-medium">Paid Out</h3>
+                    <i class="fas fa-money-bill-wave text-purple-500 text-xl"></i>
+                </div>
+                <p id="paid-commission" class="text-3xl font-bold text-gray-900">R0.00</p>
+                <p class="text-xs text-gray-500 mt-1">Received payments</p>
+            </div>
+        </div>
+
+        <!-- Coupon Code Card -->
+        <div class="bg-gradient-to-r from-blue-500 to-blue-600 rounded-lg shadow-lg p-6 mb-8 text-white">
+            <div class="flex justify-between items-center">
+                <div>
+                    <h3 class="text-lg font-semibold mb-2">Your Coupon Code</h3>
+                    <div class="flex items-center space-x-4">
+                        <span id="coupon-code-display" class="text-3xl font-bold"></span>
+                        <button onclick="copyCouponCode()" class="bg-white text-blue-600 px-4 py-2 rounded-lg text-sm font-medium hover:bg-blue-50 transition">
+                            <i class="fas fa-copy mr-2"></i>Copy Code
+                        </button>
+                    </div>
+                    <p class="text-sm mt-2 opacity-90">Share this code with your audience!</p>
+                </div>
+                <div class="text-right">
+                    <p class="text-sm opacity-75">Commission Rates</p>
+                    <p class="text-lg font-semibold">Starter: 10%</p>
+                    <p class="text-lg font-semibold">Pro & Enterprise: 25%</p>
+                </div>
+            </div>
+        </div>
+
+        <!-- Performance Chart -->
+        <div class="bg-white rounded-lg shadow p-6 mb-8">
+            <h3 class="text-lg font-semibold mb-4">Monthly Performance</h3>
+            <canvas id="performance-chart" height="80"></canvas>
+        </div>
+
+        <!-- Plan Breakdown -->
+        <div class="grid grid-cols-1 md:grid-cols-3 gap-6 mb-8">
+            <div class="bg-white rounded-lg shadow p-6">
+                <h4 class="text-sm font-medium text-gray-500 mb-2">Starter Plan</h4>
+                <p id="starter-count" class="text-2xl font-bold text-gray-900">0</p>
+                <p id="starter-commission" class="text-sm text-green-600 font-medium">R0.00 earned</p>
+            </div>
+            <div class="bg-white rounded-lg shadow p-6">
+                <h4 class="text-sm font-medium text-gray-500 mb-2">Professional Plan</h4>
+                <p id="professional-count" class="text-2xl font-bold text-gray-900">0</p>
+                <p id="professional-commission" class="text-sm text-green-600 font-medium">R0.00 earned</p>
+            </div>
+            <div class="bg-white rounded-lg shadow p-6">
+                <h4 class="text-sm font-medium text-gray-500 mb-2">Enterprise Plan</h4>
+                <p id="enterprise-count" class="text-2xl font-bold text-gray-900">0</p>
+                <p id="enterprise-commission" class="text-sm text-green-600 font-medium">R0.00 earned</p>
+            </div>
+        </div>
+
+        <!-- Recent Referrals Table -->
+        <div class="bg-white rounded-lg shadow overflow-hidden">
+            <div class="px-6 py-4 border-b border-gray-200">
+                <h3 class="text-lg font-semibold">Recent Referrals</h3>
+            </div>
+            <div class="overflow-x-auto">
+                <table class="min-w-full divide-y divide-gray-200">
+                    <thead class="bg-gray-50">
+                        <tr>
+                            <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">Customer</th>
+                            <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">Plan</th>
+                            <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">Commission</th>
+                            <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">Status</th>
+                            <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">Date</th>
+                        </tr>
+                    </thead>
+                    <tbody id="referrals-table" class="bg-white divide-y divide-gray-200">
+                        <!-- Populated by JavaScript -->
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </main>
+
+    <script>
+        const API_URL = 'http://localhost:3000/api';
+        let currentCouponCode = localStorage.getItem('affiliateCoupon');
+
+        // Check if already logged in
+        if (currentCouponCode) {
+            loadDashboard();
+        }
+
+        // Login form handler
+        document.getElementById('login-form').addEventListener('submit', async (e) => {
+            e.preventDefault();
+            const couponCode = document.getElementById('login-coupon').value.trim();
+            
+            try {
+                const response = await fetch(`${API_URL}/referrals/validate-coupon`, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ couponCode })
+                });
+
+                const data = await response.json();
+                
+                if (data.valid) {
+                    localStorage.setItem('affiliateCoupon', couponCode);
+                    currentCouponCode = couponCode;
+                    loadDashboard();
+                } else {
+                    alert('Invalid coupon code. Please check and try again.');
+                }
+            } catch (error) {
+                console.error('Login error:', error);
+                alert('Error logging in. Please try again.');
+            }
+        });
+
+        async function loadDashboard() {
+            try {
+                const response = await fetch(`${API_URL}/referrals/dashboard/${currentCouponCode}`);
+                const data = await response.json();
+
+                if (!data.success) {
+                    alert('Error loading dashboard');
+                    logout();
+                    return;
+                }
+
+                // Hide login modal, show dashboard
+                document.getElementById('login-modal').classList.add('hidden');
+                document.getElementById('dashboard-content').classList.remove('hidden');
+
+                // Populate affiliate info
+                document.getElementById('affiliate-name').textContent = data.affiliate.name;
+                document.getElementById('coupon-code-display').textContent = data.affiliate.couponCode;
+
+                // Populate stats
+                document.getElementById('total-referrals').textContent = data.summary.totalReferrals;
+                document.getElementById('pending-commission').textContent = `R${data.summary.pendingCommission.toFixed(2)}`;
+                document.getElementById('total-earned').textContent = `R${data.summary.totalEarned.toFixed(2)}`;
+                document.getElementById('paid-commission').textContent = `R${data.summary.paidCommission.toFixed(2)}`;
+
+                // Populate plan breakdown
+                const planData = { starter: {count: 0, commission: 0}, professional: {count: 0, commission: 0}, enterprise: {count: 0, commission: 0} };
+                data.planBreakdown.forEach(plan => {
+                    planData[plan.plan_type] = { count: plan.count, commission: parseFloat(plan.total_commission) };
+                });
+                
+                document.getElementById('starter-count').textContent = planData.starter.count;
+                document.getElementById('starter-commission').textContent = `R${planData.starter.commission.toFixed(2)} earned`;
+                document.getElementById('professional-count').textContent = planData.professional.count;
+                document.getElementById('professional-commission').textContent = `R${planData.professional.commission.toFixed(2)} earned`;
+                document.getElementById('enterprise-count').textContent = planData.enterprise.count;
+                document.getElementById('enterprise-commission').textContent = `R${planData.enterprise.commission.toFixed(2)} earned`;
+
+                // Populate referrals table
+                const tableBody = document.getElementById('referrals-table');
+                tableBody.innerHTML = '';
+                
+                if (data.referrals.length === 0) {
+                    tableBody.innerHTML = '<tr><td colspan="5" class="px-6 py-4 text-center text-gray-500">No referrals yet. Start promoting!</td></tr>';
+                } else {
+                    data.referrals.forEach(ref => {
+                        const row = document.createElement('tr');
+                        row.innerHTML = `
+                            <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-900">${ref.customer_name}</td>
+                            <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-900">${ref.plan_type}</td>
+                            <td class="px-6 py-4 whitespace-nowrap text-sm font-medium text-green-600">R${parseFloat(ref.commission_amount).toFixed(2)}</td>
+                            <td class="px-6 py-4 whitespace-nowrap">
+                                <span class="px-2 py-1 text-xs font-semibold rounded-full 
+                                    ${ref.status === 'converted' ? 'bg-green-100 text-green-800' : 
+                                      ref.status === 'contacted' ? 'bg-blue-100 text-blue-800' : 
+                                      ref.status === 'lost' ? 'bg-red-100 text-red-800' : 
+                                      'bg-yellow-100 text-yellow-800'}">
+                                    ${ref.status}
+                                </span>
+                            </td>
+                            <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">${new Date(ref.referred_at).toLocaleDateString()}</td>
+                        `;
+                        tableBody.appendChild(row);
+                    });
+                }
+
+                // Create performance chart
+                createPerformanceChart(data.monthlyPerformance);
+
+            } catch (error) {
+                console.error('Dashboard error:', error);
+                alert('Error loading dashboard data');
+            }
+        }
+
+        function createPerformanceChart(monthlyData) {
+            const ctx = document.getElementById('performance-chart').getContext('2d');
+            
+            const labels = monthlyData.map(m => m.month).reverse();
+            const referrals = monthlyData.map(m => m.referrals).reverse();
+            const commission = monthlyData.map(m => parseFloat(m.commission)).reverse();
+
+            new Chart(ctx, {
+                type: 'line',
+                data: {
+                    labels: labels,
+                    datasets: [{
+                        label: 'Referrals',
+                        data: referrals,
+                        borderColor: 'rgb(59, 130, 246)',
+                        backgroundColor: 'rgba(59, 130, 246, 0.1)',
+                        yAxisID: 'y'
+                    }, {
+                        label: 'Commission (R)',
+                        data: commission,
+                        borderColor: 'rgb(34, 197, 94)',
+                        backgroundColor: 'rgba(34, 197, 94, 0.1)',
+                        yAxisID: 'y1'
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    interaction: {
+                        mode: 'index',
+                        intersect: false
+                    },
+                    scales: {
+                        y: {
+                            type: 'linear',
+                            display: true,
+                            position: 'left'
+                        },
+                        y1: {
+                            type: 'linear',
+                            display: true,
+                            position: 'right',
+                            grid: {
+                                drawOnChartArea: false
+                            }
+                        }
+                    }
+                }
+            });
+        }
+
+        function copyCouponCode() {
+            const code = document.getElementById('coupon-code-display').textContent;
+            navigator.clipboard.writeText(code).then(() => {
+                alert('Coupon code copied to clipboard!');
+            });
+        }
+
+        function logout() {
+            localStorage.removeItem('affiliateCoupon');
+            location.reload();
+        }
+    </script>
+</body>
+</html>

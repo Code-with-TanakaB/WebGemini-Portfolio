@@ -1306,9 +1306,10 @@
                     
                     <div>
                         <label class="block text-sm font-medium mb-2">Discount Coupon Code</label>
-                        <input type="text" name="coupon" placeholder="Enter your discount code"
+                        <input type="text" id="coupon-input" name="coupon" placeholder="Enter your discount code" maxlength="10"
                             class="w-full bg-white/5 border border-white/10 rounded-lg px-4 py-3 focus:outline-none focus:border-primary transition">
-                        <p class="text-xs text-gray-500 mt-1">Have a promo code? Enter it here for special discounts!</p>
+                        <p class="text-xs text-gray-500 mt-1">Have a promo code? Enter it here for special discounts! (Max 10 characters, must end with @wg)</p>
+                        <p id="coupon-error" class="text-xs text-red-500 mt-1 hidden"></p>
                     </div>
                     
                     <div>
@@ -1614,13 +1615,144 @@
             renderer.setSize(window.innerWidth, window.innerHeight);
         });
         
-        // Form submission feedback
+        // Form submission feedback and spam protection
         const form = document.getElementById('quote-form-element');
-        form.addEventListener('submit', function() {
+        const COOLDOWN_PERIOD = 24 * 60 * 60 * 1000; // 24 hours in milliseconds
+        
+        // Check if user has recently submitted
+        function checkSubmissionCooldown() {
+            const lastSubmission = localStorage.getItem('lastQuoteSubmission');
+            if (lastSubmission) {
+                const timeSinceSubmission = Date.now() - parseInt(lastSubmission);
+                if (timeSinceSubmission < COOLDOWN_PERIOD) {
+                    const hoursRemaining = Math.ceil((COOLDOWN_PERIOD - timeSinceSubmission) / (60 * 60 * 1000));
+                    return hoursRemaining;
+                }
+            }
+            return 0;
+        }
+        
+        // Display cooldown message if user already submitted
+        function displayCooldownMessage(hoursRemaining) {
             const submitBtn = form.querySelector('button[type="submit"]');
+            submitBtn.disabled = true;
+            submitBtn.innerHTML = '<i class="fas fa-clock mr-2"></i>Already Submitted';
+            submitBtn.classList.remove('bg-gradient-to-r', 'from-primary', 'to-secondary');
+            submitBtn.classList.add('bg-gray-600', 'cursor-not-allowed');
+            
+            // Show message above button
+            const messageDiv = document.createElement('div');
+            messageDiv.id = 'cooldown-message';
+            messageDiv.className = 'bg-yellow-500/10 border border-yellow-500/30 rounded-lg p-4 mb-4 text-center';
+            messageDiv.innerHTML = `
+                <i class="fas fa-info-circle text-yellow-500 mr-2"></i>
+                <span class="text-yellow-500 font-semibold">You have already submitted a quote request.</span>
+                <p class="text-sm text-gray-400 mt-2">Please wait ${hoursRemaining} hour${hoursRemaining > 1 ? 's' : ''} before submitting another request, or contact us directly at <a href="mailto:support@webgemini.co.za" class="text-primary underline">support@webgemini.co.za</a></p>
+            `;
+            
+            const existingMessage = document.getElementById('cooldown-message');
+            if (!existingMessage) {
+                submitBtn.parentElement.insertBefore(messageDiv, submitBtn);
+            }
+        }
+        
+        // Check on page load
+        const hoursRemaining = checkSubmissionCooldown();
+        if (hoursRemaining > 0) {
+            displayCooldownMessage(hoursRemaining);
+        }
+        
+        form.addEventListener('submit', function(e) {
+            const submitBtn = form.querySelector('button[type="submit"]');
+            const couponInput = document.getElementById('coupon-input');
+            const couponError = document.getElementById('coupon-error');
+            
+            // Check cooldown period
+            const cooldownHours = checkSubmissionCooldown();
+            if (cooldownHours > 0) {
+                e.preventDefault();
+                alert(`You have already submitted a quote request. Please wait ${cooldownHours} hour${cooldownHours > 1 ? 's' : ''} before submitting another request.`);
+                return false;
+            }
+            
+            // Validate coupon if provided
+            if (couponInput.value.trim() !== '') {
+                const isValid = validateCoupon(couponInput.value);
+                if (!isValid) {
+                    e.preventDefault();
+                    couponError.textContent = 'Invalid coupon';
+                    couponError.classList.remove('hidden');
+                    couponInput.classList.add('border-red-500');
+                    couponInput.focus();
+                    return false;
+                }
+            }
+            
             submitBtn.innerHTML = '<i class="fas fa-spinner fa-spin mr-2"></i>Sending...';
             submitBtn.disabled = true;
+            
+            // Save submission timestamp
+            localStorage.setItem('lastQuoteSubmission', Date.now().toString());
+            
+            // Reset form after a brief delay (simulating successful submission)
+            setTimeout(function() {
+                form.reset();
+                
+                // Reset coupon field styling
+                if (couponInput) {
+                    couponInput.classList.remove('border-red-500', 'border-green-500');
+                    couponError.classList.add('hidden');
+                }
+                
+                // Show success message and update button
+                alert('Thank you! Your quote request has been submitted successfully. We\'ll get back to you within 24 hours.');
+                
+                // Display cooldown message
+                displayCooldownMessage(24);
+            }, 1500);
         });
+        
+        // Coupon validation function
+        function validateCoupon(coupon) {
+            // Check max length (10 characters)
+            if (coupon.length > 10) {
+                return false;
+            }
+            // Check if it ends with '@wg'
+            if (!coupon.endsWith('@wg')) {
+                return false;
+            }
+            return true;
+        }
+        
+        // Real-time coupon validation
+        const couponInput = document.getElementById('coupon-input');
+        const couponError = document.getElementById('coupon-error');
+        
+        if (couponInput) {
+            couponInput.addEventListener('input', function() {
+                const value = this.value.trim();
+                
+                // Reset error state
+                couponError.classList.add('hidden');
+                this.classList.remove('border-red-500');
+                this.classList.remove('border-green-500');
+                
+                // Only validate if there's input
+                if (value !== '') {
+                    const isValid = validateCoupon(value);
+                    
+                    if (!isValid) {
+                        couponError.textContent = 'Invalid coupon';
+                        couponError.classList.remove('hidden');
+                        this.classList.add('border-red-500');
+                    } else {
+                        this.classList.add('border-green-500');
+                        couponError.classList.add('hidden');
+                    }
+                }
+            });
+        }
     </script>
 </body>
 </html>

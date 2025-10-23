@@ -79,10 +79,10 @@
                     </div>
                     <div class="stat-card">
                         <div class="stat-icon green">
-                            <i class="fas fa-dollar-sign"></i>
+                            <i class="fas fa-coins"></i>
                         </div>
                         <div class="stat-info">
-                            <h3 id="totalEarnings">$0</h3>
+                            <h3 id="totalEarnings">R0</h3>
                             <p>Total Earnings</p>
                         </div>
                     </div>
@@ -91,7 +91,7 @@
                             <i class="fas fa-clock"></i>
                         </div>
                         <div class="stat-info">
-                            <h3 id="pendingEarnings">$0</h3>
+                            <h3 id="pendingEarnings">R0</h3>
                             <p>Pending Earnings</p>
                         </div>
                     </div>
@@ -100,22 +100,43 @@
                             <i class="fas fa-check-circle"></i>
                         </div>
                         <div class="stat-info">
-                            <h3 id="paidEarnings">$0</h3>
+                            <h3 id="paidEarnings">R0</h3>
                             <p>Paid Earnings</p>
                         </div>
                     </div>
                 </div>
 
                 <div class="coupon-card card">
-                    <h3>Your Unique Coupon Code</h3>
-                    <div class="coupon-display">
-                        <div class="coupon-code" id="couponCode">LOADING...</div>
-                        <button class="copy-btn" id="copyCouponBtn">
-                            <i class="fas fa-copy"></i>
-                            Copy
-                        </button>
+                    <h3>Your Affiliate Information</h3>
+                    <div class="affiliate-info-grid">
+                        <div class="info-item">
+                            <label>Affiliate ID:</label>
+                            <div class="info-value">
+                                <span id="affiliateId">Loading...</span>
+                            </div>
+                        </div>
+                        <div class="info-item">
+                            <label>Coupon Code:</label>
+                            <div class="coupon-display">
+                                <div class="coupon-code" id="couponCode">LOADING...</div>
+                                <button class="copy-btn" id="copyCouponBtn">
+                                    <i class="fas fa-copy"></i>
+                                    Copy
+                                </button>
+                            </div>
+                        </div>
+                        <div class="info-item full-width">
+                            <label>Your Referral Link:</label>
+                            <div class="link-display">
+                                <input type="text" id="referralLinkPreview" readonly value="Loading...">
+                                <button class="copy-btn" id="copyLinkPreviewBtn">
+                                    <i class="fas fa-copy"></i>
+                                    Copy
+                                </button>
+                            </div>
+                        </div>
                     </div>
-                    <p class="coupon-info">Share this code with your audience. They'll get a discount and you'll earn commission!</p>
+                    <p class="coupon-info">Share this code and link with your audience. They'll get a discount and you'll earn commission!</p>
                 </div>
             </section>
 
@@ -163,21 +184,21 @@
                                 <i class="fas fa-coins"></i>
                                 <span>Total Earned</span>
                             </div>
-                            <div class="earning-amount" id="earningsTotal">$0.00</div>
+                            <div class="earning-amount" id="earningsTotal">R0.00</div>
                         </div>
                         <div class="earning-item">
                             <div class="earning-label">
                                 <i class="fas fa-hourglass-half"></i>
                                 <span>Pending Payment</span>
                             </div>
-                            <div class="earning-amount pending" id="earningsPending">$0.00</div>
+                            <div class="earning-amount pending" id="earningsPending">R0.00</div>
                         </div>
                         <div class="earning-item">
                             <div class="earning-label">
                                 <i class="fas fa-check-double"></i>
                                 <span>Paid Out</span>
                             </div>
-                            <div class="earning-amount paid" id="earningsPaid">$0.00</div>
+                            <div class="earning-amount paid" id="earningsPaid">R0.00</div>
                         </div>
                     </div>
                 </div>

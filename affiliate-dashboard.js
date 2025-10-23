@@ -25,12 +25,15 @@ document.addEventListener('DOMContentLoaded', () => {
 });
 
 function setupEventListeners() {
-    // Navigation
+    // Navigation - fix event handling
     document.querySelectorAll('.nav-item').forEach(item => {
         item.addEventListener('click', (e) => {
             e.preventDefault();
-            const section = item.dataset.section;
-            switchSection(section);
+            e.stopPropagation();
+            const section = item.getAttribute('data-section');
+            if (section) {
+                switchSection(section);
+            }
         });
     });
 
@@ -47,10 +50,21 @@ function setupEventListeners() {
         copyToClipboard(document.getElementById('couponCode').textContent);
     });
 
-    // Copy link button
-    document.getElementById('copyLinkBtn').addEventListener('click', () => {
-        copyToClipboard(document.getElementById('referralLink').value);
-    });
+    // Copy link preview button (overview section)
+    const copyLinkPreviewBtn = document.getElementById('copyLinkPreviewBtn');
+    if (copyLinkPreviewBtn) {
+        copyLinkPreviewBtn.addEventListener('click', () => {
+            copyToClipboard(document.getElementById('referralLinkPreview').value);
+        });
+    }
+
+    // Copy link button (share section)
+    const copyLinkBtn = document.getElementById('copyLinkBtn');
+    if (copyLinkBtn) {
+        copyLinkBtn.addEventListener('click', () => {
+            copyToClipboard(document.getElementById('referralLink').value);
+        });
+    }
 
     // Referral search
     document.getElementById('referralSearch').addEventListener('input', (e) => {
@@ -98,9 +112,22 @@ async function verifyAuth() {
         document.getElementById('welcomeName').textContent = data.user.full_name;
         document.getElementById('couponCode').textContent = data.user.coupon_code;
         
-        // Set referral link
-        const referralLink = `${window.location.origin}/?ref=${data.user.coupon_code}`;
-        document.getElementById('referralLink').value = referralLink;
+        // Set affiliate ID
+        const affiliateIdElement = document.getElementById('affiliateId');
+        if (affiliateIdElement) {
+            affiliateIdElement.textContent = `#${data.user.id}`;
+        }
+        
+        // Set referral link in both places
+        const referralLink = `${window.location.origin}/client-signup.html?ref=${data.user.coupon_code}`;
+        const referralLinkElement = document.getElementById('referralLink');
+        if (referralLinkElement) {
+            referralLinkElement.value = referralLink;
+        }
+        const referralLinkPreviewElement = document.getElementById('referralLinkPreview');
+        if (referralLinkPreviewElement) {
+            referralLinkPreviewElement.value = referralLink;
+        }
         
     } catch (error) {
         console.error('Auth verification failed:', error);

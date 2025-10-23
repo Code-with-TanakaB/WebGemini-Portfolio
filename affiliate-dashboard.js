@@ -93,6 +93,10 @@ function switchSection(section) {
 }
 
 async function verifyAuth() {
+    console.log('Verifying authentication...');
+    console.log('API Base URL:', API_BASE_URL);
+    console.log('Auth Token:', authToken ? 'Present' : 'Missing');
+    
     try {
         const response = await fetch(`${API_BASE_URL}/auth/profile`, {
             headers: {
@@ -100,34 +104,60 @@ async function verifyAuth() {
             }
         });
 
+        console.log('Response status:', response.status);
+        
         const data = await response.json();
+        console.log('Profile data received:', data);
 
         if (!data.success) {
+            console.error('Profile fetch failed:', data.message);
             redirectToLogin();
             return;
         }
 
         currentUser = data.user;
-        document.getElementById('affiliateName').textContent = data.user.full_name;
-        document.getElementById('welcomeName').textContent = data.user.full_name;
-        document.getElementById('couponCode').textContent = data.user.coupon_code;
+        
+        // Update all user info elements
+        const affiliateNameEl = document.getElementById('affiliateName');
+        if (affiliateNameEl) affiliateNameEl.textContent = data.user.full_name;
+        
+        const welcomeNameEl = document.getElementById('welcomeName');
+        if (welcomeNameEl) welcomeNameEl.textContent = data.user.full_name;
+        
+        const couponCodeEl = document.getElementById('couponCode');
+        if (couponCodeEl) couponCodeEl.textContent = data.user.coupon_code;
         
         // Set affiliate ID
         const affiliateIdElement = document.getElementById('affiliateId');
         if (affiliateIdElement) {
             affiliateIdElement.textContent = `#${data.user.id}`;
+        } else {
+            console.warn('affiliateId element not found');
         }
         
         // Set referral link in both places
         const referralLink = `${window.location.origin}/client-signup.html?ref=${data.user.coupon_code}`;
+        
         const referralLinkElement = document.getElementById('referralLink');
         if (referralLinkElement) {
             referralLinkElement.value = referralLink;
+        } else {
+            console.warn('referralLink element not found');
         }
+        
         const referralLinkPreviewElement = document.getElementById('referralLinkPreview');
         if (referralLinkPreviewElement) {
             referralLinkPreviewElement.value = referralLink;
+        } else {
+            console.warn('referralLinkPreview element not found');
         }
+        
+        console.log('User info loaded:', {
+            id: data.user.id,
+            name: data.user.full_name,
+            coupon: data.user.coupon_code,
+            link: referralLink
+        });
         
     } catch (error) {
         console.error('Auth verification failed:', error);
@@ -164,7 +194,7 @@ async function loadStats() {
             // Update earnings section
             document.getElementById('earningsTotal').textContent = `R${(stats.total_earnings || 0).toFixed(2)}`;
             document.getElementById('earningsPending').textContent = `R${(stats.pending_earnings || 0).toFixed(2)}`;
-            document.getElementById('earningsPaid').textContent = `R${(stats.paid_earnings || 0).toFixed(2)}`;`
+            document.getElementById('earningsPaid').textContent = `R${(stats.paid_earnings || 0).toFixed(2)}`;
         }
     } catch (error) {
         console.error('Error loading stats:', error);

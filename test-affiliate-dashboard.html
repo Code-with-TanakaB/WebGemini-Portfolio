@@ -1,0 +1,236 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Test Affiliate Dashboard</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            max-width: 800px;
+            margin: 50px auto;
+            padding: 20px;
+            background: #f5f5f5;
+        }
+        .test-card {
+            background: white;
+            padding: 20px;
+            border-radius: 8px;
+            margin-bottom: 20px;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+        }
+        .test-result {
+            padding: 10px;
+            margin: 10px 0;
+            border-radius: 4px;
+        }
+        .success {
+            background: #d1fae5;
+            color: #065f46;
+        }
+        .error {
+            background: #fee;
+            color: #c33;
+        }
+        button {
+            padding: 10px 20px;
+            background: #6366f1;
+            color: white;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+        }
+        button:hover {
+            background: #4f46e5;
+        }
+        pre {
+            background: #f9fafb;
+            padding: 10px;
+            border-radius: 4px;
+            overflow-x: auto;
+        }
+    </style>
+</head>
+<body>
+    <h1>🧪 Affiliate Dashboard Test</h1>
+    
+    <div class="test-card">
+        <h2>Step 1: Check Server</h2>
+        <button onclick="testServer()">Test Server Connection</button>
+        <div id="serverResult"></div>
+    </div>
+
+    <div class="test-card">
+        <h2>Step 2: Login</h2>
+        <input type="text" id="username" placeholder="Username" value="johnsmith" style="padding: 8px; width: 200px; margin-right: 10px;">
+        <input type="password" id="password" placeholder="Password" value="password123" style="padding: 8px; width: 200px; margin-right: 10px;">
+        <button onclick="testLogin()">Login</button>
+        <div id="loginResult"></div>
+    </div>
+
+    <div class="test-card">
+        <h2>Step 3: Get Profile</h2>
+        <button onclick="testProfile()">Get Profile Data</button>
+        <div id="profileResult"></div>
+    </div>
+
+    <div class="test-card">
+        <h2>Step 4: Test Dashboard</h2>
+        <p>If all tests above pass, your token is valid. Now test the actual dashboard:</p>
+        <a href="affiliate-dashboard.html" target="_blank" style="display: inline-block; padding: 10px 20px; background: #10b981; color: white; text-decoration: none; border-radius: 4px;">Open Affiliate Dashboard</a>
+        <p style="margin-top: 10px; font-size: 14px; color: #666;">
+            <strong>Tip:</strong> Open browser console (F12) to see debug logs
+        </p>
+    </div>
+
+    <script>
+        const API_BASE_URL = window.location.origin.includes('github.dev') 
+            ? `${window.location.origin}/api`
+            : 'http://localhost:3001/api';
+        
+        let authToken = null;
+
+        async function testServer() {
+            const resultDiv = document.getElementById('serverResult');
+            resultDiv.innerHTML = '<p>Testing...</p>';
+            
+            try {
+                const response = await fetch(`${API_BASE_URL}/health`);
+                const data = await response.json();
+                
+                if (data.success) {
+                    resultDiv.innerHTML = `
+                        <div class="test-result success">
+                            ✅ Server is running!
+                            <pre>${JSON.stringify(data, null, 2)}</pre>
+                        </div>
+                    `;
+                } else {
+                    resultDiv.innerHTML = `<div class="test-result error">❌ Server responded but returned error</div>`;
+                }
+            } catch (error) {
+                resultDiv.innerHTML = `
+                    <div class="test-result error">
+                        ❌ Cannot connect to server
+                        <pre>${error.message}</pre>
+                    </div>
+                `;
+            }
+        }
+
+        async function testLogin() {
+            const resultDiv = document.getElementById('loginResult');
+            const username = document.getElementById('username').value;
+            const password = document.getElementById('password').value;
+            
+            resultDiv.innerHTML = '<p>Logging in...</p>';
+            
+            try {
+                const response = await fetch(`${API_BASE_URL}/auth/login`, {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify({ username, password })
+                });
+                
+                const data = await response.json();
+                
+                if (data.success) {
+                    authToken = data.token;
+                    localStorage.setItem('authToken', authToken);
+                    
+                    resultDiv.innerHTML = `
+                        <div class="test-result success">
+                            ✅ Login successful!
+                            <p><strong>User:</strong> ${data.user.full_name}</p>
+                            <p><strong>Role:</strong> ${data.user.role}</p>
+                            <p><strong>Coupon:</strong> ${data.user.coupon_code}</p>
+                            <p><strong>Token:</strong> ${authToken.substring(0, 30)}...</p>
+                        </div>
+                    `;
+                } else {
+                    resultDiv.innerHTML = `
+                        <div class="test-result error">
+                            ❌ Login failed: ${data.message}
+                        </div>
+                    `;
+                }
+            } catch (error) {
+                resultDiv.innerHTML = `
+                    <div class="test-result error">
+                        ❌ Login error
+                        <pre>${error.message}</pre>
+                    </div>
+                `;
+            }
+        }
+
+        async function testProfile() {
+            const resultDiv = document.getElementById('profileResult');
+            
+            if (!authToken) {
+                authToken = localStorage.getItem('authToken');
+            }
+            
+            if (!authToken) {
+                resultDiv.innerHTML = '<div class="test-result error">❌ Please login first</div>';
+                return;
+            }
+            
+            resultDiv.innerHTML = '<p>Fetching profile...</p>';
+            
+            try {
+                const response = await fetch(`${API_BASE_URL}/auth/profile`, {
+                    headers: {
+                        'Authorization': `Bearer ${authToken}`
+                    }
+                });
+                
+                const data = await response.json();
+                
+                if (data.success) {
+                    resultDiv.innerHTML = `
+                        <div class="test-result success">
+                            ✅ Profile loaded successfully!
+                            <pre>${JSON.stringify(data.user, null, 2)}</pre>
+                            <p style="margin-top: 10px; padding: 10px; background: #fef3c7; border-radius: 4px;">
+                                <strong>🎯 Expected Dashboard Values:</strong><br>
+                                Affiliate ID: #${data.user.id}<br>
+                                Coupon Code: ${data.user.coupon_code}<br>
+                                Referral Link: ${window.location.origin}/client-signup.html?ref=${data.user.coupon_code}
+                            </p>
+                        </div>
+                    `;
+                } else {
+                    resultDiv.innerHTML = `
+                        <div class="test-result error">
+                            ❌ Failed to load profile: ${data.message}
+                        </div>
+                    `;
+                }
+            } catch (error) {
+                resultDiv.innerHTML = `
+                    <div class="test-result error">
+                        ❌ Profile fetch error
+                        <pre>${error.message}</pre>
+                    </div>
+                `;
+            }
+        }
+
+        // Auto-test on load if token exists
+        window.addEventListener('DOMContentLoaded', () => {
+            const token = localStorage.getItem('authToken');
+            if (token) {
+                authToken = token;
+                document.getElementById('loginResult').innerHTML = `
+                    <div class="test-result success">
+                        ✅ Found existing token in localStorage
+                    </div>
+                `;
+            }
+        });
+    </script>
+</body>
+</html>

@@ -22,7 +22,7 @@ app.use(helmet({
             styleSrc: ["'self'", "'unsafe-inline'", "https://cdn.tailwindcss.com", "https://cdnjs.cloudflare.com"],
             fontSrc: ["'self'", "https://cdnjs.cloudflare.com"],
             imgSrc: ["'self'", "data:", "https:"],
-            connectSrc: ["'self'"]
+            connectSrc: ["'self'", "http://localhost:3000", "https://cdn.jsdelivr.net"]
         }
     }
 }));
@@ -31,24 +31,29 @@ app.use(cors({
     credentials: true
 }));
 
-// Rate limiting
+// Body parsing middleware
+app.use(express.json());
+app.use(express.urlencoded({ extended: true }));
+
+// Logging
+if (process.env.NODE_ENV === 'development') {
+    app.use(morgan('dev'));
+}
+
+// Serve static files from public directory FIRST (before API routes)
+app.use(express.static('public'));
+
+// Rate limiting (only for API routes)
 const limiter = rateLimit({
     windowMs: 15 * 60 * 1000, // 15 minutes
     max: 100 // limit each IP to 100 requests per windowMs
 });
 app.use('/api/', limiter);
 
-// Body parsing middleware
-app.use(express.json());
-app.use(express.urlencoded({ extended: true }));
-
-// Serve static files from public directory
-app.use(express.static('public'));
-
-// Logging
-if (process.env.NODE_ENV === 'development') {
-    app.use(morgan('dev'));
-}
+// Root redirect to admin dashboard
+app.get('/', (req, res) => {
+    res.redirect('/admin-dashboard.html');
+});
 
 // Health check endpoint
 app.get('/api/health', (req, res) => {
@@ -72,16 +77,6 @@ app.use((err, req, res, next) => {
         error: {
             message: err.message || 'Internal server error',
             status: err.status || 500
-        }
-    });
-});
-
-// 404 handler
-app.use((req, res) => {
-    res.status(404).json({
-        error: {
-            message: 'Endpoint not found',
-            status: 404
         }
     });
 });

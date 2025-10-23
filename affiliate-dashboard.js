@@ -130,14 +130,14 @@ async function loadStats() {
             
             // Update overview stats
             document.getElementById('totalReferrals').textContent = stats.total_referrals || 0;
-            document.getElementById('totalEarnings').textContent = `$${(stats.total_earnings || 0).toFixed(2)}`;
-            document.getElementById('pendingEarnings').textContent = `$${(stats.pending_earnings || 0).toFixed(2)}`;
-            document.getElementById('paidEarnings').textContent = `$${(stats.paid_earnings || 0).toFixed(2)}`;
+            document.getElementById('totalEarnings').textContent = `R${(stats.total_earnings || 0).toFixed(2)}`;
+            document.getElementById('pendingEarnings').textContent = `R${(stats.pending_earnings || 0).toFixed(2)}`;
+            document.getElementById('paidEarnings').textContent = `R${(stats.paid_earnings || 0).toFixed(2)}`;
             
             // Update earnings section
-            document.getElementById('earningsTotal').textContent = `$${(stats.total_earnings || 0).toFixed(2)}`;
-            document.getElementById('earningsPending').textContent = `$${(stats.pending_earnings || 0).toFixed(2)}`;
-            document.getElementById('earningsPaid').textContent = `$${(stats.paid_earnings || 0).toFixed(2)}`;
+            document.getElementById('earningsTotal').textContent = `R${(stats.total_earnings || 0).toFixed(2)}`;
+            document.getElementById('earningsPending').textContent = `R${(stats.pending_earnings || 0).toFixed(2)}`;
+            document.getElementById('earningsPaid').textContent = `R${(stats.paid_earnings || 0).toFixed(2)}`;`
         }
     } catch (error) {
         console.error('Error loading stats:', error);
@@ -167,9 +167,9 @@ async function loadReferrals() {
                     <td>${referral.name}</td>
                     <td>${referral.email}</td>
                     <td>${referral.plan_type}</td>
-                    <td>$${referral.plan_price.toFixed(2)}</td>
+                    <td>R${referral.plan_price.toFixed(2)}</td>
                     <td>${referral.commission_rate ? (referral.commission_rate * 100).toFixed(0) + '%' : 'N/A'}</td>
-                    <td>$${referral.commission_amount ? referral.commission_amount.toFixed(2) : '0.00'}</td>
+                    <td>R${referral.commission_amount ? referral.commission_amount.toFixed(2) : '0.00'}</td>
                     <td><span class="status-badge ${referral.commission_status}">${referral.commission_status || 'pending'}</span></td>
                     <td>${new Date(referral.signup_date).toLocaleDateString()}</td>
                 </tr>

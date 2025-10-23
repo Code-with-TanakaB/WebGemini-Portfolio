@@ -1,6 +1,8 @@
 const express = require('express');
 const cors = require('cors');
 const path = require('path');
+const helmet = require('helmet');
+const rateLimit = require('express-rate-limit');
 require('dotenv').config();
 
 const authRoutes = require('./routes/auth');
@@ -9,6 +11,38 @@ const affiliateRoutes = require('./routes/affiliates');
 const app = express();
 const PORT = process.env.PORT || 3001;
 
+// Security Headers - Helmet
+app.use(helmet({
+    contentSecurityPolicy: false, // Disable for static files
+    crossOriginEmbedderPolicy: false
+}));
+
+// Rate Limiting - Prevent brute force attacks
+const authLimiter = rateLimit({
+    windowMs: 15 * 60 * 1000, // 15 minutes
+    max: 10, // Limit each IP to 10 requests per windowMs
+    message: {
+        success: false,
+        message: 'Too many login attempts, please try again after 15 minutes'
+    },
+    standardHeaders: true,
+    legacyHeaders: false,
+});
+
+const generalLimiter = rateLimit({
+    windowMs: 15 * 60 * 1000, // 15 minutes
+    max: 100, // Limit each IP to 100 requests per windowMs
+    message: {
+        success: false,
+        message: 'Too many requests, please try again later'
+    }
+});
+
+// Apply rate limiting
+app.use('/api/auth/login', authLimiter);
+app.use('/api/auth/register', authLimiter);
+app.use('/api', generalLimiter);
+
 // Middleware - Enhanced CORS for dev environment
 app.use(cors({
     origin: '*', // Allow all origins in development
@@ -16,8 +50,10 @@ app.use(cors({
     methods: ['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS'],
     allowedHeaders: ['Content-Type', 'Authorization']
 }));
-app.use(express.json());
-app.use(express.urlencoded({ extended: true }));
+
+// Body parsing with size limits
+app.use(express.json({ limit: '10kb' }));
+app.use(express.urlencoded({ extended: true, limit: '10kb' }));
 
 // Serve static files from parent directory (for dashboards)
 app.use(express.static(path.join(__dirname, '..')));

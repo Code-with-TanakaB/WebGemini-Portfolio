@@ -1,12 +1,43 @@
 const express = require('express');
 const bcrypt = require('bcryptjs');
+const { body, validationResult } = require('express-validator');
 const { dbHelpers } = require('../models/database');
 const { generateToken, verifyToken } = require('../middleware/auth');
 
 const router = express.Router();
 
+// Input sanitization helper
+const sanitizeInput = (input) => {
+  if (typeof input !== 'string') return input;
+  return input.trim().replace(/[<>]/g, '');
+};
+
+// Validation rules
+const loginValidation = [
+  body('username').trim().isLength({ min: 3, max: 50 }).withMessage('Username must be 3-50 characters'),
+  body('password').isLength({ min: 6 }).withMessage('Password must be at least 6 characters')
+];
+
+const registerValidation = [
+  body('username').trim().isLength({ min: 3, max: 50 }).withMessage('Username must be 3-50 characters'),
+  body('email').isEmail().normalizeEmail().withMessage('Invalid email address'),
+  body('password').isLength({ min: 8 }).withMessage('Password must be at least 8 characters'),
+  body('full_name').trim().isLength({ min: 2, max: 100 }).withMessage('Full name must be 2-100 characters'),
+  body('coupon_code').trim().isLength({ min: 3, max: 20 }).isAlphanumeric().withMessage('Coupon code must be 3-20 alphanumeric characters')
+];
+
 // Login endpoint
-router.post('/login', (req, res) => {
+router.post('/login', loginValidation, (req, res) => {
+  // Check validation results
+  const errors = validationResult(req);
+  if (!errors.isEmpty()) {
+    return res.status(400).json({ 
+      success: false, 
+      message: 'Validation failed',
+      errors: errors.array()
+    });
+  }
+
   const { username, password } = req.body;
 
   if (!username || !password) {
@@ -69,16 +100,24 @@ router.post('/login', (req, res) => {
 });
 
 // Register new affiliate
-router.post('/register', (req, res) => {
-  const { username, email, password, full_name, coupon_code } = req.body;
-
-  // Validate input
-  if (!username || !email || !password || !full_name || !coupon_code) {
+router.post('/register', registerValidation, (req, res) => {
+  // Check validation results
+  const errors = validationResult(req);
+  if (!errors.isEmpty()) {
     return res.status(400).json({ 
       success: false, 
-      message: 'All fields are required.' 
+      message: 'Validation failed',
+      errors: errors.array()
     });
   }
+
+  let { username, email, password, full_name, coupon_code } = req.body;
+  
+  // Sanitize inputs
+  username = sanitizeInput(username);
+  email = sanitizeInput(email);
+  full_name = sanitizeInput(full_name);
+  coupon_code = sanitizeInput(coupon_code);
 
   // Hash password
   const hashedPassword = bcrypt.hashSync(password, 10);

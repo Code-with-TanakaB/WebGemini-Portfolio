@@ -128,10 +128,10 @@ async function loadOverviewStats() {
             const stats = data.stats;
             document.getElementById('totalAffiliates').textContent = stats.total_affiliates;
             document.getElementById('totalClients').textContent = stats.total_clients;
-            document.getElementById('totalRevenue').textContent = `$${stats.total_revenue.toFixed(2)}`;
-            document.getElementById('totalCommissions').textContent = `$${stats.total_commissions.toFixed(2)}`;
-            document.getElementById('pendingCommissions').textContent = `$${stats.pending_commissions.toFixed(2)}`;
-            document.getElementById('paidCommissions').textContent = `$${stats.paid_commissions.toFixed(2)}`;
+            document.getElementById('totalRevenue').textContent = `R${stats.total_revenue.toFixed(2)}`;
+            document.getElementById('totalCommissions').textContent = `R${stats.total_commissions.toFixed(2)}`;
+            document.getElementById('pendingCommissions').textContent = `R${stats.pending_commissions.toFixed(2)}`;
+            document.getElementById('paidCommissions').textContent = `R${stats.paid_commissions.toFixed(2)}`;
         }
     } catch (error) {
         console.error('Error loading stats:', error);
@@ -202,10 +202,10 @@ async function loadClients() {
                     <td>${client.name}</td>
                     <td>${client.email}</td>
                     <td>${client.plan_type}</td>
-                    <td>$${client.plan_price.toFixed(2)}</td>
+                    <td>R${client.plan_price.toFixed(2)}</td>
                     <td>${client.affiliate_name || 'N/A'}</td>
                     <td>${client.coupon_code ? `<span class="coupon-badge">${client.coupon_code}</span>` : 'N/A'}</td>
-                    <td>${client.commission_amount ? `$${client.commission_amount.toFixed(2)}` : 'N/A'}</td>
+                    <td>${client.commission_amount ? `R${client.commission_amount.toFixed(2)}` : 'N/A'}</td>
                     <td>${new Date(client.signup_date).toLocaleDateString()}</td>
                 </tr>
             `).join('');
@@ -223,9 +223,9 @@ async function loadClients() {
                     <td>${client.name}</td>
                     <td>${client.affiliate_name}</td>
                     <td>${client.plan_type}</td>
-                    <td>$${client.plan_price.toFixed(2)}</td>
+                    <td>R${client.plan_price.toFixed(2)}</td>
                     <td>${(client.commission_rate * 100).toFixed(0)}%</td>
-                    <td>$${client.commission_amount.toFixed(2)}</td>
+                    <td>R${client.commission_amount.toFixed(2)}</td>
                     <td><span class="status-badge ${client.commission_status}">${client.commission_status}</span></td>
                     <td>${new Date(client.signup_date).toLocaleDateString()}</td>
                 </tr>

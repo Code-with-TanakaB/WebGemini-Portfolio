@@ -1,0 +1,270 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Admin Dashboard - WebGemini Affiliate System</title>
+    <link rel="stylesheet" href="dashboard-style.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+</head>
+<body>
+    <div class="dashboard-container">
+        <!-- Sidebar -->
+        <aside class="sidebar">
+            <div class="logo">
+                <i class="fas fa-gem"></i>
+                <h2>WebGemini</h2>
+            </div>
+            <nav class="nav-menu">
+                <a href="#overview" class="nav-item active" data-section="overview">
+                    <i class="fas fa-chart-line"></i>
+                    <span>Overview</span>
+                </a>
+                <a href="#affiliates" class="nav-item" data-section="affiliates">
+                    <i class="fas fa-users"></i>
+                    <span>Affiliates</span>
+                </a>
+                <a href="#clients" class="nav-item" data-section="clients">
+                    <i class="fas fa-user-tag"></i>
+                    <span>Clients</span>
+                </a>
+                <a href="#commissions" class="nav-item" data-section="commissions">
+                    <i class="fas fa-money-bill-wave"></i>
+                    <span>Commissions</span>
+                </a>
+            </nav>
+            <div class="sidebar-footer">
+                <div class="user-info">
+                    <i class="fas fa-user-shield"></i>
+                    <div>
+                        <p class="user-name" id="adminName">Administrator</p>
+                        <p class="user-role">Admin</p>
+                    </div>
+                </div>
+                <button class="logout-btn" id="logoutBtn">
+                    <i class="fas fa-sign-out-alt"></i>
+                    Logout
+                </button>
+            </div>
+        </aside>
+
+        <!-- Main Content -->
+        <main class="main-content">
+            <header class="dashboard-header">
+                <h1>Admin Dashboard</h1>
+                <div class="header-actions">
+                    <button class="refresh-btn" id="refreshBtn">
+                        <i class="fas fa-sync-alt"></i>
+                        Refresh
+                    </button>
+                </div>
+            </header>
+
+            <!-- Overview Section -->
+            <section id="overview-section" class="content-section active">
+                <div class="stats-grid">
+                    <div class="stat-card">
+                        <div class="stat-icon blue">
+                            <i class="fas fa-users"></i>
+                        </div>
+                        <div class="stat-info">
+                            <h3 id="totalAffiliates">0</h3>
+                            <p>Total Affiliates</p>
+                        </div>
+                    </div>
+                    <div class="stat-card">
+                        <div class="stat-icon green">
+                            <i class="fas fa-user-tag"></i>
+                        </div>
+                        <div class="stat-info">
+                            <h3 id="totalClients">0</h3>
+                            <p>Total Clients</p>
+                        </div>
+                    </div>
+                    <div class="stat-card">
+                        <div class="stat-icon purple">
+                            <i class="fas fa-dollar-sign"></i>
+                        </div>
+                        <div class="stat-info">
+                            <h3 id="totalRevenue">$0</h3>
+                            <p>Total Revenue</p>
+                        </div>
+                    </div>
+                    <div class="stat-card">
+                        <div class="stat-icon orange">
+                            <i class="fas fa-money-bill-wave"></i>
+                        </div>
+                        <div class="stat-info">
+                            <h3 id="totalCommissions">$0</h3>
+                            <p>Total Commissions</p>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="commission-breakdown">
+                    <div class="card">
+                        <h3>Commission Breakdown</h3>
+                        <div class="commission-stats">
+                            <div class="commission-item pending">
+                                <i class="fas fa-clock"></i>
+                                <div>
+                                    <p class="amount" id="pendingCommissions">$0</p>
+                                    <p class="label">Pending Commissions</p>
+                                </div>
+                            </div>
+                            <div class="commission-item paid">
+                                <i class="fas fa-check-circle"></i>
+                                <div>
+                                    <p class="amount" id="paidCommissions">$0</p>
+                                    <p class="label">Paid Commissions</p>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </section>
+
+            <!-- Affiliates Section -->
+            <section id="affiliates-section" class="content-section">
+                <div class="card">
+                    <div class="card-header">
+                        <h2>All Affiliates</h2>
+                        <button class="btn-primary" id="addAffiliateBtn">
+                            <i class="fas fa-plus"></i>
+                            Add Affiliate
+                        </button>
+                    </div>
+                    <div class="table-container">
+                        <table class="data-table">
+                            <thead>
+                                <tr>
+                                    <th>ID</th>
+                                    <th>Name</th>
+                                    <th>Email</th>
+                                    <th>Username</th>
+                                    <th>Coupon Code</th>
+                                    <th>Status</th>
+                                    <th>Joined</th>
+                                </tr>
+                            </thead>
+                            <tbody id="affiliatesTableBody">
+                                <tr>
+                                    <td colspan="7" class="loading">Loading affiliates...</td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </section>
+
+            <!-- Clients Section -->
+            <section id="clients-section" class="content-section">
+                <div class="card">
+                    <div class="card-header">
+                        <h2>All Clients</h2>
+                        <div class="search-box">
+                            <i class="fas fa-search"></i>
+                            <input type="text" id="clientSearch" placeholder="Search clients...">
+                        </div>
+                    </div>
+                    <div class="table-container">
+                        <table class="data-table">
+                            <thead>
+                                <tr>
+                                    <th>ID</th>
+                                    <th>Name</th>
+                                    <th>Email</th>
+                                    <th>Plan Type</th>
+                                    <th>Plan Price</th>
+                                    <th>Affiliate</th>
+                                    <th>Coupon Code</th>
+                                    <th>Commission</th>
+                                    <th>Signup Date</th>
+                                </tr>
+                            </thead>
+                            <tbody id="clientsTableBody">
+                                <tr>
+                                    <td colspan="9" class="loading">Loading clients...</td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </section>
+
+            <!-- Commissions Section -->
+            <section id="commissions-section" class="content-section">
+                <div class="card">
+                    <div class="card-header">
+                        <h2>Commission Details</h2>
+                        <div class="filter-buttons">
+                            <button class="filter-btn active" data-filter="all">All</button>
+                            <button class="filter-btn" data-filter="pending">Pending</button>
+                            <button class="filter-btn" data-filter="paid">Paid</button>
+                        </div>
+                    </div>
+                    <div class="table-container">
+                        <table class="data-table">
+                            <thead>
+                                <tr>
+                                    <th>Client</th>
+                                    <th>Affiliate</th>
+                                    <th>Plan Type</th>
+                                    <th>Plan Price</th>
+                                    <th>Commission Rate</th>
+                                    <th>Commission Amount</th>
+                                    <th>Status</th>
+                                    <th>Date</th>
+                                </tr>
+                            </thead>
+                            <tbody id="commissionsTableBody">
+                                <tr>
+                                    <td colspan="8" class="loading">Loading commissions...</td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </section>
+        </main>
+    </div>
+
+    <!-- Add Affiliate Modal -->
+    <div id="addAffiliateModal" class="modal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h2>Add New Affiliate</h2>
+                <button class="close-btn" id="closeModal">&times;</button>
+            </div>
+            <form id="addAffiliateForm">
+                <div class="form-group">
+                    <label for="fullName">Full Name</label>
+                    <input type="text" id="fullName" required>
+                </div>
+                <div class="form-group">
+                    <label for="username">Username</label>
+                    <input type="text" id="username" required>
+                </div>
+                <div class="form-group">
+                    <label for="email">Email</label>
+                    <input type="email" id="email" required>
+                </div>
+                <div class="form-group">
+                    <label for="password">Password</label>
+                    <input type="password" id="password" required>
+                </div>
+                <div class="form-group">
+                    <label for="couponCode">Coupon Code</label>
+                    <input type="text" id="couponCode" required placeholder="e.g., INFLUENCER2024">
+                </div>
+                <div class="form-actions">
+                    <button type="button" class="btn-secondary" id="cancelBtn">Cancel</button>
+                    <button type="submit" class="btn-primary">Add Affiliate</button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <script src="admin-dashboard.js"></script>
+</body>
+</html>

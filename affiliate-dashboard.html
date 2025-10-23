@@ -1,0 +1,267 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Affiliate Dashboard - WebGemini</title>
+    <link rel="stylesheet" href="dashboard-style.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+</head>
+<body>
+    <div class="dashboard-container">
+        <!-- Sidebar -->
+        <aside class="sidebar">
+            <div class="logo">
+                <i class="fas fa-gem"></i>
+                <h2>WebGemini</h2>
+            </div>
+            <nav class="nav-menu">
+                <a href="#overview" class="nav-item active" data-section="overview">
+                    <i class="fas fa-chart-line"></i>
+                    <span>Overview</span>
+                </a>
+                <a href="#referrals" class="nav-item" data-section="referrals">
+                    <i class="fas fa-user-friends"></i>
+                    <span>My Referrals</span>
+                </a>
+                <a href="#earnings" class="nav-item" data-section="earnings">
+                    <i class="fas fa-dollar-sign"></i>
+                    <span>Earnings</span>
+                </a>
+                <a href="#share" class="nav-item" data-section="share">
+                    <i class="fas fa-share-alt"></i>
+                    <span>Share Link</span>
+                </a>
+            </nav>
+            <div class="sidebar-footer">
+                <div class="user-info">
+                    <i class="fas fa-user-tie"></i>
+                    <div>
+                        <p class="user-name" id="affiliateName">Loading...</p>
+                        <p class="user-role">Affiliate</p>
+                    </div>
+                </div>
+                <button class="logout-btn" id="logoutBtn">
+                    <i class="fas fa-sign-out-alt"></i>
+                    Logout
+                </button>
+            </div>
+        </aside>
+
+        <!-- Main Content -->
+        <main class="main-content">
+            <header class="dashboard-header">
+                <h1>Affiliate Dashboard</h1>
+                <div class="header-actions">
+                    <button class="refresh-btn" id="refreshBtn">
+                        <i class="fas fa-sync-alt"></i>
+                        Refresh
+                    </button>
+                </div>
+            </header>
+
+            <!-- Overview Section -->
+            <section id="overview-section" class="content-section active">
+                <div class="welcome-card card">
+                    <h2>Welcome back, <span id="welcomeName">Affiliate</span>! 👋</h2>
+                    <p>Track your referrals and earnings in real-time</p>
+                </div>
+
+                <div class="stats-grid">
+                    <div class="stat-card">
+                        <div class="stat-icon blue">
+                            <i class="fas fa-user-friends"></i>
+                        </div>
+                        <div class="stat-info">
+                            <h3 id="totalReferrals">0</h3>
+                            <p>Total Referrals</p>
+                        </div>
+                    </div>
+                    <div class="stat-card">
+                        <div class="stat-icon green">
+                            <i class="fas fa-dollar-sign"></i>
+                        </div>
+                        <div class="stat-info">
+                            <h3 id="totalEarnings">$0</h3>
+                            <p>Total Earnings</p>
+                        </div>
+                    </div>
+                    <div class="stat-card">
+                        <div class="stat-icon orange">
+                            <i class="fas fa-clock"></i>
+                        </div>
+                        <div class="stat-info">
+                            <h3 id="pendingEarnings">$0</h3>
+                            <p>Pending Earnings</p>
+                        </div>
+                    </div>
+                    <div class="stat-card">
+                        <div class="stat-icon purple">
+                            <i class="fas fa-check-circle"></i>
+                        </div>
+                        <div class="stat-info">
+                            <h3 id="paidEarnings">$0</h3>
+                            <p>Paid Earnings</p>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="coupon-card card">
+                    <h3>Your Unique Coupon Code</h3>
+                    <div class="coupon-display">
+                        <div class="coupon-code" id="couponCode">LOADING...</div>
+                        <button class="copy-btn" id="copyCouponBtn">
+                            <i class="fas fa-copy"></i>
+                            Copy
+                        </button>
+                    </div>
+                    <p class="coupon-info">Share this code with your audience. They'll get a discount and you'll earn commission!</p>
+                </div>
+            </section>
+
+            <!-- Referrals Section -->
+            <section id="referrals-section" class="content-section">
+                <div class="card">
+                    <div class="card-header">
+                        <h2>My Referrals</h2>
+                        <div class="search-box">
+                            <i class="fas fa-search"></i>
+                            <input type="text" id="referralSearch" placeholder="Search referrals...">
+                        </div>
+                    </div>
+                    <div class="table-container">
+                        <table class="data-table">
+                            <thead>
+                                <tr>
+                                    <th>Client Name</th>
+                                    <th>Email</th>
+                                    <th>Plan Type</th>
+                                    <th>Plan Price</th>
+                                    <th>Commission Rate</th>
+                                    <th>Commission Amount</th>
+                                    <th>Status</th>
+                                    <th>Signup Date</th>
+                                </tr>
+                            </thead>
+                            <tbody id="referralsTableBody">
+                                <tr>
+                                    <td colspan="8" class="loading">Loading referrals...</td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </section>
+
+            <!-- Earnings Section -->
+            <section id="earnings-section" class="content-section">
+                <div class="earnings-summary card">
+                    <h2>Earnings Summary</h2>
+                    <div class="earnings-breakdown">
+                        <div class="earning-item">
+                            <div class="earning-label">
+                                <i class="fas fa-coins"></i>
+                                <span>Total Earned</span>
+                            </div>
+                            <div class="earning-amount" id="earningsTotal">$0.00</div>
+                        </div>
+                        <div class="earning-item">
+                            <div class="earning-label">
+                                <i class="fas fa-hourglass-half"></i>
+                                <span>Pending Payment</span>
+                            </div>
+                            <div class="earning-amount pending" id="earningsPending">$0.00</div>
+                        </div>
+                        <div class="earning-item">
+                            <div class="earning-label">
+                                <i class="fas fa-check-double"></i>
+                                <span>Paid Out</span>
+                            </div>
+                            <div class="earning-amount paid" id="earningsPaid">$0.00</div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="card">
+                    <h3>Commission Rates</h3>
+                    <div class="commission-rates">
+                        <div class="rate-item">
+                            <div class="rate-badge starter">
+                                <i class="fas fa-star"></i>
+                            </div>
+                            <div class="rate-info">
+                                <h4>Starter Plans</h4>
+                                <p class="rate-percentage">10%</p>
+                                <p class="rate-description">Basic and starter tier plans</p>
+                            </div>
+                        </div>
+                        <div class="rate-item">
+                            <div class="rate-badge premium">
+                                <i class="fas fa-crown"></i>
+                            </div>
+                            <div class="rate-info">
+                                <h4>High-Tier Plans</h4>
+                                <p class="rate-percentage">25%</p>
+                                <p class="rate-description">Premium, Pro, Enterprise, and Advanced plans</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </section>
+
+            <!-- Share Link Section -->
+            <section id="share-section" class="content-section">
+                <div class="card">
+                    <h2>Share Your Referral Link</h2>
+                    <p>Share your unique coupon code with your audience to start earning commissions!</p>
+                    
+                    <div class="share-link-box">
+                        <div class="link-display">
+                            <input type="text" id="referralLink" readonly value="Loading...">
+                            <button class="copy-btn" id="copyLinkBtn">
+                                <i class="fas fa-copy"></i>
+                                Copy
+                            </button>
+                        </div>
+                    </div>
+
+                    <div class="share-social">
+                        <h3>Share on Social Media</h3>
+                        <div class="social-buttons">
+                            <button class="social-btn twitter" id="shareTwitter">
+                                <i class="fab fa-twitter"></i>
+                                Twitter
+                            </button>
+                            <button class="social-btn facebook" id="shareFacebook">
+                                <i class="fab fa-facebook"></i>
+                                Facebook
+                            </button>
+                            <button class="social-btn linkedin" id="shareLinkedIn">
+                                <i class="fab fa-linkedin"></i>
+                                LinkedIn
+                            </button>
+                            <button class="social-btn whatsapp" id="shareWhatsApp">
+                                <i class="fab fa-whatsapp"></i>
+                                WhatsApp
+                            </button>
+                        </div>
+                    </div>
+
+                    <div class="promotional-materials card">
+                        <h3>Promotional Guidelines</h3>
+                        <ul class="promo-list">
+                            <li><i class="fas fa-check"></i> Share your unique coupon code with your followers</li>
+                            <li><i class="fas fa-check"></i> Create content showcasing WebGemini services</li>
+                            <li><i class="fas fa-check"></i> Earn 10% on starter plans and 25% on high-tier plans</li>
+                            <li><i class="fas fa-check"></i> Track all your referrals in real-time</li>
+                            <li><i class="fas fa-check"></i> Get paid monthly for successful conversions</li>
+                        </ul>
+                    </div>
+                </div>
+            </section>
+        </main>
+    </div>
+
+    <script src="affiliate-dashboard.js"></script>
+</body>
+</html>

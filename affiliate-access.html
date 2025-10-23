@@ -1,0 +1,163 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>WebGemini Affiliate System - Access Portal</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 20px;
+        }
+        .container {
+            background: white;
+            border-radius: 20px;
+            padding: 40px;
+            max-width: 600px;
+            width: 100%;
+            box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
+        }
+        h1 {
+            color: #333;
+            margin-bottom: 10px;
+            font-size: 28px;
+        }
+        .subtitle {
+            color: #666;
+            margin-bottom: 30px;
+        }
+        .status {
+            background: #10b981;
+            color: white;
+            padding: 15px;
+            border-radius: 10px;
+            margin-bottom: 30px;
+            text-align: center;
+            font-weight: bold;
+        }
+        .links {
+            display: flex;
+            flex-direction: column;
+            gap: 15px;
+        }
+        .link-card {
+            background: #f8f9fa;
+            padding: 20px;
+            border-radius: 10px;
+            border-left: 4px solid #667eea;
+            transition: all 0.3s;
+        }
+        .link-card:hover {
+            transform: translateX(5px);
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1);
+        }
+        .link-card h3 {
+            color: #333;
+            margin-bottom: 10px;
+            font-size: 18px;
+        }
+        .link-card a {
+            color: #667eea;
+            text-decoration: none;
+            font-size: 14px;
+            word-break: break-all;
+        }
+        .link-card a:hover {
+            text-decoration: underline;
+        }
+        .credentials {
+            background: #fff3cd;
+            padding: 20px;
+            border-radius: 10px;
+            margin-top: 30px;
+            border-left: 4px solid #ffc107;
+        }
+        .credentials h3 {
+            color: #856404;
+            margin-bottom: 10px;
+        }
+        .credentials p {
+            color: #856404;
+            margin: 5px 0;
+        }
+        .credentials code {
+            background: #fff;
+            padding: 2px 8px;
+            border-radius: 4px;
+            font-family: 'Courier New', monospace;
+        }
+        .icon {
+            margin-right: 10px;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>🎉 WebGemini Affiliate System</h1>
+        <p class="subtitle">Your affiliate tracking system is ready!</p>
+        
+        <div class="status">
+            ✅ Server Status: RUNNING
+        </div>
+
+        <div class="links">
+            <div class="link-card">
+                <h3>🔐 Login Page</h3>
+                <a href="#" id="loginLink" target="_blank">Click here to login</a>
+            </div>
+
+            <div class="link-card">
+                <h3>👤 Admin Dashboard</h3>
+                <a href="#" id="adminLink" target="_blank">Access admin panel</a>
+            </div>
+
+            <div class="link-card">
+                <h3>💼 Affiliate Dashboard</h3>
+                <a href="#" id="affiliateLink" target="_blank">View affiliate panel</a>
+            </div>
+
+            <div class="link-card">
+                <h3>📝 Client Signup Form</h3>
+                <a href="#" id="signupLink" target="_blank">Open signup form</a>
+            </div>
+        </div>
+
+        <div class="credentials">
+            <h3>🔑 Default Login Credentials</h3>
+            <p><strong>Username:</strong> <code>admin</code></p>
+            <p><strong>Password:</strong> <code>admin123</code></p>
+        </div>
+    </div>
+
+    <script>
+        // Detect if we're in Codespaces and construct proper URLs
+        const isCodespace = window.location.hostname.includes('github.dev');
+        const baseUrl = isCodespace 
+            ? window.location.origin
+            : 'http://localhost:3001';
+
+        // Update all links
+        document.getElementById('loginLink').href = `${baseUrl}/login.html`;
+        document.getElementById('loginLink').textContent = `${baseUrl}/login.html`;
+
+        document.getElementById('adminLink').href = `${baseUrl}/admin-dashboard.html`;
+        document.getElementById('adminLink').textContent = `${baseUrl}/admin-dashboard.html`;
+
+        document.getElementById('affiliateLink').href = `${baseUrl}/affiliate-dashboard.html`;
+        document.getElementById('affiliateLink').textContent = `${baseUrl}/affiliate-dashboard.html`;
+
+        document.getElementById('signupLink').href = `${baseUrl}/client-signup.html`;
+        document.getElementById('signupLink').textContent = `${baseUrl}/client-signup.html`;
+    </script>
+</body>
+</html>

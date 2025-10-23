@@ -1,5 +1,7 @@
 // Admin Dashboard JavaScript
-const API_BASE_URL = 'http://localhost:3001/api';
+const API_BASE_URL = window.location.origin.includes('github.dev') 
+    ? `${window.location.origin}/api`
+    : 'http://localhost:3001/api';
 let authToken = null;
 
 // Check authentication on page load

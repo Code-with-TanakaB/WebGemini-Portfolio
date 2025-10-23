@@ -80,19 +80,28 @@ app.use((req, res) => {
 });
 
 // Start server
-const server = app.listen(PORT, () => {
+const server = app.listen(PORT, '0.0.0.0', () => {
+  const isCodespace = process.env.CODESPACE_NAME;
+  const baseUrl = isCodespace 
+    ? `https://${process.env.CODESPACE_NAME}-${PORT}.app.github.dev`
+    : `http://localhost:${PORT}`;
+  
   console.log(`
 ╔═══════════════════════════════════════════════════╗
 ║   WebGemini Affiliate System API                 ║
-║   Server running on http://localhost:${PORT}       ║
+║   Server running on ${isCodespace ? 'GitHub Codespaces' : 'localhost'}
+║                                                   ║
+║   Access URL: ${baseUrl.padEnd(41)}║
 ║                                                   ║
 ║   Admin Login:                                    ║
 ║   Username: admin                                 ║
 ║   Password: admin123                              ║
 ║                                                   ║
 ║   Dashboards:                                     ║
-║   Admin: http://localhost:${PORT}/admin-dashboard.html  ║
-║   Affiliate: http://localhost:${PORT}/affiliate-dashboard.html ║
+║   Login:            ${baseUrl}/login.html
+║   Admin Dashboard:  ${baseUrl}/admin-dashboard.html
+║   Affiliate Panel:  ${baseUrl}/affiliate-dashboard.html
+║   Client Signup:    ${baseUrl}/client-signup.html
 ╚═══════════════════════════════════════════════════╝
   `);
 });

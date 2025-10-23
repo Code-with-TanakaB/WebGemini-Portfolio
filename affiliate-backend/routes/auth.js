@@ -151,6 +151,102 @@ router.post('/register', registerValidation, (req, res) => {
   });
 });
 
+// Self-registration for new affiliates (public endpoint)
+router.post('/register-affiliate', [
+  body('username').trim().isLength({ min: 3, max: 50 }).withMessage('Username must be 3-50 characters'),
+  body('email').isEmail().normalizeEmail().withMessage('Invalid email address'),
+  body('password').isLength({ min: 8 }).withMessage('Password must be at least 8 characters'),
+  body('full_name').trim().isLength({ min: 2, max: 100 }).withMessage('Full name must be 2-100 characters')
+], (req, res) => {
+  // Check validation results
+  const errors = validationResult(req);
+  if (!errors.isEmpty()) {
+    return res.status(400).json({ 
+      success: false, 
+      message: 'Validation failed',
+      errors: errors.array()
+    });
+  }
+
+  let { username, email, password, full_name } = req.body;
+  
+  // Sanitize inputs
+  username = sanitizeInput(username);
+  email = sanitizeInput(email);
+  full_name = sanitizeInput(full_name);
+
+  // Generate coupon code from username/name + @wg
+  // Maximum 10 characters total, so 7 chars from name + @wg (3 chars) = 10
+  const nameBase = username.replace(/[^a-zA-Z0-9]/g, '').toUpperCase();
+  const couponPrefix = nameBase.substring(0, 7); // Max 7 characters from username
+  let coupon_code = `${couponPrefix}@WG`;
+  
+  // If too short, try using full_name
+  if (couponPrefix.length < 3) {
+    const fullNameBase = full_name.replace(/[^a-zA-Z0-9]/g, '').toUpperCase();
+    const altPrefix = fullNameBase.substring(0, 7);
+    coupon_code = `${altPrefix}@WG`;
+  }
+
+  // Check if coupon code exists, add number if needed
+  const checkAndCreateAffiliate = (attemptNumber = 0) => {
+    let finalCouponCode = coupon_code;
+    
+    if (attemptNumber > 0) {
+      // If collision, add number: JOHN@WG becomes JOHN2@WG, etc.
+      const numStr = attemptNumber.toString();
+      const prefixLength = 7 - numStr.length;
+      const newPrefix = couponPrefix.substring(0, prefixLength) + numStr;
+      finalCouponCode = `${newPrefix}@WG`;
+    }
+
+    // Hash password
+    const hashedPassword = bcrypt.hashSync(password, 10);
+
+    // Create affiliate
+    dbHelpers.createAffiliate({
+      username,
+      email,
+      password: hashedPassword,
+      full_name,
+      coupon_code: finalCouponCode
+    }, function(err) {
+      if (err) {
+        if (err.message.includes('UNIQUE constraint failed: affiliates.coupon_code')) {
+          // Coupon code collision, try again with next number
+          if (attemptNumber < 99) {
+            checkAndCreateAffiliate(attemptNumber + 1);
+          } else {
+            return res.status(500).json({ 
+              success: false, 
+              message: 'Unable to generate unique coupon code. Please try a different username.' 
+            });
+          }
+        } else if (err.message.includes('UNIQUE constraint failed')) {
+          return res.status(409).json({ 
+            success: false, 
+            message: 'Username or email already exists.' 
+          });
+        } else {
+          return res.status(500).json({ 
+            success: false, 
+            message: 'Error creating affiliate account.' 
+          });
+        }
+      } else {
+        res.status(201).json({
+          success: true,
+          message: 'Affiliate account created successfully! You can now login.',
+          coupon_code: finalCouponCode,
+          affiliate_id: this.lastID
+        });
+      }
+    });
+  };
+
+  checkAndCreateAffiliate();
+});
+
 // Verify token endpoint (check if user is still authenticated)
 router.get('/verify', verifyToken, (req, res) => {
   res.json({

@@ -159,6 +159,15 @@ body {
     border-left: 4px solid #c33;
 }
 
+.success-message {
+    background: #d1fae5;
+    color: #065f46;
+    padding: 12px;
+    border-radius: 8px;
+    border-left: 4px solid #10b981;
+    font-weight: 500;
+}
+
 .login-footer {
     text-align: center;
     margin-top: 20px;
@@ -166,6 +175,18 @@ body {
     border-top: 1px solid #e2e8f0;
     color: #64748b;
     font-size: 14px;
+}
+
+.register-link {
+    color: var(--primary-color);
+    text-decoration: none;
+    font-weight: 600;
+    transition: color 0.3s;
+}
+
+.register-link:hover {
+    color: var(--primary-dark);
+    text-decoration: underline;
 }
 
 .login-hint {

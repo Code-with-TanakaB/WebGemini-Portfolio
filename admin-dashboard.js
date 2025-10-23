@@ -53,6 +53,15 @@ function setupEventListeners() {
     // Add affiliate form
     document.getElementById('addAffiliateForm').addEventListener('submit', handleAddAffiliate);
 
+    // Auto-generate coupon code from username
+    document.getElementById('username').addEventListener('input', (e) => {
+        const username = e.target.value;
+        const nameBase = username.replace(/[^a-zA-Z0-9]/g, '').toUpperCase();
+        const couponPrefix = nameBase.substring(0, 7);
+        const couponCode = `${couponPrefix}@WG`;
+        document.getElementById('couponCode').value = couponCode;
+    });
+
     // Client search
     document.getElementById('clientSearch').addEventListener('input', (e) => {
         filterTable('clientsTableBody', e.target.value);
@@ -241,11 +250,20 @@ async function loadClients() {
 async function handleAddAffiliate(e) {
     e.preventDefault();
 
+    const username = document.getElementById('username').value;
+    const password = document.getElementById('password').value;
+    
+    // Validate password length
+    if (password.length < 8) {
+        alert('Password must be at least 8 characters');
+        return;
+    }
+
     const formData = {
         full_name: document.getElementById('fullName').value,
-        username: document.getElementById('username').value,
+        username: username,
         email: document.getElementById('email').value,
-        password: document.getElementById('password').value,
+        password: password,
         coupon_code: document.getElementById('couponCode').value
     };
 
@@ -261,9 +279,10 @@ async function handleAddAffiliate(e) {
         const data = await response.json();
 
         if (data.success) {
-            alert('Affiliate added successfully!');
+            alert(`Affiliate added successfully! Coupon Code: ${formData.coupon_code}`);
             closeModal();
             document.getElementById('addAffiliateForm').reset();
+            document.getElementById('couponCode').value = ''; // Clear auto-generated code
             loadAffiliates();
         } else {
             alert(data.message || 'Error adding affiliate');

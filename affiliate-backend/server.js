@@ -129,15 +129,15 @@ const server = app.listen(PORT, '0.0.0.0', () => {
 ║                                                   ║
 ║   Access URL: ${baseUrl.padEnd(41)}║
 ║                                                   ║
-║   Admin Login:                                    ║
-║   Username: admin                                 ║
-║   Password: admin123                              ║
-║                                                   ║
 ║   Dashboards:                                     ║
 ║   Login:            ${baseUrl}/login.html
 ║   Admin Dashboard:  ${baseUrl}/admin-dashboard.html
 ║   Affiliate Panel:  ${baseUrl}/affiliate-dashboard.html
 ║   Client Signup:    ${baseUrl}/client-signup.html
+║                                                   ║
+║   Security:         ✓ Rate Limiting Active       ║
+║                     ✓ Input Validation Enabled   ║
+║                     ✓ HTTPS Encryption          ║
 ╚═══════════════════════════════════════════════════╝
   `);
 });

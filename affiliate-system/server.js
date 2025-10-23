@@ -26,10 +26,38 @@ app.use(helmet({
         }
     }
 }));
-app.use(cors({
-    origin: process.env.FRONTEND_URL || '*',
-    credentials: true
-}));
+const allowedOrigins = (process.env.FRONTEND_URL || 'http://localhost:3000').split(',');
+
+// Replace the previous app.use(cors(...)) call with a dynamic header middleware
+app.use((req, res, next) => {
+    const origin = req.headers.origin;
+    // allow requests with no origin (curl, mobile, same-origin)
+    if (!origin) return next();
+
+    if (allowedOrigins.indexOf(origin) !== -1) {
+        // Echo the Origin instead of using "*" so credentials can be sent
+        res.header('Access-Control-Allow-Origin', origin);
+        res.header('Access-Control-Allow-Credentials', 'true');
+        res.header('Access-Control-Allow-Methods', 'GET,POST,PUT,DELETE,OPTIONS');
+        res.header('Access-Control-Allow-Headers', 'Content-Type, Authorization, X-Requested-With');
+        // ensure caches vary by Origin
+        res.header('Vary', 'Origin');
+    } else {
+        console.warn('CORS blocked for origin:', origin);
+    }
+
+    // Preflight
+    if (req.method === 'OPTIONS') return res.sendStatus(204);
+    next();
+});
+
+// Debug middleware: logs origin and incoming cookies for troubleshooting
+app.use((req, res, next) => {
+    if (req.path.startsWith('/api/')) {
+        console.log(`[CORS DEBUG] ${req.method} ${req.originalUrl} origin=${req.headers.origin} cookies=${req.headers.cookie || '<none>'}`);
+    }
+    next();
+});
 
 // Body parsing middleware
 app.use(express.json());
@@ -87,5 +115,22 @@ app.listen(PORT, () => {
     console.log(`📊 Environment: ${process.env.NODE_ENV || 'development'}`);
     console.log(`🔗 API URL: http://localhost:${PORT}/api`);
 });
+
+// (frontend)
+fetch('/api/admin/login', {
+    method: 'POST',
+    credentials: 'include', // required to send/receive cookies
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify({ email, password })
+});
+
+// when setting cookie/session after successful login:
+res.cookie('sid', sessionId, {
+    httpOnly: true,
+    sameSite: 'none', // required for cross-site cookies
+    secure: process.env.NODE_ENV === 'production', // true in prod (HTTPS), false for local dev
+    maxAge: 7 * 24 * 60 * 60 * 1000
+});
+res.json({ success: true });
 
 module.exports = app;

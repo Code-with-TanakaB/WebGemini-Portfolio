@@ -18,7 +18,7 @@ const clientSignupValidation = [
   body('phone').optional().trim().isLength({ min: 10, max: 20 }).withMessage('Phone must be 10-20 characters'),
   body('plan_type').trim().notEmpty().withMessage('Plan type is required'),
   body('plan_price').isFloat({ min: 0 }).withMessage('Plan price must be a positive number'),
-  body('coupon_code').optional().trim().isLength({ max: 20 }).isAlphanumeric().withMessage('Invalid coupon code')
+  body('coupon_code').optional().trim().isLength({ max: 20 }).matches(/^[A-Z0-9@]+$/i).withMessage('Invalid coupon code format')
 ];
 
 // Calculate commission based on plan type

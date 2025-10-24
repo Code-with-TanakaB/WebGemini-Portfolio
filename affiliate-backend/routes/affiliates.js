@@ -27,16 +27,13 @@ function calculateCommission(planType, planPrice) {
   let commissionRate = 0;
 
   // Starter plan gets 10% commission
-  if (lowerPlanType.includes('starter') || lowerPlanType.includes('basic')) {
+  if (lowerPlanType.includes('starter')) {
     commissionRate = 0.10;
   } 
-  // High-tier plans (premium, enterprise, pro, advanced) get 25% commission
+  // Professional and Enterprise plans get 25% commission
   else if (
-    lowerPlanType.includes('premium') || 
-    lowerPlanType.includes('enterprise') || 
-    lowerPlanType.includes('pro') || 
-    lowerPlanType.includes('advanced') ||
-    lowerPlanType.includes('high-tier')
+    lowerPlanType.includes('professional') || 
+    lowerPlanType.includes('enterprise')
   ) {
     commissionRate = 0.25;
   }

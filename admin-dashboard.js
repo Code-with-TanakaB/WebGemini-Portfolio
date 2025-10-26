@@ -1,7 +1,22 @@
 // Admin Dashboard JavaScript
-const API_BASE_URL = window.location.origin.includes('github.dev') 
-    ? `${window.location.origin}/api`
-    : 'http://localhost:3001/api';
+// API Configuration - Auto-detects environment
+const API_BASE_URL = (() => {
+    const hostname = window.location.hostname;
+    
+    // Development environments
+    if (hostname === 'localhost' || hostname.includes('127.0.0.1')) {
+        return 'http://localhost:3001/api';
+    }
+    
+    if (hostname.includes('github.dev')) {
+        return `${window.location.origin}/api`;
+    }
+    
+    // Production: Railway deployment URL
+    return 'https://webgemini-portfolio-production-fab7.up.railway.app/api';
+})();
+
+console.log('Admin Dashboard using API:', API_BASE_URL);
 let authToken = null;
 
 // Check authentication on page load

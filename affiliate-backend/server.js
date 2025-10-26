@@ -43,13 +43,34 @@ app.use('/api/auth/login', authLimiter);
 app.use('/api/auth/register', authLimiter);
 app.use('/api', generalLimiter);
 
-// Middleware - Enhanced CORS for dev environment
-app.use(cors({
-    origin: '*', // Allow all origins in development
+// Middleware - Enhanced CORS with environment-based configuration
+const allowedOrigins = process.env.ALLOWED_ORIGINS 
+    ? process.env.ALLOWED_ORIGINS.split(',').map(origin => origin.trim())
+    : ['*']; // Allow all in development
+
+const corsOptions = {
+    origin: function (origin, callback) {
+        // Allow requests with no origin (mobile apps, Postman, etc.)
+        if (!origin) return callback(null, true);
+        
+        // In development, allow all origins
+        if (allowedOrigins.includes('*')) {
+            return callback(null, true);
+        }
+        
+        // In production, check against whitelist
+        if (allowedOrigins.indexOf(origin) !== -1) {
+            callback(null, true);
+        } else {
+            callback(new Error('Not allowed by CORS'));
+        }
+    },
     credentials: true,
     methods: ['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS'],
     allowedHeaders: ['Content-Type', 'Authorization']
-}));
+};
+
+app.use(cors(corsOptions));
 
 // Body parsing with size limits
 app.use(express.json({ limit: '10kb' }));
@@ -97,6 +118,14 @@ app.get('/api', (req, res) => {
   });
 });
 
+// 404 handler for API routes only
+app.use('/api/*', (req, res) => {
+  res.status(404).json({
+    success: false,
+    message: 'API endpoint not found'
+  });
+});
+
 // Error handling middleware
 app.use((err, req, res, next) => {
   console.error(err.stack);
@@ -104,14 +133,6 @@ app.use((err, req, res, next) => {
     success: false, 
     message: 'Something went wrong!',
     error: process.env.NODE_ENV === 'development' ? err.message : undefined
-  });
-});
-
-// 404 handler
-app.use((req, res) => {
-  res.status(404).json({ 
-    success: false, 
-    message: 'Endpoint not found' 
   });
 });
 

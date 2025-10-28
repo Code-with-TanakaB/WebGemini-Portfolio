@@ -150,20 +150,39 @@ git push heroku main
 ```
 ⚠️ Note: Heroku's filesystem is ephemeral - you'll need to migrate to PostgreSQL
 
-#### **Railway** (Modern, SQLite-friendly)
+#### **Render** (Recommended - Free tier available, SQLite-friendly)
+
+**Option A: Using render.yaml (Automated)**
 ```bash
-# Install Railway CLI
-npm i -g @railway/cli
-railway login
-railway init
-railway up
+# 1. Push your code to GitHub
+git add .
+git commit -m "Add Render configuration"
+git push origin main
+
+# 2. Go to https://render.com and sign up/login
+# 3. Click "New" → "Blueprint"
+# 4. Connect your GitHub repository
+# 5. Render will auto-detect render.yaml and deploy!
 ```
 
-#### **Render** (Free tier available)
-- Connect your GitHub repo
-- Set build command: `npm install`
-- Set start command: `node server.js`
-- Add environment variables
+**Option B: Manual Setup**
+```bash
+# 1. Go to https://render.com
+# 2. Click "New" → "Web Service"
+# 3. Connect your GitHub repository
+# 4. Configure:
+#    - Name: webgemini-affiliate-backend
+#    - Runtime: Docker (or Node if not using Dockerfile)
+#    - Build Command: npm install
+#    - Start Command: node server.js
+# 5. Add environment variables:
+#    - NODE_ENV=production
+#    - JWT_SECRET=your-secret-key
+#    - ALLOWED_ORIGINS=https://yourwebsite.com
+# 6. Click "Create Web Service"
+```
+
+**Your API will be available at**: `https://webgemini-affiliate-backend.onrender.com`
 
 ### 3. **Serverless** (Auto-scaling)
 - **Vercel**: Good for API routes

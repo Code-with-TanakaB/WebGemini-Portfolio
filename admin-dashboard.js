@@ -1,19 +1,15 @@
 // Admin Dashboard JavaScript
 // API Configuration - Auto-detects environment
 const API_BASE_URL = (() => {
-    const hostname = window.location.hostname;
-    
-    // Development environments
-    if (hostname === 'localhost' || hostname.includes('127.0.0.1')) {
+    // If on localhost/Codespaces, use local backend
+    if (window.location.hostname === 'localhost' || 
+        window.location.hostname.includes('github.dev')) {
         return 'http://localhost:3001/api';
     }
     
-    if (hostname.includes('github.dev')) {
-        return `${window.location.origin}/api`;
-    }
-    
-    // Production: Railway deployment URL
-    return 'https://webgemini-portfolio-production-fab7.up.railway.app/api';
+    // Production: Render deployment URL
+    // TODO: Replace with your actual Render URL after deployment
+    return 'https://webgemini-affiliate-backend.onrender.com/api';
 })();
 
 console.log('Admin Dashboard using API:', API_BASE_URL);

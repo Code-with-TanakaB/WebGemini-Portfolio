@@ -1,89 +1,102 @@
-# 🚀 Railway Deployment Guide - WebGemini Affiliate System
+# 🚀 Render Deployment Guide - WebGemini Affiliate System
 
-This guide will help you deploy your affiliate backend to Railway for 24/7 uptime with zero server management.
+This guide will help you deploy your affiliate backend to Render for 24/7 uptime with zero server management and a generous free tier.
 
 ---
 
 ## 📋 Prerequisites
 
 - GitHub account (your repository is already set up)
-- Railway account (free - sign up at https://railway.app)
+- Render account (free - sign up at https://render.com)
 - Your frontend domain (where your website is hosted)
 
 ---
 
 ## 🎯 Step-by-Step Deployment
 
-### Step 1: Sign Up for Railway
+### Step 1: Sign Up for Render
 
-1. Go to **https://railway.app**
-2. Click **"Start a New Project"**
+1. Go to **https://render.com**
+2. Click **"Get Started"** or **"Sign Up"**
 3. Sign in with your **GitHub account**
-4. Authorize Railway to access your repositories
+4. Authorize Render to access your repositories
 
-### Step 2: Create New Project
+### Step 2: Create New Web Service
 
-1. Click **"New Project"**
-2. Select **"Deploy from GitHub repo"**
-3. Search for and select: **`Code-with-TanakaB/WebGemini-Portfolio`**
-4. Railway will detect your repository
+**Option A: Using Blueprint (Automated - Recommended)**
 
-### Step 3: Configure Root Directory
+1. Click **"New"** → **"Blueprint"**
+2. Connect your GitHub repository: **`Code-with-TanakaB/WebGemini-Portfolio`**
+3. Render will auto-detect `render.yaml` in the `affiliate-backend` folder
+4. Review the configuration and click **"Apply"**
+5. Render will automatically deploy! ✨
 
-Since your backend is in a subdirectory:
+**Option B: Manual Setup**
 
-1. Click on your deployed service
-2. Go to **Settings** tab
-3. Find **"Root Directory"** or **"Service Settings"**
-4. Set root directory to: **`affiliate-backend`**
-5. Click **Save**
+1. Click **"New"** → **"Web Service"**
+2. Connect your GitHub repository: **`Code-with-TanakaB/WebGemini-Portfolio`**
+3. Configure the service:
+   - **Name:** `webgemini-affiliate-backend`
+   - **Runtime:** Docker (or Node if not using Dockerfile)
+   - **Region:** Choose closest to your users
+   - **Branch:** `main`
+   - **Root Directory:** `affiliate-backend`
+   - **Build Command:** `npm install` (or leave blank for Docker)
+   - **Start Command:** `node server.js` (or leave blank for Docker)
+4. Click **"Advanced"** to set environment variables (see Step 3)
 
-### Step 4: Set Environment Variables
+### Step 3: Set Environment Variables
 
-1. In your Railway project, click on **Variables** tab
-2. Add these environment variables:
+Add these environment variables in Render dashboard:
 
-```env
-NODE_ENV=production
-PORT=3001
-JWT_SECRET=generate-a-random-secure-string-here
-ALLOWED_ORIGINS=https://your-actual-website.com
+| Key | Value | Notes |
+|-----|-------|-------|
+| `NODE_ENV` | `production` | Required |
+| `PORT` | `3001` | Render will override with their port |
+| `JWT_SECRET` | `your-random-secret-key` | Generate at [randomkeygen.com](https://randomkeygen.com/) |
+| `ALLOWED_ORIGINS` | `https://your-website.com` | Your actual domain (comma-separated for multiple) |
+
+**Important Security Notes:**
+- Generate a **strong JWT_SECRET** (at least 32 characters)
+- Set **ALLOWED_ORIGINS** to your actual website URL
+- For multiple origins: `https://site1.com,https://site2.com`
+
+### Step 4: Deploy
+
+1. Click **"Create Web Service"**
+2. Render will start building and deploying (takes 2-5 minutes)
+3. Watch the logs in real-time
+4. Once deployed, you'll see **"Live"** status with a green indicator
+
+### Step 5: Get Your API URL
+
+Your API will be automatically available at:
+```
+https://webgemini-affiliate-backend.onrender.com
 ```
 
-**Important:** 
-- Replace `JWT_SECRET` with a random string (use this generator: https://randomkeygen.com/)
-- Replace `ALLOWED_ORIGINS` with your actual website URL (e.g., `https://code-with-tanakab.github.io`)
-- Add multiple origins separated by commas if needed: `https://site1.com,https://site2.com`
+Or your custom name:
+```
+https://your-service-name.onrender.com
+```
 
-### Step 5: Deploy
-
-1. Railway will automatically start building and deploying
-2. Wait 2-3 minutes for the deployment to complete
-3. Once deployed, you'll see a **"Deploy successful"** message
-
-### Step 6: Get Your API URL
-
-1. In your Railway project, click on **Settings**
-2. Find **"Domains"** section
-3. Click **"Generate Domain"**
-4. Railway will give you a URL like: `https://webgemini-production.up.railway.app`
-5. **Copy this URL** - you'll need it for the next step
+**Copy this URL** - you'll need it to update your frontend configuration.
 
 ---
 
 ## 🔧 Update Frontend Configuration
 
-Now you need to update your frontend files to use the Railway API URL.
+Update your frontend files to use the Render API URL.
 
 ### Files to Update:
 
 1. **`affiliate-dashboard.js`**
 2. **`admin-dashboard.js`**
-3. **`client-signup.html`** (if it has direct API calls)
+3. Any other files making API calls
 
 ### Configuration Template:
 
-Add this at the top of your JavaScript files:
+Replace the existing `API_BASE_URL` logic with:
 
 ```javascript
 // API Configuration - Auto-detects environment
@@ -94,14 +107,14 @@ const API_BASE_URL = (() => {
         return 'http://localhost:3001/api';
     }
     
-    // Production: Use Railway URL
-    return 'https://your-railway-domain.up.railway.app/api';
+    // Production: Use Render URL
+    return 'https://webgemini-affiliate-backend.onrender.com/api';
 })();
 
 console.log('Using API:', API_BASE_URL);
 ```
 
-**Replace** `https://your-railway-domain.up.railway.app` with your actual Railway domain from Step 6.
+**Replace** `webgemini-affiliate-backend.onrender.com` with your actual Render domain.
 
 ---
 
@@ -109,26 +122,34 @@ console.log('Using API:', API_BASE_URL);
 
 ### Test the API:
 
-1. Open your Railway URL in a browser: `https://your-railway-domain.up.railway.app/api`
-2. You should see a JSON response like:
+Open your Render URL in a browser:
+```
+https://webgemini-affiliate-backend.onrender.com/api
+```
+
+Expected response:
 ```json
 {
   "success": true,
   "message": "Welcome to WebGemini Affiliate System API",
-  "version": "1.0.0"
+  "version": "1.0.0",
+  "endpoints": { ... }
 }
 ```
 
 ### Test Health Endpoint:
 
-Visit: `https://your-railway-domain.up.railway.app/api/health`
+Visit:
+```
+https://webgemini-affiliate-backend.onrender.com/api/health
+```
 
-You should see:
+Expected response:
 ```json
 {
   "success": true,
   "message": "WebGemini Affiliate API is running",
-  "timestamp": "2025-10-26T..."
+  "timestamp": "2025-10-28T..."
 }
 ```
 
@@ -136,118 +157,148 @@ You should see:
 
 ## 🔄 Auto-Deployment (Continuous Deployment)
 
-Railway automatically redeploys when you push to GitHub:
+Render automatically redeploys when you push to GitHub:
 
-1. Make changes to your code
-2. Commit and push to GitHub:
-   ```bash
-   git add .
-   git commit -m "Update affiliate backend"
-   git push origin main
-   ```
-3. Railway detects the change and automatically redeploys
-4. Wait 2-3 minutes for the new version to be live
+```bash
+# 1. Make changes to your code
+# 2. Commit and push to GitHub
+git add .
+git commit -m "Update affiliate backend"
+git push origin main
+
+# 3. Render detects the change and auto-deploys
+# 4. Check Render dashboard for deployment status
+```
+
+**Auto-deploy is enabled by default!** ✨
 
 ---
 
 ## 📊 Monitoring Your Server
 
 ### View Logs:
-1. Go to your Railway project dashboard
+1. Go to Render dashboard
 2. Click on your service
-3. Click **"Deployments"** tab
-4. Click on the active deployment
-5. Click **"View Logs"** to see real-time server logs
+3. Click **"Logs"** tab
+4. See real-time logs and filter by severity
 
-### Monitor Resources:
-- Railway shows CPU, Memory, and Network usage
-- Free tier includes: 500 hours/month, $5 credit
-- Upgrade if you need more resources
+### Monitor Metrics:
+- **Events:** Deployment history and status
+- **Metrics:** CPU, Memory, and Network usage (on paid plans)
+- **Health Checks:** Automatic monitoring of `/api/health`
+
+### Set Up Alerts:
+1. Go to service **"Settings"**
+2. Scroll to **"Health Check Path"**
+3. Set to `/api/health`
+4. Render will notify you if your service goes down
 
 ---
 
 ## 🔒 Security Checklist
 
-✅ **JWT_SECRET** - Set to a random, secure string (at least 32 characters)
-✅ **ALLOWED_ORIGINS** - Set to your actual website domain
-✅ **HTTPS** - Railway provides automatic HTTPS
-✅ **Rate Limiting** - Already configured in your server.js
-✅ **Database Backups** - Download periodically from Railway
+✅ **JWT_SECRET** - Strong random string (32+ characters)
+✅ **ALLOWED_ORIGINS** - Set to your actual domain(s)
+✅ **HTTPS** - Render provides automatic SSL certificates
+✅ **Rate Limiting** - Already configured in server.js
+✅ **Database Persistence** - Render persists disk by default
 
 ### Backup Your Database:
 
-1. Go to Railway dashboard
-2. Click on your service
-3. Click **"Data"** or **"Volumes"**
-4. Find `affiliate.db` file
-5. Download a backup copy weekly
+**Option 1: Render Shell**
+```bash
+# 1. Go to your service in Render dashboard
+# 2. Click "Shell" tab
+# 3. Run: cat affiliate.db > /tmp/backup.db
+# 4. Download from /tmp/backup.db
+```
+
+**Option 2: Automated Backups (Recommended)**
+Set up a cron job or use Render's disk snapshots (paid plans).
 
 ---
 
 ## 🆘 Troubleshooting
 
 ### Problem: "Application failed to respond"
-**Solution:** Check Railway logs for errors. Ensure PORT is set to 3001 in environment variables.
+**Solution:** 
+- Check Render logs for errors
+- Ensure health check is set to `/api/health`
+- Verify PORT environment variable
 
 ### Problem: "CORS error" when calling API
 **Solution:** 
 1. Check `ALLOWED_ORIGINS` includes your website URL
-2. Ensure no trailing slashes in URLs
-3. Verify your frontend is using HTTPS (not HTTP)
+2. Ensure no trailing slashes
+3. Verify frontend uses HTTPS (not HTTP)
+4. Check browser console for exact error
 
-### Problem: Database not persisting
+### Problem: "Free instance spins down"
 **Solution:** 
-1. Go to Railway settings
-2. Add a **Volume** mount
-3. Set mount path to: `/app/affiliate.db`
+- Free tier instances sleep after 15 minutes of inactivity
+- Upgrade to paid plan ($7/month) for always-on
+- Or use a service like UptimeRobot to ping your API every 10 minutes
 
-### Problem: "Cannot find module" errors
+### Problem: Database resets or data lost
 **Solution:**
-1. Check that `railway.json` has correct build command
-2. Ensure `package.json` has all dependencies
-3. Try redeploying: Settings → Redeploy
+- Render persists disk by default
+- Check that you're not using ephemeral storage
+- For critical data, consider upgrading to managed database
+
+### Problem: Build fails
+**Solution:**
+1. Check build logs in Render dashboard
+2. Verify `package.json` has all dependencies
+3. Try manual redeploy: Settings → Manual Deploy
+4. Check Dockerfile syntax if using Docker
 
 ---
 
 ## 💰 Cost Estimate
 
-Railway **Free Tier** includes:
-- ✅ $5 in credits per month
-- ✅ 500 hours of uptime
-- ✅ 100GB bandwidth
-- ✅ Automatic HTTPS
+**Free Tier Includes:**
+- ✅ 750 hours/month (one service always-on)
+- ✅ 100GB bandwidth/month
+- ✅ Automatic HTTPS/SSL
+- ✅ Auto-deploys from GitHub
+- ✅ Free custom domains
+- ⚠️ Instances spin down after 15 min inactivity
 
-**Expected cost for your app:** $0-5/month (well within free tier for small traffic)
+**Paid Starter Plan ($7/month):**
+- ✅ Always-on (no spin down)
+- ✅ Faster build times
+- ✅ More resources
+- ✅ Priority support
 
-To prevent unexpected charges:
-1. Go to Railway project settings
-2. Set a **usage limit**
-3. Add a **notification** for 80% usage
+**Expected cost for your app:** 
+- **Free** (with occasional cold starts)
+- **$7/month** (always responsive)
 
 ---
 
 ## 🎉 You're Done!
 
 Your affiliate backend is now:
-- ✅ Running 24/7 on Railway
+- ✅ Running 24/7 on Render
 - ✅ Auto-deploying from GitHub
 - ✅ Using HTTPS automatically
-- ✅ Backed by Railway's infrastructure
-- ✅ Monitored with real-time logs
+- ✅ Monitored with health checks
+- ✅ Backed by reliable infrastructure
 
 ### Next Steps:
-1. Update your frontend to use the Railway API URL
-2. Test all affiliate features (login, dashboard, tracking)
-3. Set up weekly database backups
-4. Monitor logs regularly for any issues
+1. ✅ Update frontend to use Render API URL
+2. ✅ Test all affiliate features (login, dashboard, tracking)
+3. ✅ Set up health check monitoring
+4. ✅ Consider upgrading if you need always-on service
 
 ---
 
 ## 📞 Support & Resources
 
-- **Railway Documentation:** https://docs.railway.app/
-- **Railway Discord:** https://discord.gg/railway
-- **Your Deployment URL:** Check Railway dashboard → Domains
+- **Render Documentation:** https://render.com/docs
+- **Render Community:** https://community.render.com
+- **Status Page:** https://status.render.com
+- **Your Service URL:** Check Render dashboard
 
 ---
 
@@ -258,16 +309,34 @@ Your affiliate backend is now:
 git add .
 git commit -m "Your update message"
 git push origin main
-# Railway auto-deploys in 2-3 minutes
+# Render auto-deploys in 2-5 minutes
 
-# Test your API locally before pushing
+# Test locally before pushing
 cd affiliate-backend
 npm start
 
-# Check Railway deployment status
-# Visit: https://railway.app/dashboard
+# View logs (using Render CLI)
+npm install -g @render-com/cli
+render login
+render logs
+
+# Manual redeploy
+# Go to Render dashboard → Service → Manual Deploy
 ```
 
 ---
 
-**Congratulations!** Your affiliate system is now production-ready and will stay online 24/7! 🎊
+## 🔄 Migrating from Railway to Render
+
+If you previously used Railway:
+
+1. ✅ `railway.json` → Replaced with `render.yaml`
+2. ✅ Environment variables → Transferred to Render dashboard
+3. ✅ Database file → Will persist on Render disk
+4. ✅ Update frontend API URLs → Changed to Render domain
+
+**No database migration needed!** Your SQLite file will work as-is.
+
+---
+
+**Congratulations!** Your affiliate system is now production-ready on Render! 🎊

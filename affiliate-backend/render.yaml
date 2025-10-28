@@ -1,0 +1,16 @@
+services:
+  - type: web
+    name: webgemini-affiliate-backend
+    runtime: docker
+    dockerfilePath: ./Dockerfile
+    envVars:
+      - key: NODE_ENV
+        value: production
+      - key: PORT
+        value: 3001
+      - key: JWT_SECRET
+        generateValue: true
+      - key: ALLOWED_ORIGINS
+        value: https://yourwebsite.com
+    healthCheckPath: /api/health
+    autoDeploy: true

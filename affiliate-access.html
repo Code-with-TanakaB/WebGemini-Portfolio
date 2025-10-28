@@ -140,11 +140,15 @@
     </div>
 
     <script>
-        // Detect if we're in Codespaces and construct proper URLs
+        // Detect environment and construct proper URLs
         const isCodespace = window.location.hostname.includes('github.dev');
+        const isLocalhost = window.location.hostname === 'localhost';
+        
         const baseUrl = isCodespace 
             ? window.location.origin
-            : 'http://localhost:3001';
+            : isLocalhost
+            ? 'http://localhost:3001'
+            : 'https://webgemini-portfolio.onrender.com';
 
         // Update all links
         document.getElementById('loginLink').href = `${baseUrl}/login.html`;

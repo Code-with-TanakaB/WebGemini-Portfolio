@@ -8,8 +8,7 @@ const API_BASE_URL = (() => {
     }
     
     // Production: Render deployment URL
-    // TODO: Replace with your actual Render URL after deployment
-    return 'https://webgemini-affiliate-backend.onrender.com/api';
+    return 'https://webgemini-portfolio.onrender.com/api';
 })();
 
 console.log('Admin Dashboard using API:', API_BASE_URL);

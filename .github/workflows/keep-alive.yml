@@ -1,0 +1,45 @@
+name: Keep Render Service Alive
+
+on:
+  schedule:
+    # Run every 10 minutes during business hours (8 AM - 8 PM UTC, Mon-Fri)
+    # Adjust timezone as needed: UTC is used here
+    - cron: '*/10 8-20 * * 1-5'
+    
+    # Optional: Keep alive on weekends too (less frequent)
+    - cron: '*/30 * * * 0,6'
+  
+  workflow_dispatch: # Allow manual trigger from GitHub Actions tab
+
+jobs:
+  ping-service:
+    runs-on: ubuntu-latest
+    
+    steps:
+      - name: Ping Health Endpoint
+        run: |
+          echo "🔄 Pinging Render service..."
+          response=$(curl -s -o /dev/null -w "%{http_code}" https://webgemini-portfolio.onrender.com/api/health)
+          
+          if [ $response -eq 200 ]; then
+            echo "✅ Service is alive and healthy (HTTP $response)"
+          else
+            echo "⚠️ Service returned HTTP $response"
+            exit 1
+          fi
+      
+      - name: Check API Endpoint
+        run: |
+          echo "🔍 Checking main API endpoint..."
+          api_response=$(curl -s https://webgemini-portfolio.onrender.com/api | jq -r '.message' 2>/dev/null || echo "Failed")
+          
+          if [[ "$api_response" == *"WebGemini"* ]]; then
+            echo "✅ API is responding correctly"
+            echo "Message: $api_response"
+          else
+            echo "⚠️ API response unexpected: $api_response"
+          fi
+      
+      - name: Log Timestamp
+        run: |
+          echo "⏰ Ping completed at: $(date -u '+%Y-%m-%d %H:%M:%S UTC')"

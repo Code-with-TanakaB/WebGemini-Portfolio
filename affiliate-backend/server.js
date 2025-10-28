@@ -11,6 +11,9 @@ const affiliateRoutes = require('./routes/affiliates');
 const app = express();
 const PORT = process.env.PORT || 3001;
 
+// Trust proxy - Required for rate limiting behind proxies/load balancers
+app.set('trust proxy', 1);
+
 // Security Headers - Helmet
 app.use(helmet({
     contentSecurityPolicy: false, // Disable for static files
@@ -53,15 +56,17 @@ const corsOptions = {
         // Allow requests with no origin (mobile apps, Postman, etc.)
         if (!origin) return callback(null, true);
         
-        // In development, allow all origins
+        // In development or if wildcard is set, allow all origins
         if (allowedOrigins.includes('*')) {
             return callback(null, true);
         }
         
         // In production, check against whitelist
-        if (allowedOrigins.indexOf(origin) !== -1) {
+        if (allowedOrigins.indexOf(origin) !== -1 || allowedOrigins.includes('*')) {
             callback(null, true);
         } else {
+            console.log(`CORS blocked origin: ${origin}`);
+            console.log(`Allowed origins:`, allowedOrigins);
             callback(new Error('Not allowed by CORS'));
         }
     },

@@ -27,9 +27,11 @@ This guide will help you deploy your affiliate backend to Render for 24/7 uptime
 
 1. Click **"New"** → **"Blueprint"**
 2. Connect your GitHub repository: **`Code-with-TanakaB/WebGemini-Portfolio`**
-3. Render will auto-detect `render.yaml` in the `affiliate-backend` folder
+3. Render will auto-detect `render.yaml` in the **repository root**
 4. Review the configuration and click **"Apply"**
 5. Render will automatically deploy! ✨
+
+**Note:** The `render.yaml` file is in the repository root and points to the `affiliate-backend` folder.
 
 **Option B: Manual Setup**
 

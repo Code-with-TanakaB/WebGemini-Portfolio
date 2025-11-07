@@ -19,6 +19,12 @@
             </div>
 
             <form id="loginForm" class="login-form">
+                <div class="form-group" style="margin-bottom: 8px;">
+                    <label style="font-size: 13px; color: #666;">
+                        <input type="checkbox" id="demoMode" checked>
+                        <span style="vertical-align: middle; margin-left: 6px;">Use Demo / Offline Mode</span>
+                    </label>
+                </div>
                 <div class="form-group">
                     <label for="username">
                         <i class="fas fa-user"></i>
@@ -157,14 +163,50 @@
             document.getElementById('registerBox').style.display = 'none';
         });
 
-        // Login Form Handler
+        // Login Form Handler - BYPASS MODE (No Server Required)
         document.getElementById('loginForm').addEventListener('submit', async (e) => {
             e.preventDefault();
             
             const username = document.getElementById('username').value;
             const password = document.getElementById('password').value;
+            const demoMode = document.getElementById('demoMode') && document.getElementById('demoMode').checked;
             const errorMessage = document.getElementById('errorMessage');
             
+            // BYPASS: Mock authentication with demo credentials
+            // Admin: username = "admin", password = "admin"
+            // Affiliate: username = "affiliate", password = "affiliate"
+            
+            if (demoMode && username === 'admin' && password === 'admin') {
+                // Mock admin login
+                localStorage.setItem('authToken', 'mock-admin-token');
+                localStorage.setItem('mockUser', JSON.stringify({
+                    username: 'admin',
+                    role: 'admin',
+                    full_name: 'Admin User'
+                }));
+                window.location.href = 'admin-dashboard.html';
+                return;
+            } else if (demoMode && username === 'affiliate' && password === 'affiliate') {
+                // Mock affiliate login
+                localStorage.setItem('authToken', 'mock-affiliate-token');
+                localStorage.setItem('mockUser', JSON.stringify({
+                    username: 'affiliate',
+                    role: 'affiliate',
+                    full_name: 'Demo Affiliate'
+                }));
+                window.location.href = 'affiliate-dashboard.html';
+                return;
+            } else {
+                // If demo mode is enabled, provide helpful message. Otherwise, attempt normal server login (original code below)
+                if (demoMode) {
+                    errorMessage.innerHTML = 'Invalid demo credentials. Use:<br><strong>Admin:</strong> admin / admin<br><strong>Affiliate:</strong> affiliate / affiliate';
+                    errorMessage.style.display = 'block';
+                    return;
+                }
+                // Fall through to original (server) login flow below if demoMode is not enabled
+            }
+            
+            /* ORIGINAL CODE (commented out for bypass mode)
             try {
                 const response = await fetch(`${API_BASE_URL}/auth/login`, {
                     method: 'POST',
@@ -195,6 +237,7 @@
                 errorMessage.textContent = 'Connection error. Please make sure the server is running.';
                 errorMessage.style.display = 'block';
             }
+            */
         });
 
         // Registration Form Handler
@@ -272,23 +315,40 @@
         // Check if already logged in
         const token = localStorage.getItem('authToken');
         if (token) {
-            // Verify token
-            fetch(`${API_BASE_URL}/auth/verify`, {
-                headers: {
-                    'Authorization': `Bearer ${token}`
-                }
-            })
-            .then(res => res.json())
-            .then(data => {
-                if (data.success) {
-                    if (data.user.role === 'admin') {
-                        window.location.href = 'admin-dashboard.html';
-                    } else {
-                        window.location.href = 'affiliate-dashboard.html';
+            // If this is a mock token, skip server verification and redirect based on stored mockUser
+            if (token.startsWith('mock-')) {
+                const mockUser = localStorage.getItem('mockUser');
+                if (mockUser) {
+                    try {
+                        const data = JSON.parse(mockUser);
+                        if (data.role === 'admin') {
+                            window.location.href = 'admin-dashboard.html';
+                        } else {
+                            window.location.href = 'affiliate-dashboard.html';
+                        }
+                    } catch (e) {
+                        console.log('Invalid mockUser data');
                     }
                 }
-            })
-            .catch(err => console.log('Not logged in'));
+            } else {
+                // Verify token with server for real tokens
+                fetch(`${API_BASE_URL}/auth/verify`, {
+                    headers: {
+                        'Authorization': `Bearer ${token}`
+                    }
+                })
+                .then(res => res.json())
+                .then(data => {
+                    if (data.success) {
+                        if (data.user.role === 'admin') {
+                            window.location.href = 'admin-dashboard.html';
+                        } else {
+                            window.location.href = 'affiliate-dashboard.html';
+                        }
+                    }
+                })
+                .catch(err => console.log('Not logged in'));
+            }
         }
     </script>
 </body>

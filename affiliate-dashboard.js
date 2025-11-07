@@ -1,3 +1,4 @@
+
 // Affiliate Dashboard JavaScript
 // API Configuration - Auto-detects environment
 const API_BASE_URL = (() => {
@@ -17,20 +18,19 @@ let currentUser = null;
 
 // Check authentication on page load
 document.addEventListener('DOMContentLoaded', () => {
-    authToken = localStorage.getItem('authToken');
+    // BYPASS: Force no token for local testing - ignore any stored token
+    authToken = null;
+    localStorage.removeItem('authToken'); // Clear any old tokens
     
-    if (!authToken) {
-        redirectToLogin();
-        return;
-    }
-
-    // Verify token and load user info
-    verifyAuth();
+    console.log('🔧 BYPASS MODE: Running without authentication');
+    
+    // BYPASS: Use mock data instead of verifying auth
+    loadMockUserData();
     
     // Set up event listeners
     setupEventListeners();
     
-    // Load dashboard data
+    // Load dashboard data (will use mock data)
     loadDashboardData();
 });
 
@@ -100,6 +100,41 @@ function switchSection(section) {
         sec.classList.remove('active');
     });
     document.getElementById(`${section}-section`).classList.add('active');
+}
+
+// BYPASS: Mock user data for local testing without backend
+function loadMockUserData() {
+    console.log('Loading mock user data for local testing...');
+    
+    currentUser = {
+        id: 1,
+        full_name: 'Demo Affiliate',
+        email: 'demo@webgemini.com',
+        coupon_code: 'DEMO2024'
+    };
+    
+    // Update UI with mock data
+    const affiliateNameEl = document.getElementById('affiliateName');
+    if (affiliateNameEl) affiliateNameEl.textContent = currentUser.full_name;
+    
+    const welcomeNameEl = document.getElementById('welcomeName');
+    if (welcomeNameEl) welcomeNameEl.textContent = currentUser.full_name;
+    
+    const couponCodeEl = document.getElementById('couponCode');
+    if (couponCodeEl) couponCodeEl.textContent = currentUser.coupon_code;
+    
+    const affiliateIdElement = document.getElementById('affiliateId');
+    if (affiliateIdElement) affiliateIdElement.textContent = `#${currentUser.id}`;
+    
+    const referralLink = `${window.location.origin}/client-signup.html?ref=${currentUser.coupon_code}`;
+    
+    const referralLinkElement = document.getElementById('referralLink');
+    if (referralLinkElement) referralLinkElement.value = referralLink;
+    
+    const referralLinkPreviewElement = document.getElementById('referralLinkPreview');
+    if (referralLinkPreviewElement) referralLinkPreviewElement.value = referralLink;
+    
+    console.log('Mock user loaded:', currentUser);
 }
 
 async function verifyAuth() {
@@ -184,6 +219,38 @@ async function loadDashboardData() {
 
 async function loadStats() {
     try {
+        // BYPASS: Use mock data if no authToken
+        if (!authToken) {
+            const mockStats = {
+                total_referrals: 12,
+                total_earnings: 1200.00,
+                pending_earnings: 300.00,
+                paid_earnings: 900.00,
+                confirmed_referrals: 8
+            };
+            
+            // Update overview stats
+            document.getElementById('totalReferrals').textContent = mockStats.total_referrals;
+            document.getElementById('totalEarnings').textContent = `R${mockStats.total_earnings.toFixed(2)}`;
+            document.getElementById('pendingEarnings').textContent = `R${mockStats.pending_earnings.toFixed(2)}`;
+            
+            // Update earnings section (if elements exist)
+            const paidEarningsEl = document.getElementById('paidEarnings');
+            if (paidEarningsEl) paidEarningsEl.textContent = `R${mockStats.paid_earnings.toFixed(2)}`;
+            
+            const earningsTotalEl = document.getElementById('earningsTotal');
+            if (earningsTotalEl) earningsTotalEl.textContent = `R${mockStats.total_earnings.toFixed(2)}`;
+            
+            const earningsPendingEl = document.getElementById('earningsPending');
+            if (earningsPendingEl) earningsPendingEl.textContent = `R${mockStats.pending_earnings.toFixed(2)}`;
+            
+            const earningsPaidEl = document.getElementById('earningsPaid');
+            if (earningsPaidEl) earningsPaidEl.textContent = `R${mockStats.paid_earnings.toFixed(2)}`;
+            
+            console.log('✅ Loaded mock stats:', mockStats);
+            return;
+        }
+        
         const response = await fetch(`${API_BASE_URL}/affiliates/stats`, {
             headers: {
                 'Authorization': `Bearer ${authToken}`
@@ -213,6 +280,59 @@ async function loadStats() {
 
 async function loadReferrals() {
     try {
+        // BYPASS: Use mock data if no authToken
+        if (!authToken) {
+            const mockReferrals = [
+                {
+                    name: 'John Smith',
+                    email: 'john@example.com',
+                    plan_type: 'Standard Plan',
+                    plan_price: 2000,
+                    commission_rate: 0.10,
+                    commission_amount: 200,
+                    commission_status: 'paid',
+                    signup_date: '2024-10-15'
+                },
+                {
+                    name: 'Sarah Johnson',
+                    email: 'sarah@example.com',
+                    plan_type: 'Premium Plan',
+                    plan_price: 5000,
+                    commission_rate: 0.10,
+                    commission_amount: 500,
+                    commission_status: 'pending',
+                    signup_date: '2024-10-20'
+                },
+                {
+                    name: 'Mike Williams',
+                    email: 'mike@example.com',
+                    plan_type: 'Basic Plan',
+                    plan_price: 1000,
+                    commission_rate: 0.10,
+                    commission_amount: 100,
+                    commission_status: 'confirmed',
+                    signup_date: '2024-10-25'
+                }
+            ];
+            
+            const tbody = document.getElementById('referralsTableBody');
+            tbody.innerHTML = mockReferrals.map(referral => `
+                <tr>
+                    <td>${referral.name}</td>
+                    <td>${referral.email}</td>
+                    <td>${referral.plan_type}</td>
+                    <td>R${referral.plan_price.toFixed(2)}</td>
+                    <td>${referral.commission_rate ? (referral.commission_rate * 100).toFixed(0) + '%' : 'N/A'}</td>
+                    <td>R${referral.commission_amount ? referral.commission_amount.toFixed(2) : '0.00'}</td>
+                    <td><span class="status-badge ${referral.commission_status}">${referral.commission_status || 'pending'}</span></td>
+                    <td>${new Date(referral.signup_date).toLocaleDateString()}</td>
+                </tr>
+            `).join('');
+            
+            console.log('Loaded mock referrals:', mockReferrals.length);
+            return;
+        }
+        
         const response = await fetch(`${API_BASE_URL}/affiliates/referrals`, {
             headers: {
                 'Authorization': `Bearer ${authToken}`

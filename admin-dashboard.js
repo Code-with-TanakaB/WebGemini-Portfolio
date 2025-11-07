@@ -18,18 +18,19 @@ let authToken = null;
 document.addEventListener('DOMContentLoaded', () => {
     authToken = localStorage.getItem('authToken');
     
-    if (!authToken) {
-        redirectToLogin();
-        return;
-    }
+    // BYPASS: Comment out authentication check for local testing
+    // if (!authToken) {
+    //     redirectToLogin();
+    //     return;
+    // }
 
-    // Verify token and check if user is admin
-    verifyAuth();
+    // BYPASS: Use mock data instead of verifying auth
+    loadMockAdminData();
     
     // Set up event listeners
     setupEventListeners();
     
-    // Load initial data
+    // Load initial data (will use mock data)
     loadDashboardData();
 });
 
@@ -102,6 +103,21 @@ function switchSection(section) {
     document.getElementById(`${section}-section`).classList.add('active');
 }
 
+// BYPASS: Mock admin data for local testing without backend
+function loadMockAdminData() {
+    console.log('Loading mock admin data for local testing...');
+    
+    const mockUser = localStorage.getItem('mockUser');
+    if (mockUser) {
+        const user = JSON.parse(mockUser);
+        document.getElementById('adminName').textContent = user.username;
+    } else {
+        document.getElementById('adminName').textContent = 'Admin Demo';
+    }
+    
+    console.log('Mock admin user loaded');
+}
+
 async function verifyAuth() {
     try {
         const response = await fetch(`${API_BASE_URL}/auth/verify`, {
@@ -135,6 +151,28 @@ async function loadDashboardData() {
 
 async function loadOverviewStats() {
     try {
+        // BYPASS: Use mock data if no authToken or mock token
+        if (!authToken || authToken.startsWith('mock-')) {
+            const mockStats = {
+                total_affiliates: 8,
+                total_clients: 45,
+                total_revenue: 125000.00,
+                total_commissions: 12500.00,
+                pending_commissions: 3200.00,
+                paid_commissions: 9300.00
+            };
+            
+            document.getElementById('totalAffiliates').textContent = mockStats.total_affiliates;
+            document.getElementById('totalClients').textContent = mockStats.total_clients;
+            document.getElementById('totalRevenue').textContent = `R${mockStats.total_revenue.toFixed(2)}`;
+            document.getElementById('totalCommissions').textContent = `R${mockStats.total_commissions.toFixed(2)}`;
+            document.getElementById('pendingCommissions').textContent = `R${mockStats.pending_commissions.toFixed(2)}`;
+            document.getElementById('paidCommissions').textContent = `R${mockStats.paid_commissions.toFixed(2)}`;
+            
+            console.log('Loaded mock overview stats:', mockStats);
+            return;
+        }
+        
         const response = await fetch(`${API_BASE_URL}/affiliates/admin/stats`, {
             headers: {
                 'Authorization': `Bearer ${authToken}`
@@ -159,6 +197,64 @@ async function loadOverviewStats() {
 
 async function loadAffiliates() {
     try {
+        // BYPASS: Use mock data if no authToken or mock token
+        if (!authToken || authToken.startsWith('mock-')) {
+            const mockAffiliates = [
+                {
+                    id: 1,
+                    full_name: 'John Smith',
+                    email: 'john@example.com',
+                    username: 'johnsmith',
+                    coupon_code: 'JOHNSMITH@WG',
+                    status: 'active',
+                    created_at: '2024-09-15'
+                },
+                {
+                    id: 2,
+                    full_name: 'Sarah Johnson',
+                    email: 'sarah@example.com',
+                    username: 'sarahj',
+                    coupon_code: 'SARAHJ@WG',
+                    status: 'active',
+                    created_at: '2024-09-20'
+                },
+                {
+                    id: 3,
+                    full_name: 'Mike Williams',
+                    email: 'mike@example.com',
+                    username: 'mikew',
+                    coupon_code: 'MIKEW@WG',
+                    status: 'active',
+                    created_at: '2024-10-01'
+                },
+                {
+                    id: 4,
+                    full_name: 'Demo Affiliate',
+                    email: 'demo@example.com',
+                    username: 'affiliate',
+                    coupon_code: 'DEMO2024',
+                    status: 'active',
+                    created_at: '2024-10-15'
+                }
+            ];
+            
+            const tbody = document.getElementById('affiliatesTableBody');
+            tbody.innerHTML = mockAffiliates.map(affiliate => `
+                <tr>
+                    <td>${affiliate.id}</td>
+                    <td>${affiliate.full_name}</td>
+                    <td>${affiliate.email}</td>
+                    <td>${affiliate.username}</td>
+                    <td><span class="coupon-badge">${affiliate.coupon_code}</span></td>
+                    <td><span class="status-badge ${affiliate.status}">${affiliate.status}</span></td>
+                    <td>${new Date(affiliate.created_at).toLocaleDateString()}</td>
+                </tr>
+            `).join('');
+            
+            console.log('Loaded mock affiliates:', mockAffiliates.length);
+            return;
+        }
+        
         const response = await fetch(`${API_BASE_URL}/affiliates/all`, {
             headers: {
                 'Authorization': `Bearer ${authToken}`
@@ -196,6 +292,79 @@ async function loadAffiliates() {
 
 async function loadClients() {
     try {
+        // BYPASS: Use mock data if no authToken or mock token
+        if (!authToken || authToken.startsWith('mock-')) {
+            const mockClients = [
+                {
+                    id: 1,
+                    name: 'Emma Davis',
+                    email: 'emma@company.com',
+                    plan_type: 'Premium Plan',
+                    plan_price: 5000,
+                    referred_by: 'JOHNSMITH@WG',
+                    affiliate_name: 'John Smith',
+                    commission_amount: 500,
+                    commission_status: 'paid',
+                    signup_date: '2024-10-10'
+                },
+                {
+                    id: 2,
+                    name: 'Robert Chen',
+                    email: 'robert@startup.com',
+                    plan_type: 'Standard Plan',
+                    plan_price: 2000,
+                    referred_by: 'SARAHJ@WG',
+                    affiliate_name: 'Sarah Johnson',
+                    commission_amount: 200,
+                    commission_status: 'pending',
+                    signup_date: '2024-10-18'
+                },
+                {
+                    id: 3,
+                    name: 'Lisa Wong',
+                    email: 'lisa@business.com',
+                    plan_type: 'Basic Plan',
+                    plan_price: 1000,
+                    referred_by: 'MIKEW@WG',
+                    affiliate_name: 'Mike Williams',
+                    commission_amount: 100,
+                    commission_status: 'confirmed',
+                    signup_date: '2024-10-22'
+                },
+                {
+                    id: 4,
+                    name: 'David Brown',
+                    email: 'david@tech.com',
+                    plan_type: 'Enterprise Plan',
+                    plan_price: 10000,
+                    referred_by: 'DEMO2024',
+                    affiliate_name: 'Demo Affiliate',
+                    commission_amount: 1000,
+                    commission_status: 'paid',
+                    signup_date: '2024-10-25'
+                }
+            ];
+            
+            const tbody = document.getElementById('clientsTableBody');
+            tbody.innerHTML = mockClients.map(client => `
+                <tr>
+                    <td>${client.id}</td>
+                    <td>${client.name}</td>
+                    <td>${client.email}</td>
+                    <td>${client.plan_type}</td>
+                    <td>R${client.plan_price.toFixed(2)}</td>
+                    <td><span class="coupon-badge">${client.referred_by}</span></td>
+                    <td>${client.affiliate_name}</td>
+                    <td>R${client.commission_amount.toFixed(2)}</td>
+                    <td><span class="status-badge ${client.commission_status}">${client.commission_status}</span></td>
+                    <td>${new Date(client.signup_date).toLocaleDateString()}</td>
+                </tr>
+            `).join('');
+            
+            console.log('Loaded mock clients:', mockClients.length);
+            return;
+        }
+        
         const response = await fetch(`${API_BASE_URL}/affiliates/admin/clients`, {
             headers: {
                 'Authorization': `Bearer ${authToken}`

@@ -1,6 +1,6 @@
 // Admin Dashboard JavaScript
 // API Configuration - Points to Render backend
-const API_BASE_URL = 'https://webgemini-portfolio.onrender.com/api';
+const API_BASE_URL = 'https://webgemini-affiliate-backend.onrender.com/api';
 
 console.log('Admin Dashboard using API:', API_BASE_URL);
 let authToken = null;

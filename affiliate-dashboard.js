@@ -1,7 +1,7 @@
 
 // Affiliate Dashboard JavaScript
-// API Configuration - Production backend on Render
-const API_BASE_URL = 'https://webgemini-portfolio.onrender.com/api';
+// API Configuration - Points to Render backend
+const API_BASE_URL = 'https://webgemini-affiliate-backend.onrender.com/api';
 
 console.log('Affiliate Dashboard using API:', API_BASE_URL);
 let authToken = null;

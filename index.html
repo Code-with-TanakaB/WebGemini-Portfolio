@@ -1706,7 +1706,9 @@
         }
         
         form.addEventListener('submit', async function(e) {
-            e.preventDefault(); // Prevent default form submission
+            e.preventDefault(); // Prevent default only for validation
+            
+            console.log('Form submission started...');
             
             const submitBtn = form.querySelector('button[type="submit"]');
             const couponInput = document.getElementById('coupon-input');
@@ -1727,10 +1729,12 @@
                 submitBtn.innerHTML = '<i class="fas fa-spinner fa-spin mr-2"></i>Validating coupon...';
                 submitBtn.disabled = true;
                 
+                console.log('Validating coupon:', couponInput.value);
                 const validationResult = await validateCoupon(couponInput.value);
+                console.log('Validation result:', validationResult);
                 
                 if (!validationResult.valid) {
-                    couponError.textContent = 'Invalid coupon';
+                    couponError.textContent = validationResult.message || 'Invalid coupon';
                     couponError.classList.remove('hidden');
                     couponInput.classList.add('border-red-500');
                     couponInput.focus();
@@ -1746,7 +1750,7 @@
             submitBtn.innerHTML = '<i class="fas fa-spinner fa-spin mr-2"></i>Sending...';
             submitBtn.disabled = true;
             
-            // Collect form data
+            // Collect form data for tracking
             const formData = {
                 customerName: form.querySelector('[name="name"]').value,
                 customerEmail: form.querySelector('[name="email"]').value,
@@ -1757,19 +1761,36 @@
                 couponCode: couponInput.value.trim()
             };
             
-            // Track referral if coupon was used
+            console.log('Form data collected:', formData);
+            
+            // Track referral if coupon was used (don't let this block form submission)
             if (couponValid && formData.couponCode) {
-                const trackingResult = await trackReferral(formData);
-                
-                if (trackingResult.success) {
-                    console.log('✅ Referral tracked:', trackingResult);
-                    if (trackingResult.commission) {
-                        console.log(`💰 Commission: R${trackingResult.commission.amount} (${trackingResult.commission.plan})`);
+                console.log('Tracking referral...');
+                trackReferral(formData).then(trackingResult => {
+                    if (trackingResult.success) {
+                        console.log('✅ Referral tracked:', trackingResult);
+                        if (trackingResult.commission) {
+                            console.log(`💰 Commission: R${trackingResult.commission.amount} (${trackingResult.commission.plan})`);
+                        }
+                    } else {
+                        console.log('⚠️ Referral tracking skipped or failed (non-critical)');
                     }
-                }
+                }).catch(err => {
+                    console.warn('Referral tracking error (non-critical):', err);
+                });
             }
             
-            // Submit to Formspree (original functionality)
+            // Save submission timestamp BEFORE submitting (prevents duplicate submissions on page reload)
+            localStorage.setItem('lastQuoteSubmission', Date.now().toString());
+            
+            // FIXED: Submit form normally (not via AJAX) to avoid Formspree AJAX key requirement
+            // This will redirect to Formspree's thank you page
+            console.log('Submitting form via standard POST (will redirect to Formspree)...');
+            form.submit();
+            
+            // Note: Code below won't execute due to form navigation, but kept for reference
+            
+            /* ORIGINAL AJAX SUBMISSION CODE (causes "custom key or reCAPTCHA" error)
             try {
                 const formspreeResponse = await fetch(form.action, {
                     method: 'POST',
@@ -1779,74 +1800,147 @@
                     }
                 });
                 
+                const responseData = await formspreeResponse.json().catch(() => ({}));
+                
                 if (formspreeResponse.ok) {
-                    // Save submission timestamp
                     localStorage.setItem('lastQuoteSubmission', Date.now().toString());
-                    
-                    // Reset form
                     form.reset();
                     
-                    // Reset coupon field styling
                     if (couponInput) {
                         couponInput.classList.remove('border-red-500', 'border-green-500');
                         couponError.classList.add('hidden');
                     }
                     
-                    // Show success message
                     let successMessage = 'Thank you! Your quote request has been submitted successfully. We\'ll get back to you within 24 hours.';
                     if (affiliateData) {
                         successMessage += `\n\nYour discount code from ${affiliateData.name} has been applied!`;
                     }
                     alert(successMessage);
                     
-                    // Display cooldown message
                     displayCooldownMessage(24);
+                    
+                    submitBtn.innerHTML = 'Send Quote Request <i class="fas fa-paper-plane ml-2"></i>';
+                    submitBtn.disabled = false;
                 } else {
-                    throw new Error('Form submission failed');
+                    console.error('Formspree error:', responseData);
+                    let errorMessage = 'Form submission failed. ';
+                    
+                    if (responseData.errors && Array.isArray(responseData.errors)) {
+                        errorMessage += responseData.errors.map(err => err.message || err).join(', ');
+                    } else if (responseData.error) {
+                        errorMessage += responseData.error;
+                    } else if (formspreeResponse.status === 422) {
+                        errorMessage += 'Please check that all required fields are filled correctly.';
+                    } else if (formspreeResponse.status === 429) {
+                        errorMessage += 'Too many requests. Please try again later.';
+                    } else {
+                        errorMessage += `Server returned status ${formspreeResponse.status}. Please try again.`;
+                    }
+                    
+                    alert(errorMessage);
+                    submitBtn.innerHTML = 'Send Quote Request <i class="fas fa-paper-plane ml-2"></i>';
+                    submitBtn.disabled = false;
                 }
             } catch (error) {
                 console.error('Submission error:', error);
-                alert('There was an error submitting your request. Please try again or contact us directly.');
+                let errorMsg = 'There was an error submitting your request. ';
+                
+                if (error.message.includes('fetch') || error.message.includes('network')) {
+                    errorMsg += 'Please check your internet connection and try again.';
+                } else {
+                    errorMsg += 'Please try again or contact us directly at support@webgemini.co.za';
+                }
+                
+                alert(errorMsg);
                 submitBtn.innerHTML = 'Send Quote Request <i class="fas fa-paper-plane ml-2"></i>';
                 submitBtn.disabled = false;
             }
+            */
         });
         
+        // API Base URL - Auto-detect environment
+        const API_BASE_URL = (() => {
+            // If on localhost/Codespaces, use local backend
+            if (window.location.hostname === 'localhost' || 
+                window.location.hostname.includes('github.dev')) {
+                return 'http://localhost:3001/api';
+            }
+            
+            // Production: Render deployment URL
+            return 'https://webgemini-portfolio.onrender.com/api';
+        })();
+        
+        // Helper function to estimate plan price from budget
+        function getPlanPrice(budget) {
+            const priceMap = {
+                'under-2k': 1500,
+                '2k-5k': 3500,
+                '5k-10k': 7500,
+                '10k-plus': 15000
+            };
+            return priceMap[budget] || 5000; // Default to 5000 if not specified
+        }
+
         // Coupon validation function - now checks with API
         async function validateCoupon(coupon) {
             // Check max length (10 characters)
             if (coupon.length > 10) {
                 return { valid: false, message: 'Coupon code too long' };
             }
-            // Check if it ends with '@wg'
-            if (!coupon.endsWith('@wg')) {
-                return { valid: false, message: 'Invalid coupon format' };
+            // Check if it ends with '@wg' (case insensitive)
+            const couponUpper = coupon.toUpperCase();
+            if (!couponUpper.endsWith('@WG')) {
+                return { valid: false, message: 'Invalid coupon format (must end with @wg)' };
             }
             
             // Validate with API
             try {
-                const response = await fetch('http://localhost:3000/api/referrals/validate-coupon', {
+                const response = await fetch(`${API_BASE_URL}/affiliates/verify-coupon`, {
                     method: 'POST',
                     headers: { 'Content-Type': 'application/json' },
-                    body: JSON.stringify({ couponCode: coupon })
+                    body: JSON.stringify({ coupon_code: couponUpper })
                 });
+                
+                if (!response.ok) {
+                    console.warn('Coupon validation API error:', response.status);
+                    // Fallback to basic validation if API is down
+                    return { valid: true, message: 'Coupon accepted (offline mode)', affiliate: { name: 'Affiliate' } };
+                }
+                
                 const data = await response.json();
-                return data;
+                return { 
+                    valid: data.success, 
+                    message: data.message,
+                    affiliate: data.affiliate 
+                };
             } catch (error) {
                 console.error('API validation error:', error);
-                // Fallback to basic validation if API is down
-                return { valid: true, message: 'Coupon accepted (offline mode)' };
+                // Fallback to basic validation if API is down - allow submission to continue
+                return { valid: true, message: 'Coupon accepted (offline mode)', affiliate: { name: 'Affiliate' } };
             }
         }
         
         // Track referral with API
         async function trackReferral(formData) {
             try {
-                const response = await fetch('http://localhost:3000/api/referrals/track-referral', {
+                const response = await fetch(`${API_BASE_URL}/affiliates/track-signup`, {
                     method: 'POST',
                     headers: { 'Content-Type': 'application/json' },
-                    body: JSON.stringify(formData)
+                    body: JSON.stringify({
+                        name: formData.customerName,
+                        email: formData.customerEmail,
+                        phone: formData.customerPhone,
+                        plan_type: formData.serviceType,
+                        plan_price: getPlanPrice(formData.budget),
+                        coupon_code: formData.couponCode.toUpperCase()
+                    })
                 });
+                
+                if (!response.ok) {
+                    console.warn('Referral tracking API error:', response.status);
+                    return { success: false, message: 'Tracking unavailable' };
+                }
+                
                 const data = await response.json();
                 return data;
             } catch (error) {

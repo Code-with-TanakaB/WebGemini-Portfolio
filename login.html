@@ -162,10 +162,10 @@
             const demoMode = document.getElementById('demoMode') && document.getElementById('demoMode').checked;
             const errorMessage = document.getElementById('errorMessage');
             
-            // BYPASS: Mock authentication with demo credentials
-            // Admin: username = "admin", password = "admin"
-            // Affiliate: username = "affiliate", password = "affiliate"
+            // Hide previous error messages
+            errorMessage.style.display = 'none';
             
+            // BYPASS: Mock authentication with demo credentials (optional for offline testing)
             if (demoMode && username === 'admin' && password === 'admin') {
                 // Mock admin login
                 localStorage.setItem('authToken', 'mock-admin-token');
@@ -186,17 +186,14 @@
                 }));
                 window.location.href = 'affiliate-dashboard.html';
                 return;
-            } else {
-                // If demo mode is enabled, provide helpful message. Otherwise, attempt normal server login (original code below)
-                if (demoMode) {
-                    errorMessage.innerHTML = 'Invalid demo credentials. Use:<br><strong>Admin:</strong> admin / admin<br><strong>Affiliate:</strong> affiliate / affiliate';
-                    errorMessage.style.display = 'block';
-                    return;
-                }
-                // Fall through to original (server) login flow below if demoMode is not enabled
+            } else if (demoMode) {
+                // If demo mode is enabled but wrong credentials
+                errorMessage.innerHTML = 'Invalid demo credentials. Use:<br><strong>Admin:</strong> admin / admin<br><strong>Affiliate:</strong> affiliate / affiliate';
+                errorMessage.style.display = 'block';
+                return;
             }
             
-            /* ORIGINAL CODE (commented out for bypass mode)
+            // Real server login (for production affiliates)
             try {
                 const response = await fetch(`${API_BASE_URL}/auth/login`, {
                     method: 'POST',
@@ -207,6 +204,13 @@
                 });
 
                 const data = await response.json();
+
+                if (response.status === 429) {
+                    // Rate limit exceeded
+                    errorMessage.innerHTML = '⚠️ Too many login attempts. Please wait 15 minutes and try again.<br><small>If you need immediate access, use Demo Mode above.</small>';
+                    errorMessage.style.display = 'block';
+                    return;
+                }
 
                 if (data.success) {
                     // Store token
@@ -219,15 +223,14 @@
                         window.location.href = 'affiliate-dashboard.html';
                     }
                 } else {
-                    errorMessage.textContent = data.message || 'Login failed';
+                    errorMessage.textContent = data.message || 'Login failed. Please check your credentials.';
                     errorMessage.style.display = 'block';
                 }
             } catch (error) {
                 console.error('Login error:', error);
-                errorMessage.textContent = 'Connection error. Please make sure the server is running.';
+                errorMessage.innerHTML = '⚠️ Connection error. Please check:<br>• Your internet connection<br>• Backend server status<br><small>Or use Demo Mode for offline testing.</small>';
                 errorMessage.style.display = 'block';
             }
-            */
         });
 
         // Registration Form Handler

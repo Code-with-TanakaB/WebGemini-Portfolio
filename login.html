@@ -131,18 +131,8 @@
     </div>
 
     <script>
-        const API_BASE_URL = (() => {
-            // If on localhost/Codespaces, use local backend
-            if (window.location.hostname === 'localhost' || 
-                window.location.hostname.includes('github.dev')) {
-                return window.location.origin.includes('github.dev')
-                    ? `${window.location.origin}/api`
-                    : 'http://localhost:3001/api';
-            }
-            
-            // Production: Render deployment URL
-            return 'https://webgemini-portfolio.onrender.com/api';
-        })();
+        // API Configuration - Points to Render backend
+        const API_BASE_URL = 'https://webgemini-portfolio.onrender.com/api';
 
         // Toggle between login and register forms
         document.getElementById('showRegisterLink').addEventListener('click', (e) => {

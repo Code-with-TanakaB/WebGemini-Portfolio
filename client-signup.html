@@ -214,22 +214,8 @@
     </div>
 
     <script>
-        // API Configuration - Auto-detects environment
-        const API_BASE_URL = (() => {
-            const hostname = window.location.hostname;
-            
-            // Development environments
-            if (hostname === 'localhost' || hostname.includes('127.0.0.1')) {
-                return 'http://localhost:3001/api';
-            }
-            
-            if (hostname.includes('github.dev')) {
-                return `${window.location.origin}/api`;
-            }
-            
-            // Production: Render deployment URL
-            return 'https://webgemini-portfolio.onrender.com/api';
-        })();
+        // API Configuration - Points to Render backend
+        const API_BASE_URL = 'https://webgemini-portfolio.onrender.com/api';
         
         console.log('Client Signup using API:', API_BASE_URL);
         let isCouponValid = false;

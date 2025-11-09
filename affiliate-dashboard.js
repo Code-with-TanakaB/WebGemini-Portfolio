@@ -1,16 +1,7 @@
 
 // Affiliate Dashboard JavaScript
-// API Configuration - Auto-detects environment
-const API_BASE_URL = (() => {
-    // If on localhost/Codespaces, use local backend
-    if (window.location.hostname === 'localhost' || 
-        window.location.hostname.includes('github.dev')) {
-        return 'http://localhost:3001/api';
-    }
-    
-    // Production: Render deployment URL
-    return 'https://webgemini-portfolio.onrender.com/api';
-})();
+// API Configuration - Production backend on Render
+const API_BASE_URL = 'https://webgemini-portfolio.onrender.com/api';
 
 console.log('Affiliate Dashboard using API:', API_BASE_URL);
 let authToken = null;

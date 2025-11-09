@@ -1,4 +1,13 @@
-# 🚀 Render Deployment Guide - WebGemini Affiliate System
+# RENDER DEPLOYMENT CHECKLIST - UPDATED FOR SPLIT DEPLOYMENT
+
+## ✅ What You've Done So Far
+- [x] Created PostgreSQL database on Render
+
+## 📋 What You Need to Do Now: Create Web Service
+
+---
+
+# Render Deployment Guide
 
 This guide will help you deploy your affiliate backend to Render for 24/7 uptime with zero server management and a generous free tier.
 

@@ -9,19 +9,21 @@ let authToken = null;
 document.addEventListener('DOMContentLoaded', () => {
     authToken = localStorage.getItem('authToken');
     
-    // BYPASS: Comment out authentication check for local testing
-    // if (!authToken) {
-    //     redirectToLogin();
-    //     return;
-    // }
+    // Clear any old mock data
+    localStorage.removeItem('mockUser');
+    
+    if (!authToken || authToken.startsWith('mock-')) {
+        redirectToLogin();
+        return;
+    }
 
-    // BYPASS: Use mock data instead of verifying auth
-    loadMockAdminData();
+    // Verify token and load admin info
+    verifyAuth();
     
     // Set up event listeners
     setupEventListeners();
     
-    // Load initial data (will use mock data)
+    // Load initial data
     loadDashboardData();
 });
 
@@ -92,21 +94,6 @@ function switchSection(section) {
         sec.classList.remove('active');
     });
     document.getElementById(`${section}-section`).classList.add('active');
-}
-
-// BYPASS: Mock admin data for local testing without backend
-function loadMockAdminData() {
-    console.log('Loading mock admin data for local testing...');
-    
-    const mockUser = localStorage.getItem('mockUser');
-    if (mockUser) {
-        const user = JSON.parse(mockUser);
-        document.getElementById('adminName').textContent = user.username;
-    } else {
-        document.getElementById('adminName').textContent = 'Admin Demo';
-    }
-    
-    console.log('Mock admin user loaded');
 }
 
 async function verifyAuth() {

@@ -192,7 +192,18 @@ const dbHelpers = {
 
         // If affiliate found, create commission and referral
         if (affiliateId) {
-          const commissionRate = 0.10; // 10%
+          // Calculate commission rate based on plan type
+          let commissionRate;
+          if (plan_type === 'Starter') {
+            commissionRate = 0.10; // 10% for Starter
+          } else if (plan_type === 'Professional') {
+            commissionRate = 0.15; // 15% for Professional
+          } else if (plan_type === 'Enterprise') {
+            commissionRate = 0.20; // 20% for Enterprise
+          } else {
+            commissionRate = 0.10; // Default to 10% for any other plans
+          }
+          
           const commissionAmount = plan_price * commissionRate;
 
           await client.query(

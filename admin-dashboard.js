@@ -123,7 +123,8 @@ async function loadDashboardData() {
     await Promise.all([
         loadOverviewStats(),
         loadAffiliates(),
-        loadClients()
+        loadClients(),
+        loadAnalytics()
     ]);
 }
 
@@ -216,14 +217,16 @@ async function loadClients() {
             const commissionsBody = document.getElementById('commissionsTableBody');
             
             if (data.clients.length === 0) {
-                tbody.innerHTML = '<tr><td colspan="9" class="no-data">No clients found</td></tr>';
+                tbody.innerHTML = '<tr><td colspan="11" class="no-data">No clients found</td></tr>';
                 commissionsBody.innerHTML = '<tr><td colspan="8" class="no-data">No commissions found</td></tr>';
                 return;
             }
 
             // Populate clients table
-            tbody.innerHTML = data.clients.map(client => `
-                <tr>
+            tbody.innerHTML = data.clients.map(client => {
+                const clientStatus = client.status || 'active';
+                return `
+                <tr data-client-id="${client.id}">
                     <td>${client.id}</td>
                     <td>${client.name}</td>
                     <td>${client.email}</td>
@@ -233,8 +236,22 @@ async function loadClients() {
                     <td>${client.coupon_code ? `<span class="coupon-badge">${client.coupon_code}</span>` : 'N/A'}</td>
                     <td>${client.commission_amount ? `R${client.commission_amount.toFixed(2)}` : 'N/A'}</td>
                     <td>${new Date(client.signup_date).toLocaleDateString()}</td>
+                    <td><span class="status-badge ${clientStatus}">${clientStatus}</span></td>
+                    <td class="action-buttons">
+                        ${clientStatus === 'active' ? 
+                            `<button class="btn-archive" onclick="archiveClient(${client.id})" title="Archive">
+                                <i class="fas fa-archive"></i>
+                            </button>` :
+                            `<button class="btn-activate" onclick="activateClient(${client.id})" title="Activate">
+                                <i class="fas fa-check"></i>
+                            </button>`
+                        }
+                        <button class="btn-delete" onclick="deleteClient(${client.id}, '${client.name}')" title="Delete">
+                            <i class="fas fa-trash"></i>
+                        </button>
+                    </td>
                 </tr>
-            `).join('');
+            `}).join('');
 
             // Populate commissions table
             const clientsWithCommissions = data.clients.filter(c => c.commission_amount);
@@ -347,6 +364,242 @@ function redirectToLogin() {
     window.location.href = 'login.html';
 }
 
+// Load Analytics Data
+let signupChart = null;
+
+async function loadAnalytics() {
+    try {
+        const [clientsData, affiliatesData] = await Promise.all([
+            fetch(`${API_BASE_URL}/affiliates/admin/clients`, {
+                headers: { 'Authorization': `Bearer ${authToken}` }
+            }).then(res => res.json()),
+            fetch(`${API_BASE_URL}/affiliates/all`, {
+                headers: { 'Authorization': `Bearer ${authToken}` }
+            }).then(res => res.json())
+        ]);
+
+        if (clientsData.success && affiliatesData.success) {
+            const clients = clientsData.clients;
+            const affiliates = affiliatesData.affiliates;
+
+            // Load all analytics sections
+            loadTopPerformers(clients, affiliates);
+            loadSignupTrends(clients);
+            loadPlanDistribution(clients);
+            loadReferralActivity(clients);
+            loadRevenueTrends(clients);
+        }
+    } catch (error) {
+        console.error('Error loading analytics:', error);
+    }
+}
+
+function loadTopPerformers(clients, affiliates) {
+    const affiliateStats = {};
+
+    // Calculate stats for each affiliate
+    affiliates.forEach(aff => {
+        affiliateStats[aff.id] = {
+            name: aff.full_name,
+            username: aff.username,
+            referrals: 0,
+            earnings: 0
+        };
+    });
+
+    clients.forEach(client => {
+        if (client.affiliate_id && affiliateStats[client.affiliate_id]) {
+            affiliateStats[client.affiliate_id].referrals++;
+            affiliateStats[client.affiliate_id].earnings += client.commission_amount || 0;
+        }
+    });
+
+    // Sort by earnings
+    const topPerformers = Object.values(affiliateStats)
+        .filter(aff => aff.referrals > 0)
+        .sort((a, b) => b.earnings - a.earnings)
+        .slice(0, 5);
+
+    const tbody = document.getElementById('topPerformersBody');
+    
+    if (topPerformers.length === 0) {
+        tbody.innerHTML = '<tr><td colspan="5" class="no-data">No affiliate activity yet</td></tr>';
+        return;
+    }
+
+    tbody.innerHTML = topPerformers.map((aff, index) => `
+        <tr>
+            <td><span style="font-weight: 700; color: ${index === 0 ? '#f59e0b' : '#64748b'}">#${index + 1}</span></td>
+            <td>${aff.name}</td>
+            <td>${aff.referrals}</td>
+            <td>R${aff.earnings.toFixed(2)}</td>
+            <td>${aff.referrals > 0 ? '100%' : '0%'}</td>
+        </tr>
+    `).join('');
+}
+
+function loadSignupTrends(clients) {
+    // Get last 30 days of data
+    const today = new Date();
+    const last30Days = [];
+    const signupCounts = {};
+
+    // Initialize all 30 days
+    for (let i = 29; i >= 0; i--) {
+        const date = new Date(today);
+        date.setDate(date.getDate() - i);
+        const dateStr = date.toISOString().split('T')[0];
+        last30Days.push(dateStr);
+        signupCounts[dateStr] = 0;
+    }
+
+    // Count signups per day
+    clients.forEach(client => {
+        const signupDate = new Date(client.signup_date).toISOString().split('T')[0];
+        if (signupCounts.hasOwnProperty(signupDate)) {
+            signupCounts[signupDate]++;
+        }
+    });
+
+    const counts = last30Days.map(date => signupCounts[date]);
+    const labels = last30Days.map(date => {
+        const d = new Date(date);
+        return `${d.getMonth() + 1}/${d.getDate()}`;
+    });
+
+    // Destroy existing chart if it exists
+    if (signupChart) {
+        signupChart.destroy();
+    }
+
+    const ctx = document.getElementById('signupCanvas').getContext('2d');
+    signupChart = new Chart(ctx, {
+        type: 'line',
+        data: {
+            labels: labels,
+            datasets: [{
+                label: 'Client Signups',
+                data: counts,
+                borderColor: '#667eea',
+                backgroundColor: 'rgba(102, 126, 234, 0.1)',
+                tension: 0.4,
+                fill: true
+            }]
+        },
+        options: {
+            responsive: true,
+            maintainAspectRatio: false,
+            plugins: {
+                legend: {
+                    display: false
+                }
+            },
+            scales: {
+                y: {
+                    beginAtZero: true,
+                    ticks: {
+                        stepSize: 1
+                    }
+                }
+            }
+        }
+    });
+}
+
+function loadPlanDistribution(clients) {
+    const planCounts = {
+        'Starter': 0,
+        'Professional': 0,
+        'Enterprise': 0
+    };
+
+    clients.forEach(client => {
+        if (planCounts.hasOwnProperty(client.plan_type)) {
+            planCounts[client.plan_type]++;
+        }
+    });
+
+    const total = clients.length || 1;
+    
+    // Update bars
+    document.getElementById('starterCount').textContent = planCounts.Starter;
+    document.getElementById('starterBar').style.width = `${(planCounts.Starter / total) * 100}%`;
+    
+    document.getElementById('professionalCount').textContent = planCounts.Professional;
+    document.getElementById('professionalBar').style.width = `${(planCounts.Professional / total) * 100}%`;
+    
+    document.getElementById('enterpriseCount').textContent = planCounts.Enterprise;
+    document.getElementById('enterpriseBar').style.width = `${(planCounts.Enterprise / total) * 100}%`;
+}
+
+function loadReferralActivity(clients) {
+    const today = new Date();
+    const todayStr = today.toISOString().split('T')[0];
+    
+    const weekAgo = new Date(today);
+    weekAgo.setDate(weekAgo.getDate() - 7);
+    
+    const monthAgo = new Date(today);
+    monthAgo.setMonth(monthAgo.getMonth() - 1);
+
+    let dailyCount = 0;
+    let weeklyCount = 0;
+    let monthlyCount = 0;
+
+    clients.forEach(client => {
+        const signupDate = new Date(client.signup_date);
+        
+        if (signupDate.toISOString().split('T')[0] === todayStr) {
+            dailyCount++;
+        }
+        if (signupDate >= weekAgo) {
+            weeklyCount++;
+        }
+        if (signupDate >= monthAgo) {
+            monthlyCount++;
+        }
+    });
+
+    document.getElementById('dailyReferrals').textContent = dailyCount;
+    document.getElementById('weeklyReferrals').textContent = weeklyCount;
+    document.getElementById('monthlyReferrals').textContent = monthlyCount;
+}
+
+function loadRevenueTrends(clients) {
+    if (clients.length === 0) {
+        document.getElementById('avgDealValue').textContent = 'R0.00';
+        document.getElementById('avgCommissionRate').textContent = '0%';
+        document.getElementById('growthRate').textContent = '0%';
+        return;
+    }
+
+    // Average deal value
+    const totalRevenue = clients.reduce((sum, c) => sum + c.plan_price, 0);
+    const avgDeal = totalRevenue / clients.length;
+    document.getElementById('avgDealValue').textContent = `R${avgDeal.toFixed(2)}`;
+
+    // Average commission rate
+    const totalCommissions = clients.reduce((sum, c) => sum + (c.commission_amount || 0), 0);
+    const avgCommission = (totalCommissions / totalRevenue) * 100;
+    document.getElementById('avgCommissionRate').textContent = `${avgCommission.toFixed(1)}%`;
+
+    // Growth rate (compare last 15 days vs previous 15 days)
+    const today = new Date();
+    const fifteenDaysAgo = new Date(today);
+    fifteenDaysAgo.setDate(fifteenDaysAgo.getDate() - 15);
+    const thirtyDaysAgo = new Date(today);
+    thirtyDaysAgo.setDate(thirtyDaysAgo.getDate() - 30);
+
+    const recentClients = clients.filter(c => new Date(c.signup_date) >= fifteenDaysAgo).length;
+    const previousClients = clients.filter(c => {
+        const date = new Date(c.signup_date);
+        return date >= thirtyDaysAgo && date < fifteenDaysAgo;
+    }).length;
+
+    const growth = previousClients > 0 ? ((recentClients - previousClients) / previousClients) * 100 : 0;
+    document.getElementById('growthRate').textContent = `${growth >= 0 ? '+' : ''}${growth.toFixed(1)}%`;
+}
+
 // Archive/Activate/Delete Affiliate Functions
 async function archiveAffiliate(affiliateId) {
     if (!confirm('Are you sure you want to archive this affiliate? They will no longer be able to access their dashboard.')) {
@@ -437,3 +690,95 @@ async function deleteAffiliate(affiliateId, username) {
         alert('Failed to delete affiliate. Please try again.');
     }
 }
+
+// Archive/Activate/Delete Client Functions
+async function archiveClient(clientId) {
+    if (!confirm('Are you sure you want to archive this client? Their data will be preserved but marked as archived.')) {
+        return;
+    }
+
+    try {
+        const response = await fetch(`${API_BASE_URL}/affiliates/admin/clients/${clientId}/status`, {
+            method: 'PATCH',
+            headers: {
+                'Authorization': `Bearer ${authToken}`,
+                'Content-Type': 'application/json'
+            },
+            body: JSON.stringify({ status: 'archived' })
+        });
+
+        const data = await response.json();
+
+        if (data.success) {
+            alert('Client archived successfully');
+            loadClients(); // Reload the table
+        } else {
+            alert(`Error: ${data.message}`);
+        }
+    } catch (error) {
+        console.error('Error archiving client:', error);
+        alert('Failed to archive client. Please try again.');
+    }
+}
+
+async function activateClient(clientId) {
+    if (!confirm('Are you sure you want to reactivate this client?')) {
+        return;
+    }
+
+    try {
+        const response = await fetch(`${API_BASE_URL}/affiliates/admin/clients/${clientId}/status`, {
+            method: 'PATCH',
+            headers: {
+                'Authorization': `Bearer ${authToken}`,
+                'Content-Type': 'application/json'
+            },
+            body: JSON.stringify({ status: 'active' })
+        });
+
+        const data = await response.json();
+
+        if (data.success) {
+            alert('Client activated successfully');
+            loadClients(); // Reload the table
+        } else {
+            alert(`Error: ${data.message}`);
+        }
+    } catch (error) {
+        console.error('Error activating client:', error);
+        alert('Failed to activate client. Please try again.');
+    }
+}
+
+async function deleteClient(clientId, clientName) {
+    if (!confirm(`⚠️ WARNING: This will permanently delete client "${clientName}" and all their associated data (commissions, referrals, etc.).\n\nThis action CANNOT be undone!\n\nAre you absolutely sure?`)) {
+        return;
+    }
+
+    // Double confirmation for delete
+    if (!confirm('Please confirm one more time: Delete this client permanently?')) {
+        return;
+    }
+
+    try {
+        const response = await fetch(`${API_BASE_URL}/affiliates/admin/clients/${clientId}`, {
+            method: 'DELETE',
+            headers: {
+                'Authorization': `Bearer ${authToken}`
+            }
+        });
+
+        const data = await response.json();
+
+        if (data.success) {
+            alert('Client deleted successfully');
+            loadDashboardData(); // Reload all data including stats
+        } else {
+            alert(`Error: ${data.message}`);
+        }
+    } catch (error) {
+        console.error('Error deleting client:', error);
+        alert('Failed to delete client. Please try again.');
+    }
+}
+

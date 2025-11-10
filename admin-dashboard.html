@@ -6,6 +6,7 @@
     <title>Admin Dashboard - WebGemini Affiliate System</title>
     <link rel="stylesheet" href="dashboard-style.css">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.min.js"></script>
 </head>
 <body>
     <div class="dashboard-container">
@@ -31,6 +32,10 @@
                 <a href="#commissions" class="nav-item" data-section="commissions">
                     <i class="fas fa-money-bill-wave"></i>
                     <span>Commissions</span>
+                </a>
+                <a href="#analytics" class="nav-item" data-section="analytics">
+                    <i class="fas fa-chart-bar"></i>
+                    <span>Analytics</span>
                 </a>
             </nav>
             <div class="sidebar-footer">
@@ -181,11 +186,13 @@
                                     <th>Coupon Code</th>
                                     <th>Commission</th>
                                     <th>Signup Date</th>
+                                    <th>Status</th>
+                                    <th>Actions</th>
                                 </tr>
                             </thead>
                             <tbody id="clientsTableBody">
                                 <tr>
-                                    <td colspan="9" class="loading">Loading clients...</td>
+                                    <td colspan="11" class="loading">Loading clients...</td>
                                 </tr>
                             </tbody>
                         </table>
@@ -224,6 +231,133 @@
                                 </tr>
                             </tbody>
                         </table>
+                    </div>
+                </div>
+            </section>
+
+            <!-- Analytics Section -->
+            <section id="analytics-section" class="content-section">
+                <h2 style="margin-bottom: 20px;">Analytics & Trends</h2>
+                
+                <!-- Top Performers -->
+                <div class="card" style="margin-bottom: 20px;">
+                    <h3>Top Performing Affiliates</h3>
+                    <div class="table-container">
+                        <table class="data-table">
+                            <thead>
+                                <tr>
+                                    <th>Rank</th>
+                                    <th>Affiliate</th>
+                                    <th>Total Referrals</th>
+                                    <th>Total Earnings</th>
+                                    <th>Conversion Rate</th>
+                                </tr>
+                            </thead>
+                            <tbody id="topPerformersBody">
+                                <tr>
+                                    <td colspan="5" class="loading">Loading top performers...</td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+
+                <!-- Signup Trends -->
+                <div class="card" style="margin-bottom: 20px;">
+                    <h3>Client Signup Trends (Last 30 Days)</h3>
+                    <div id="signupChart" style="padding: 20px; min-height: 300px;">
+                        <canvas id="signupCanvas"></canvas>
+                    </div>
+                </div>
+
+                <!-- Plan Distribution -->
+                <div class="analytics-grid">
+                    <div class="card">
+                        <h3>Plan Distribution</h3>
+                        <div id="planDistribution" style="padding: 20px;">
+                            <div class="plan-stat-item">
+                                <span class="plan-label">Starter Plan</span>
+                                <div class="plan-bar">
+                                    <div class="plan-bar-fill starter" id="starterBar" style="width: 0%"></div>
+                                </div>
+                                <span class="plan-count" id="starterCount">0</span>
+                            </div>
+                            <div class="plan-stat-item">
+                                <span class="plan-label">Professional Plan</span>
+                                <div class="plan-bar">
+                                    <div class="plan-bar-fill professional" id="professionalBar" style="width: 0%"></div>
+                                </div>
+                                <span class="plan-count" id="professionalCount">0</span>
+                            </div>
+                            <div class="plan-stat-item">
+                                <span class="plan-label">Enterprise Plan</span>
+                                <div class="plan-bar">
+                                    <div class="plan-bar-fill enterprise" id="enterpriseBar" style="width: 0%"></div>
+                                </div>
+                                <span class="plan-count" id="enterpriseCount">0</span>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="card">
+                        <h3>Referral Activity</h3>
+                        <div class="referral-stats">
+                            <div class="referral-stat-item">
+                                <i class="fas fa-calendar-day"></i>
+                                <div>
+                                    <p class="stat-value" id="dailyReferrals">0</p>
+                                    <p class="stat-label">Today</p>
+                                </div>
+                            </div>
+                            <div class="referral-stat-item">
+                                <i class="fas fa-calendar-week"></i>
+                                <div>
+                                    <p class="stat-value" id="weeklyReferrals">0</p>
+                                    <p class="stat-label">This Week</p>
+                                </div>
+                            </div>
+                            <div class="referral-stat-item">
+                                <i class="fas fa-calendar-alt"></i>
+                                <div>
+                                    <p class="stat-value" id="monthlyReferrals">0</p>
+                                    <p class="stat-label">This Month</p>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Revenue Trends -->
+                <div class="card">
+                    <h3>Revenue & Commission Trends</h3>
+                    <div class="revenue-grid">
+                        <div class="revenue-item">
+                            <div class="revenue-icon blue">
+                                <i class="fas fa-dollar-sign"></i>
+                            </div>
+                            <div class="revenue-info">
+                                <p class="revenue-label">Average Deal Value</p>
+                                <h4 id="avgDealValue">R0.00</h4>
+                            </div>
+                        </div>
+                        <div class="revenue-item">
+                            <div class="revenue-icon green">
+                                <i class="fas fa-percentage"></i>
+                            </div>
+                            <div class="revenue-info">
+                                <p class="revenue-label">Average Commission Rate</p>
+                                <h4 id="avgCommissionRate">0%</h4>
+                            </div>
+                        </div>
+                        <div class="revenue-item">
+                            <div class="revenue-icon purple">
+                                <i class="fas fa-chart-line"></i>
+                            </div>
+                            <div class="revenue-info">
+                                <p class="revenue-label">Growth Rate (Month)</p>
+                                <h4 id="growthRate">0%</h4>
+                            </div>
+                        </div>
                     </div>
                 </div>
             </section>

@@ -30,12 +30,13 @@ function calculateCommission(planType, planPrice) {
   if (lowerPlanType.includes('starter')) {
     commissionRate = 0.10;
   } 
-  // Professional and Enterprise plans get 25% commission
-  else if (
-    lowerPlanType.includes('professional') || 
-    lowerPlanType.includes('enterprise')
-  ) {
-    commissionRate = 0.25;
+  // Professional plan gets 15% commission
+  else if (lowerPlanType.includes('professional')) {
+    commissionRate = 0.15;
+  }
+  // Enterprise plan gets 20% commission
+  else if (lowerPlanType.includes('enterprise')) {
+    commissionRate = 0.20;
   }
   // Default to 10% for unknown plans
   else {
@@ -419,6 +420,181 @@ router.delete('/admin/affiliates/:id', verifyToken, verifyAdmin, (req, res) => {
       });
     });
   });
+});
+
+// Update client status (archive/activate) - Admin only
+router.patch('/admin/clients/:id/status', verifyAdmin, async (req, res) => {
+  const clientId = req.params.id;
+  const { status } = req.body;
+
+  // Validate status
+  const validStatuses = ['active', 'archived', 'inactive'];
+  if (!status || !validStatuses.includes(status)) {
+    return res.status(400).json({
+      success: false,
+      message: 'Invalid status. Must be: active, archived, or inactive'
+    });
+  }
+
+  // Use PostgreSQL if available, otherwise SQLite
+  if (process.env.DATABASE_URL) {
+    try {
+      const result = await pool.query(
+        'UPDATE clients SET status = $1, updated_at = NOW() WHERE id = $2 RETURNING *',
+        [status, clientId]
+      );
+
+      if (result.rows.length === 0) {
+        return res.status(404).json({
+          success: false,
+          message: 'Client not found'
+        });
+      }
+
+      res.json({
+        success: true,
+        message: `Client ${status === 'archived' ? 'archived' : 'activated'} successfully`,
+        client: result.rows[0]
+      });
+    } catch (error) {
+      console.error('Error updating client status:', error);
+      res.status(500).json({
+        success: false,
+        message: 'Error updating client status'
+      });
+    }
+  } else {
+    // SQLite fallback
+    db.run(
+      'UPDATE clients SET status = ? WHERE id = ?',
+      [status, clientId],
+      function(err) {
+        if (err) {
+          console.error('Error updating client status:', err);
+          return res.status(500).json({
+            success: false,
+            message: 'Error updating client status'
+          });
+        }
+
+        if (this.changes === 0) {
+          return res.status(404).json({
+            success: false,
+            message: 'Client not found'
+          });
+        }
+
+        res.json({
+          success: true,
+          message: `Client ${status === 'archived' ? 'archived' : 'activated'} successfully`
+        });
+      }
+    );
+  }
+});
+
+// Delete client permanently - Admin only
+router.delete('/admin/clients/:id', verifyAdmin, async (req, res) => {
+  const clientId = req.params.id;
+
+  // Use PostgreSQL if available, otherwise SQLite
+  if (process.env.DATABASE_URL) {
+    const client = await pool.connect();
+    try {
+      await client.query('BEGIN');
+
+      // Delete associated commissions first
+      await client.query('DELETE FROM commissions WHERE client_id = $1', [clientId]);
+
+      // Delete associated referrals
+      await client.query('DELETE FROM referrals WHERE client_id = $1', [clientId]);
+
+      // Delete the client
+      const result = await client.query('DELETE FROM clients WHERE id = $1 RETURNING *', [clientId]);
+
+      if (result.rows.length === 0) {
+        await client.query('ROLLBACK');
+        client.release();
+        return res.status(404).json({
+          success: false,
+          message: 'Client not found'
+        });
+      }
+
+      await client.query('COMMIT');
+      client.release();
+
+      res.json({
+        success: true,
+        message: 'Client and all associated data deleted successfully'
+      });
+    } catch (error) {
+      await client.query('ROLLBACK');
+      client.release();
+      console.error('Error deleting client:', error);
+      res.status(500).json({
+        success: false,
+        message: 'Error deleting client'
+      });
+    }
+  } else {
+    // SQLite fallback with transaction
+    db.run('BEGIN TRANSACTION', (err) => {
+      if (err) {
+        return res.status(500).json({
+          success: false,
+          message: 'Error starting transaction'
+        });
+      }
+
+      // Delete commissions
+      db.run('DELETE FROM commissions WHERE client_id = ?', [clientId], (err) => {
+        if (err) {
+          db.run('ROLLBACK');
+          return res.status(500).json({
+            success: false,
+            message: 'Error deleting client commissions'
+          });
+        }
+
+        // Delete referrals
+        db.run('DELETE FROM referrals WHERE client_id = ?', [clientId], (err) => {
+          if (err) {
+            db.run('ROLLBACK');
+            return res.status(500).json({
+              success: false,
+              message: 'Error deleting client referrals'
+            });
+          }
+
+          // Delete client
+          db.run('DELETE FROM clients WHERE id = ?', [clientId], function(err) {
+            if (err) {
+              db.run('ROLLBACK');
+              return res.status(500).json({
+                success: false,
+                message: 'Error deleting client'
+              });
+            }
+
+            if (this.changes === 0) {
+              db.run('ROLLBACK');
+              return res.status(404).json({
+                success: false,
+                message: 'Client not found'
+              });
+            }
+
+            db.run('COMMIT');
+            res.json({
+              success: true,
+              message: 'Client deleted successfully'
+            });
+          });
+        });
+      });
+    });
+  }
 });
 
 module.exports = router;

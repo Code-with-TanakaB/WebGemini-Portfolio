@@ -107,12 +107,28 @@ body {
     font-size: 15px;
     transition: all 0.3s;
     color: #1e293b;
+    background: white;
 }
 
 .login-form input:focus {
     outline: none;
     border-color: var(--primary-color);
     box-shadow: 0 0 0 3px rgba(99, 102, 241, 0.1);
+}
+
+/* Login form placeholder text */
+.login-form input::placeholder {
+    color: #94a3b8;
+    opacity: 0.8;
+}
+
+/* Login form autocomplete text color */
+.login-form input:-webkit-autofill,
+.login-form input:-webkit-autofill:hover,
+.login-form input:-webkit-autofill:focus {
+    -webkit-text-fill-color: #1e293b;
+    -webkit-box-shadow: 0 0 0 1000px white inset;
+    transition: background-color 5000s ease-in-out 0s;
 }
 
 .form-options {
@@ -867,6 +883,22 @@ body {
     border-color: var(--primary-color);
 }
 
+/* Ensure placeholder text is visible */
+.form-group input::placeholder,
+.form-group textarea::placeholder {
+    color: var(--text-secondary);
+    opacity: 0.7;
+}
+
+/* Ensure autocomplete text is visible */
+.form-group input:-webkit-autofill,
+.form-group input:-webkit-autofill:hover,
+.form-group input:-webkit-autofill:focus {
+    -webkit-text-fill-color: var(--text-primary);
+    -webkit-box-shadow: 0 0 0 1000px var(--dark-bg) inset;
+    transition: background-color 5000s ease-in-out 0s;
+}
+
 .form-actions {
     display: flex;
     gap: 10px;
@@ -1103,7 +1135,8 @@ body {
 
 .btn-archive,
 .btn-activate,
-.btn-delete {
+.btn-delete,
+.btn-paid {
     padding: 6px 12px;
     border: none;
     border-radius: 6px;
@@ -1113,6 +1146,17 @@ body {
     display: inline-flex;
     align-items: center;
     justify-content: center;
+}
+
+.btn-paid {
+    background: #10b981;
+    color: white;
+}
+
+.btn-paid:hover {
+    background: #059669;
+    transform: translateY(-2px);
+    box-shadow: 0 4px 8px rgba(16, 185, 129, 0.3);
 }
 
 .btn-archive {
@@ -1147,8 +1191,15 @@ body {
 
 .btn-archive i,
 .btn-activate i,
-.btn-delete i {
+.btn-delete i,
+.btn-paid i {
     font-size: 14px;
+}
+
+/* Status badge for 'paid' status */
+.status-badge.paid {
+    background: rgba(16, 185, 129, 0.2);
+    color: var(--success-color);
 }
 
 /* Analytics Section Styles */

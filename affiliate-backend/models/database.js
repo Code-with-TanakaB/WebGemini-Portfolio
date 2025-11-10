@@ -78,9 +78,9 @@ function initializeDatabase() {
       )
     `);
 
-    // Create default admin user (password: #01Admin123 - should be changed in production)
+    // Create default admin user (password: #01Admin@WG2024 - MUST be changed after first login)
     const bcrypt = require('bcryptjs');
-    const adminPassword = bcrypt.hashSync('#01Admin123', 10);
+    const adminPassword = bcrypt.hashSync('#01Admin@WG2024', 10);
     
     db.run(`
       INSERT OR IGNORE INTO affiliates (username, email, password, full_name, coupon_code, role)
@@ -90,6 +90,10 @@ function initializeDatabase() {
         console.error('Error creating admin user:', err.message);
       } else {
         console.log('Database initialized successfully');
+        console.log('⚠️  IMPORTANT: Default admin credentials:');
+        console.log('   Username: its.admin01');
+        console.log('   Password: #01Admin@WG2024');
+        console.log('   Please change these credentials after first login!');
       }
     });
   });

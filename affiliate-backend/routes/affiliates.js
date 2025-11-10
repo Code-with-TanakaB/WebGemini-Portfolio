@@ -423,7 +423,7 @@ router.delete('/admin/affiliates/:id', verifyToken, verifyAdmin, (req, res) => {
 });
 
 // Update client status (archive/activate) - Admin only
-router.patch('/admin/clients/:id/status', verifyAdmin, async (req, res) => {
+router.patch('/admin/clients/:id/status', verifyToken, verifyAdmin, async (req, res) => {
   const clientId = req.params.id;
   const { status } = req.body;
 
@@ -465,6 +465,7 @@ router.patch('/admin/clients/:id/status', verifyAdmin, async (req, res) => {
     }
   } else {
     // SQLite fallback
+    const { db } = require('../models/database');
     db.run(
       'UPDATE clients SET status = ? WHERE id = ?',
       [status, clientId],
@@ -490,6 +491,104 @@ router.patch('/admin/clients/:id/status', verifyAdmin, async (req, res) => {
         });
       }
     );
+  }
+});
+
+// Mark client as paid - Admin only (NEW ENDPOINT)
+router.patch('/admin/clients/:id/mark-paid', verifyToken, verifyAdmin, async (req, res) => {
+  const clientId = req.params.id;
+
+  // Use PostgreSQL if available, otherwise SQLite
+  if (process.env.DATABASE_URL) {
+    const client = await pool.connect();
+    try {
+      await client.query('BEGIN');
+
+      // Update client status to 'paid'
+      const clientResult = await client.query(
+        'UPDATE clients SET status = $1 WHERE id = $2 RETURNING *',
+        ['paid', clientId]
+      );
+
+      if (clientResult.rows.length === 0) {
+        await client.query('ROLLBACK');
+        client.release();
+        return res.status(404).json({
+          success: false,
+          message: 'Client not found'
+        });
+      }
+
+      // Update associated commission to 'paid'
+      const commissionResult = await client.query(
+        'UPDATE commissions SET status = $1, paid_at = NOW() WHERE client_id = $2 RETURNING *',
+        ['paid', clientId]
+      );
+
+      await client.query('COMMIT');
+      client.release();
+
+      res.json({
+        success: true,
+        message: 'Client marked as paid and affiliate commission updated',
+        client: clientResult.rows[0],
+        commission: commissionResult.rows[0] || null
+      });
+    } catch (error) {
+      await client.query('ROLLBACK');
+      client.release();
+      console.error('Error marking client as paid:', error);
+      res.status(500).json({
+        success: false,
+        message: 'Error marking client as paid'
+      });
+    }
+  } else {
+    // SQLite fallback with transaction
+    const { db } = require('../models/database');
+    db.serialize(() => {
+      db.run('BEGIN TRANSACTION');
+
+      // Update client status
+      db.run('UPDATE clients SET status = ? WHERE id = ?', ['paid', clientId], function(err) {
+        if (err) {
+          db.run('ROLLBACK');
+          return res.status(500).json({
+            success: false,
+            message: 'Error updating client status'
+          });
+        }
+
+        if (this.changes === 0) {
+          db.run('ROLLBACK');
+          return res.status(404).json({
+            success: false,
+            message: 'Client not found'
+          });
+        }
+
+        // Update commission status and paid_at
+        db.run(
+          'UPDATE commissions SET status = ?, paid_at = CURRENT_TIMESTAMP WHERE client_id = ?',
+          ['paid', clientId],
+          (err) => {
+            if (err) {
+              db.run('ROLLBACK');
+              return res.status(500).json({
+                success: false,
+                message: 'Error updating commission'
+              });
+            }
+
+            db.run('COMMIT');
+            res.json({
+              success: true,
+              message: 'Client marked as paid and affiliate commission updated'
+            });
+          }
+        );
+      });
+    });
   }
 });
 

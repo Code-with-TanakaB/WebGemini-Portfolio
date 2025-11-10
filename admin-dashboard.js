@@ -225,6 +225,8 @@ async function loadClients() {
             // Populate clients table
             tbody.innerHTML = data.clients.map(client => {
                 const clientStatus = client.status || 'active';
+                const isPaid = clientStatus === 'paid';
+                
                 return `
                 <tr data-client-id="${client.id}">
                     <td>${client.id}</td>
@@ -238,17 +240,24 @@ async function loadClients() {
                     <td>${new Date(client.signup_date).toLocaleDateString()}</td>
                     <td><span class="status-badge ${clientStatus}">${clientStatus}</span></td>
                     <td class="action-buttons">
+                        ${!isPaid && clientStatus === 'active' ? 
+                            `<button class="btn-paid" onclick="markClientAsPaid(${client.id}, '${client.name}')" title="Mark as Paid">
+                                <i class="fas fa-money-check-alt"></i>
+                            </button>` : ''
+                        }
                         ${clientStatus === 'active' ? 
                             `<button class="btn-archive" onclick="archiveClient(${client.id})" title="Archive">
                                 <i class="fas fa-archive"></i>
                             </button>` :
-                            `<button class="btn-activate" onclick="activateClient(${client.id})" title="Activate">
+                            !isPaid ? `<button class="btn-activate" onclick="activateClient(${client.id})" title="Activate">
                                 <i class="fas fa-check"></i>
-                            </button>`
+                            </button>` : ''
                         }
-                        <button class="btn-delete" onclick="deleteClient(${client.id}, '${client.name}')" title="Delete">
-                            <i class="fas fa-trash"></i>
-                        </button>
+                        ${!isPaid ? 
+                            `<button class="btn-delete" onclick="deleteClient(${client.id}, '${client.name}')" title="Delete">
+                                <i class="fas fa-trash"></i>
+                            </button>` : ''
+                        }
                     </td>
                 </tr>
             `}).join('');
@@ -692,6 +701,34 @@ async function deleteAffiliate(affiliateId, username) {
 }
 
 // Archive/Activate/Delete Client Functions
+async function markClientAsPaid(clientId, clientName) {
+    if (!confirm(`Mark client "${clientName}" as PAID?\n\nThis will:\n- Change client status to "paid"\n- Mark affiliate commission as "paid"\n- Update affiliate's earnings\n\nContinue?`)) {
+        return;
+    }
+
+    try {
+        const response = await fetch(`${API_BASE_URL}/affiliates/admin/clients/${clientId}/mark-paid`, {
+            method: 'PATCH',
+            headers: {
+                'Authorization': `Bearer ${authToken}`,
+                'Content-Type': 'application/json'
+            }
+        });
+
+        const data = await response.json();
+
+        if (data.success) {
+            alert('✅ Client marked as paid! Affiliate commission has been updated.');
+            loadDashboardData(); // Reload all data including stats
+        } else {
+            alert(`Error: ${data.message}`);
+        }
+    } catch (error) {
+        console.error('Error marking client as paid:', error);
+        alert('Failed to mark client as paid. Please try again.');
+    }
+}
+
 async function archiveClient(clientId) {
     if (!confirm('Are you sure you want to archive this client? Their data will be preserved but marked as archived.')) {
         return;

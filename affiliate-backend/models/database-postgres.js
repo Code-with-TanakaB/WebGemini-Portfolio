@@ -85,16 +85,20 @@ async function initializeDatabase() {
     `);
 
     // Create default admin user
-    const adminPassword = bcrypt.hashSync('admin123', 10);
+    const adminPassword = bcrypt.hashSync('#01Admin@WG2024', 10);
     
     await client.query(`
       INSERT INTO affiliates (username, email, password, full_name, coupon_code, role)
       VALUES ($1, $2, $3, $4, $5, $6)
       ON CONFLICT (username) DO NOTHING
-    `, ['admin', 'admin@webgemini.com', adminPassword, 'Administrator', 'ADMIN2024', 'admin']);
+    `, ['its.admin01', 'admin@webgemini.com', adminPassword, 'Administrator', 'ADMIN2024', 'admin']);
 
     await client.query('COMMIT');
     console.log('✅ Database initialized successfully');
+    console.log('⚠️  IMPORTANT: Default admin credentials:');
+    console.log('   Username: its.admin01');
+    console.log('   Password: #01Admin@WG2024');
+    console.log('   Please change these credentials after first login!');
 
   } catch (err) {
     await client.query('ROLLBACK');

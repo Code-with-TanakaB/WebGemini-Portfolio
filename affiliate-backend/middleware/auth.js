@@ -47,8 +47,11 @@ const verifyAffiliate = (req, res, next) => {
   next();
 };
 
-// Generate JWT token
-const generateToken = (user) => {
+// Generate JWT token with longer expiration
+const generateToken = (user, rememberMe = false) => {
+  // If remember me is checked, token lasts 30 days, otherwise 7 days
+  const expiresIn = rememberMe ? '30d' : '7d';
+  
   return jwt.sign(
     { 
       id: user.id, 
@@ -57,7 +60,7 @@ const generateToken = (user) => {
       role: user.role 
     },
     JWT_SECRET,
-    { expiresIn: '24h' }
+    { expiresIn }
   );
 };
 

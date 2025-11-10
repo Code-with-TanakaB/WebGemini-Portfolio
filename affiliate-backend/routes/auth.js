@@ -38,7 +38,7 @@ router.post('/login', loginValidation, (req, res) => {
     });
   }
 
-  const { username, password } = req.body;
+  const { username, password, rememberMe } = req.body;
 
   if (!username || !password) {
     return res.status(400).json({ 
@@ -49,6 +49,7 @@ router.post('/login', loginValidation, (req, res) => {
 
   dbHelpers.getAffiliateByLogin(username, (err, user) => {
     if (err) {
+      console.error('Database error during login:', err);
       return res.status(500).json({ 
         success: false, 
         message: 'Database error occurred.' 
@@ -80,8 +81,8 @@ router.post('/login', loginValidation, (req, res) => {
       });
     }
 
-    // Generate token
-    const token = generateToken(user);
+    // Generate token with remember me option
+    const token = generateToken(user, rememberMe);
 
     res.json({
       success: true,

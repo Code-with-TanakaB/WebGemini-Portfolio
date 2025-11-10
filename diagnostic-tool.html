@@ -1,0 +1,326 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Admin Dashboard Diagnostic Tool</title>
+    <style>
+        body {
+            font-family: 'Courier New', monospace;
+            background: #1e293b;
+            color: #f1f5f9;
+            padding: 20px;
+            max-width: 1200px;
+            margin: 0 auto;
+        }
+        h1 {
+            color: #60a5fa;
+        }
+        .test-section {
+            background: #334155;
+            border-radius: 8px;
+            padding: 20px;
+            margin: 20px 0;
+            border-left: 4px solid #3b82f6;
+        }
+        .test-result {
+            margin: 10px 0;
+            padding: 10px;
+            border-radius: 4px;
+            font-size: 14px;
+        }
+        .pass {
+            background: #065f46;
+            color: #d1fae5;
+            border-left: 4px solid #10b981;
+        }
+        .fail {
+            background: #7f1d1d;
+            color: #fecaca;
+            border-left: 4px solid #ef4444;
+        }
+        .warning {
+            background: #78350f;
+            color: #fef3c7;
+            border-left: 4px solid #f59e0b;
+        }
+        .info {
+            background: #1e3a8a;
+            color: #dbeafe;
+            border-left: 4px solid #3b82f6;
+        }
+        button {
+            background: #3b82f6;
+            color: white;
+            border: none;
+            padding: 12px 24px;
+            border-radius: 6px;
+            cursor: pointer;
+            font-size: 16px;
+            margin: 10px 5px;
+        }
+        button:hover {
+            background: #2563eb;
+        }
+        .code-block {
+            background: #0f172a;
+            padding: 15px;
+            border-radius: 4px;
+            overflow-x: auto;
+            margin: 10px 0;
+        }
+        .icon {
+            margin-right: 8px;
+        }
+    </style>
+</head>
+<body>
+    <h1>🔧 Admin Dashboard Diagnostic Tool</h1>
+    <p>This tool will help diagnose why admin actions aren't working.</p>
+
+    <button onclick="runAllTests()">▶️ Run All Tests</button>
+    <button onclick="clearResults()">🗑️ Clear Results</button>
+    <button onclick="location.href='admin-dashboard.html'">← Back to Dashboard</button>
+
+    <div id="results"></div>
+
+    <script>
+        const API_BASE_URL = 'https://webgemini-affiliate-backend.onrender.com/api';
+        const resultsDiv = document.getElementById('results');
+
+        function clearResults() {
+            resultsDiv.innerHTML = '';
+        }
+
+        function addResult(section, status, message, details = '') {
+            const result = document.createElement('div');
+            result.className = `test-result ${status}`;
+            
+            const icons = {
+                pass: '✅',
+                fail: '❌',
+                warning: '⚠️',
+                info: 'ℹ️'
+            };
+            
+            result.innerHTML = `
+                <span class="icon">${icons[status]}</span>
+                <strong>${message}</strong>
+                ${details ? `<div class="code-block">${details}</div>` : ''}
+            `;
+            
+            let sectionDiv = document.getElementById(section);
+            if (!sectionDiv) {
+                sectionDiv = document.createElement('div');
+                sectionDiv.id = section;
+                sectionDiv.className = 'test-section';
+                sectionDiv.innerHTML = `<h2>${section}</h2>`;
+                resultsDiv.appendChild(sectionDiv);
+            }
+            
+            sectionDiv.appendChild(result);
+        }
+
+        async function runAllTests() {
+            clearResults();
+            
+            await test1_LocalStorage();
+            await test2_APIConnection();
+            await test3_Functions();
+            await test4_Token();
+            await test5_APIEndpoints();
+            await test6_DOMElements();
+            
+            addResult('Summary', 'info', 'All tests completed! Check results above.', '');
+        }
+
+        async function test1_LocalStorage() {
+            const section = '1️⃣ LocalStorage';
+            
+            const token = localStorage.getItem('authToken');
+            if (token) {
+                addResult(section, 'pass', 'Auth token exists in localStorage', `Token: ${token.substring(0, 30)}...`);
+                
+                if (token.startsWith('mock-')) {
+                    addResult(section, 'fail', 'Using mock token! This will not work.', 'Solution: Logout and login again with real credentials');
+                }
+            } else {
+                addResult(section, 'fail', 'No auth token found in localStorage', 'Solution: You are not logged in. Go to login page.');
+            }
+            
+            const mockUser = localStorage.getItem('mockUser');
+            if (mockUser) {
+                addResult(section, 'warning', 'Old mock user data found', 'Solution: Run this in console: localStorage.removeItem("mockUser")');
+            }
+        }
+
+        async function test2_APIConnection() {
+            const section = '2️⃣ API Connection';
+            
+            addResult(section, 'info', `Testing connection to: ${API_BASE_URL}`, '');
+            
+            try {
+                const response = await fetch(`${API_BASE_URL}/health`, {
+                    method: 'GET'
+                });
+                
+                const data = await response.json();
+                
+                if (data.success) {
+                    addResult(section, 'pass', 'API server is reachable and running', `Response: ${data.message}`);
+                } else {
+                    addResult(section, 'warning', 'API reachable but returned unexpected response', JSON.stringify(data));
+                }
+            } catch (error) {
+                addResult(section, 'fail', 'Cannot reach API server', `Error: ${error.message}<br>Check if server is running on Render`);
+            }
+        }
+
+        async function test3_Functions() {
+            const section = '3️⃣ JavaScript Functions';
+            
+            const functions = [
+                'markClientAsPaid',
+                'archiveClient',
+                'activateClient',
+                'deleteClient',
+                'archiveAffiliate',
+                'deleteAffiliate'
+            ];
+            
+            let allFound = true;
+            
+            functions.forEach(funcName => {
+                if (typeof window[funcName] === 'function') {
+                    addResult(section, 'pass', `Function ${funcName} is defined`, '');
+                } else {
+                    addResult(section, 'fail', `Function ${funcName} is NOT defined`, 'Solution: Hard refresh page (Ctrl+Shift+R)');
+                    allFound = false;
+                }
+            });
+            
+            if (allFound) {
+                addResult(section, 'pass', 'All admin functions are available!', '');
+            }
+        }
+
+        async function test4_Token() {
+            const section = '4️⃣ Token Validation';
+            
+            const token = localStorage.getItem('authToken');
+            
+            if (!token) {
+                addResult(section, 'fail', 'No token to validate', 'Login first');
+                return;
+            }
+            
+            try {
+                const response = await fetch(`${API_BASE_URL}/auth/verify`, {
+                    headers: {
+                        'Authorization': `Bearer ${token}`
+                    }
+                });
+                
+                const data = await response.json();
+                
+                if (data.success) {
+                    addResult(section, 'pass', 'Token is VALID', `User: ${data.user.username}<br>Role: ${data.user.role}`);
+                    
+                    if (data.user.role !== 'admin') {
+                        addResult(section, 'fail', 'You are NOT logged in as admin!', `Current role: ${data.user.role}<br>Solution: Logout and login as admin`);
+                    } else {
+                        addResult(section, 'pass', 'Confirmed: You are logged in as ADMIN', '');
+                    }
+                } else {
+                    addResult(section, 'fail', 'Token is INVALID or EXPIRED', `Message: ${data.message}<br>Solution: Logout and login again`);
+                }
+            } catch (error) {
+                addResult(section, 'fail', 'Error validating token', `Error: ${error.message}`);
+            }
+        }
+
+        async function test5_APIEndpoints() {
+            const section = '5️⃣ API Endpoints';
+            
+            const token = localStorage.getItem('authToken');
+            
+            if (!token) {
+                addResult(section, 'warning', 'Skipping API tests (no token)', '');
+                return;
+            }
+            
+            // Test get clients
+            try {
+                const response = await fetch(`${API_BASE_URL}/affiliates/admin/clients`, {
+                    headers: {
+                        'Authorization': `Bearer ${token}`
+                    }
+                });
+                
+                const data = await response.json();
+                
+                if (data.success) {
+                    addResult(section, 'pass', 'GET /admin/clients works', `Found ${data.clients.length} clients`);
+                    
+                    if (data.clients.length > 0) {
+                        window.testClientId = data.clients[0].id;
+                        addResult(section, 'info', `Will use Client ID ${window.testClientId} for tests`, '');
+                    }
+                } else {
+                    addResult(section, 'fail', 'GET /admin/clients failed', `Status: ${response.status}<br>Message: ${data.message}`);
+                }
+            } catch (error) {
+                addResult(section, 'fail', 'Error calling GET /admin/clients', `Error: ${error.message}`);
+            }
+            
+            // Test mark as paid endpoint (without actually executing)
+            addResult(section, 'info', 'PATCH /admin/clients/:id/mark-paid endpoint exists', 'Test execution skipped (would modify data)');
+            addResult(section, 'info', 'PATCH /admin/clients/:id/status endpoint exists', 'Test execution skipped (would modify data)');
+            addResult(section, 'info', 'DELETE /admin/clients/:id endpoint exists', 'Test execution skipped (would modify data)');
+        }
+
+        async function test6_DOMElements() {
+            const section = '6️⃣ DOM Elements';
+            
+            // Check for action buttons
+            const paidButtons = document.querySelectorAll('.btn-paid');
+            const archiveButtons = document.querySelectorAll('.btn-archive');
+            const deleteButtons = document.querySelectorAll('.btn-delete');
+            
+            if (paidButtons.length > 0) {
+                addResult(section, 'pass', `Found ${paidButtons.length} "Mark as Paid" buttons`, '');
+            } else {
+                addResult(section, 'warning', 'No "Mark as Paid" buttons found', 'Check if you have active clients in the Clients tab');
+            }
+            
+            if (archiveButtons.length > 0) {
+                addResult(section, 'pass', `Found ${archiveButtons.length} "Archive" buttons`, '');
+            } else {
+                addResult(section, 'warning', 'No "Archive" buttons found', 'Normal if all clients are archived or no clients exist');
+            }
+            
+            if (deleteButtons.length > 0) {
+                addResult(section, 'pass', `Found ${deleteButtons.length} "Delete" buttons`, '');
+            } else {
+                addResult(section, 'warning', 'No "Delete" buttons found', 'Normal if no clients exist');
+            }
+            
+            // Check if onclick handlers are present
+            if (paidButtons.length > 0) {
+                const firstButton = paidButtons[0];
+                const onclick = firstButton.getAttribute('onclick');
+                if (onclick && onclick.includes('markClientAsPaid')) {
+                    addResult(section, 'pass', 'Button onclick handlers are properly set', `Handler: ${onclick.substring(0, 50)}...`);
+                } else {
+                    addResult(section, 'fail', 'Button onclick handlers are missing or incorrect', 'Hard refresh page (Ctrl+Shift+R)');
+                }
+            }
+        }
+
+        // Run tests on page load
+        window.addEventListener('load', () => {
+            addResult('Welcome', 'info', 'Diagnostic tool loaded', 'Click "Run All Tests" to begin');
+        });
+    </script>
+</body>
+</html>

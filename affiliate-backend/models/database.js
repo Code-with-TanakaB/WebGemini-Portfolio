@@ -78,14 +78,14 @@ function initializeDatabase() {
       )
     `);
 
-    // Create default admin user (password: admin123 - should be changed in production)
+    // Create default admin user (password: #01Admin123 - should be changed in production)
     const bcrypt = require('bcryptjs');
-    const adminPassword = bcrypt.hashSync('admin123', 10);
+    const adminPassword = bcrypt.hashSync('#01Admin123', 10);
     
     db.run(`
       INSERT OR IGNORE INTO affiliates (username, email, password, full_name, coupon_code, role)
       VALUES (?, ?, ?, ?, ?, ?)
-    `, ['admin', 'admin@webgemini.com', adminPassword, 'Administrator', 'ADMIN2024', 'admin'], (err) => {
+    `, ['its.admin01', 'admin@webgemini.com', adminPassword, 'Administrator', 'ADMIN2024', 'admin'], (err) => {
       if (err) {
         console.error('Error creating admin user:', err.message);
       } else {

@@ -309,4 +309,117 @@ router.post('/verify-coupon', (req, res) => {
   });
 });
 
+// Update affiliate status (archive/activate) - Admin only
+router.patch('/admin/affiliates/:id/status', verifyToken, verifyAdmin, (req, res) => {
+  const affiliateId = parseInt(req.params.id);
+  const { status } = req.body;
+
+  // Validate status
+  if (!['active', 'archived', 'inactive'].includes(status)) {
+    return res.status(400).json({
+      success: false,
+      message: 'Invalid status. Must be: active, archived, or inactive'
+    });
+  }
+
+  const { db } = require('../models/database');
+  
+  db.run(
+    'UPDATE affiliates SET status = ?, updated_at = CURRENT_TIMESTAMP WHERE id = ? AND role = "affiliate"',
+    [status, affiliateId],
+    function(err) {
+      if (err) {
+        console.error('Error updating affiliate status:', err);
+        return res.status(500).json({
+          success: false,
+          message: 'Error updating affiliate status'
+        });
+      }
+
+      if (this.changes === 0) {
+        return res.status(404).json({
+          success: false,
+          message: 'Affiliate not found'
+        });
+      }
+
+      res.json({
+        success: true,
+        message: `Affiliate ${status === 'archived' ? 'archived' : 'status updated'} successfully`
+      });
+    }
+  );
+});
+
+// Delete affiliate permanently - Admin only
+router.delete('/admin/affiliates/:id', verifyToken, verifyAdmin, (req, res) => {
+  const affiliateId = parseInt(req.params.id);
+
+  const { db } = require('../models/database');
+
+  // Start transaction to delete related data
+  db.serialize(() => {
+    db.run('BEGIN TRANSACTION');
+
+    // Delete commissions
+    db.run('DELETE FROM commissions WHERE affiliate_id = ?', [affiliateId], (err) => {
+      if (err) {
+        db.run('ROLLBACK');
+        return res.status(500).json({
+          success: false,
+          message: 'Error deleting affiliate commissions'
+        });
+      }
+
+      // Delete referrals
+      db.run('DELETE FROM referrals WHERE affiliate_id = ?', [affiliateId], (err) => {
+        if (err) {
+          db.run('ROLLBACK');
+          return res.status(500).json({
+            success: false,
+            message: 'Error deleting affiliate referrals'
+          });
+        }
+
+        // Update clients to remove affiliate reference
+        db.run('UPDATE clients SET affiliate_id = NULL WHERE affiliate_id = ?', [affiliateId], (err) => {
+          if (err) {
+            db.run('ROLLBACK');
+            return res.status(500).json({
+              success: false,
+              message: 'Error updating client records'
+            });
+          }
+
+          // Delete affiliate
+          db.run('DELETE FROM affiliates WHERE id = ? AND role = "affiliate"', [affiliateId], function(err) {
+            if (err) {
+              db.run('ROLLBACK');
+              return res.status(500).json({
+                success: false,
+                message: 'Error deleting affiliate'
+              });
+            }
+
+            if (this.changes === 0) {
+              db.run('ROLLBACK');
+              return res.status(404).json({
+                success: false,
+                message: 'Affiliate not found or cannot delete admin'
+              });
+            }
+
+            db.run('COMMIT');
+            res.json({
+              success: true,
+              message: 'Affiliate deleted successfully'
+            });
+          });
+        });
+      });
+    });
+  });
+});
+
 module.exports = router;
+

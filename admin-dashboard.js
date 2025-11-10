@@ -129,28 +129,6 @@ async function loadDashboardData() {
 
 async function loadOverviewStats() {
     try {
-        // BYPASS: Use mock data if no authToken or mock token
-        if (!authToken || authToken.startsWith('mock-')) {
-            const mockStats = {
-                total_affiliates: 8,
-                total_clients: 45,
-                total_revenue: 125000.00,
-                total_commissions: 12500.00,
-                pending_commissions: 3200.00,
-                paid_commissions: 9300.00
-            };
-            
-            document.getElementById('totalAffiliates').textContent = mockStats.total_affiliates;
-            document.getElementById('totalClients').textContent = mockStats.total_clients;
-            document.getElementById('totalRevenue').textContent = `R${mockStats.total_revenue.toFixed(2)}`;
-            document.getElementById('totalCommissions').textContent = `R${mockStats.total_commissions.toFixed(2)}`;
-            document.getElementById('pendingCommissions').textContent = `R${mockStats.pending_commissions.toFixed(2)}`;
-            document.getElementById('paidCommissions').textContent = `R${mockStats.paid_commissions.toFixed(2)}`;
-            
-            console.log('Loaded mock overview stats:', mockStats);
-            return;
-        }
-        
         const response = await fetch(`${API_BASE_URL}/affiliates/admin/stats`, {
             headers: {
                 'Authorization': `Bearer ${authToken}`
@@ -175,64 +153,6 @@ async function loadOverviewStats() {
 
 async function loadAffiliates() {
     try {
-        // BYPASS: Use mock data if no authToken or mock token
-        if (!authToken || authToken.startsWith('mock-')) {
-            const mockAffiliates = [
-                {
-                    id: 1,
-                    full_name: 'John Smith',
-                    email: 'john@example.com',
-                    username: 'johnsmith',
-                    coupon_code: 'JOHNSMITH@WG',
-                    status: 'active',
-                    created_at: '2024-09-15'
-                },
-                {
-                    id: 2,
-                    full_name: 'Sarah Johnson',
-                    email: 'sarah@example.com',
-                    username: 'sarahj',
-                    coupon_code: 'SARAHJ@WG',
-                    status: 'active',
-                    created_at: '2024-09-20'
-                },
-                {
-                    id: 3,
-                    full_name: 'Mike Williams',
-                    email: 'mike@example.com',
-                    username: 'mikew',
-                    coupon_code: 'MIKEW@WG',
-                    status: 'active',
-                    created_at: '2024-10-01'
-                },
-                {
-                    id: 4,
-                    full_name: 'Demo Affiliate',
-                    email: 'demo@example.com',
-                    username: 'affiliate',
-                    coupon_code: 'DEMO2024',
-                    status: 'active',
-                    created_at: '2024-10-15'
-                }
-            ];
-            
-            const tbody = document.getElementById('affiliatesTableBody');
-            tbody.innerHTML = mockAffiliates.map(affiliate => `
-                <tr>
-                    <td>${affiliate.id}</td>
-                    <td>${affiliate.full_name}</td>
-                    <td>${affiliate.email}</td>
-                    <td>${affiliate.username}</td>
-                    <td><span class="coupon-badge">${affiliate.coupon_code}</span></td>
-                    <td><span class="status-badge ${affiliate.status}">${affiliate.status}</span></td>
-                    <td>${new Date(affiliate.created_at).toLocaleDateString()}</td>
-                </tr>
-            `).join('');
-            
-            console.log('Loaded mock affiliates:', mockAffiliates.length);
-            return;
-        }
-        
         const response = await fetch(`${API_BASE_URL}/affiliates/all`, {
             headers: {
                 'Authorization': `Bearer ${authToken}`
@@ -245,12 +165,12 @@ async function loadAffiliates() {
             const tbody = document.getElementById('affiliatesTableBody');
             
             if (data.affiliates.length === 0) {
-                tbody.innerHTML = '<tr><td colspan="7" class="no-data">No affiliates found</td></tr>';
+                tbody.innerHTML = '<tr><td colspan="8" class="no-data">No affiliates found</td></tr>';
                 return;
             }
 
             tbody.innerHTML = data.affiliates.map(affiliate => `
-                <tr>
+                <tr data-affiliate-id="${affiliate.id}">
                     <td>${affiliate.id}</td>
                     <td>${affiliate.full_name}</td>
                     <td>${affiliate.email}</td>
@@ -258,91 +178,31 @@ async function loadAffiliates() {
                     <td><span class="coupon-badge">${affiliate.coupon_code}</span></td>
                     <td><span class="status-badge ${affiliate.status}">${affiliate.status}</span></td>
                     <td>${new Date(affiliate.created_at).toLocaleDateString()}</td>
+                    <td class="action-buttons">
+                        ${affiliate.status === 'active' ? 
+                            `<button class="btn-archive" onclick="archiveAffiliate(${affiliate.id})" title="Archive">
+                                <i class="fas fa-archive"></i>
+                            </button>` :
+                            `<button class="btn-activate" onclick="activateAffiliate(${affiliate.id})" title="Activate">
+                                <i class="fas fa-check"></i>
+                            </button>`
+                        }
+                        <button class="btn-delete" onclick="deleteAffiliate(${affiliate.id}, '${affiliate.username}')" title="Delete">
+                            <i class="fas fa-trash"></i>
+                        </button>
+                    </td>
                 </tr>
             `).join('');
         }
     } catch (error) {
         console.error('Error loading affiliates:', error);
         document.getElementById('affiliatesTableBody').innerHTML = 
-            '<tr><td colspan="7" class="error">Error loading affiliates</td></tr>';
+            '<tr><td colspan="8" class="error">Error loading affiliates</td></tr>';
     }
 }
 
 async function loadClients() {
     try {
-        // BYPASS: Use mock data if no authToken or mock token
-        if (!authToken || authToken.startsWith('mock-')) {
-            const mockClients = [
-                {
-                    id: 1,
-                    name: 'Emma Davis',
-                    email: 'emma@company.com',
-                    plan_type: 'Premium Plan',
-                    plan_price: 5000,
-                    referred_by: 'JOHNSMITH@WG',
-                    affiliate_name: 'John Smith',
-                    commission_amount: 500,
-                    commission_status: 'paid',
-                    signup_date: '2024-10-10'
-                },
-                {
-                    id: 2,
-                    name: 'Robert Chen',
-                    email: 'robert@startup.com',
-                    plan_type: 'Standard Plan',
-                    plan_price: 2000,
-                    referred_by: 'SARAHJ@WG',
-                    affiliate_name: 'Sarah Johnson',
-                    commission_amount: 200,
-                    commission_status: 'pending',
-                    signup_date: '2024-10-18'
-                },
-                {
-                    id: 3,
-                    name: 'Lisa Wong',
-                    email: 'lisa@business.com',
-                    plan_type: 'Basic Plan',
-                    plan_price: 1000,
-                    referred_by: 'MIKEW@WG',
-                    affiliate_name: 'Mike Williams',
-                    commission_amount: 100,
-                    commission_status: 'confirmed',
-                    signup_date: '2024-10-22'
-                },
-                {
-                    id: 4,
-                    name: 'David Brown',
-                    email: 'david@tech.com',
-                    plan_type: 'Enterprise Plan',
-                    plan_price: 10000,
-                    referred_by: 'DEMO2024',
-                    affiliate_name: 'Demo Affiliate',
-                    commission_amount: 1000,
-                    commission_status: 'paid',
-                    signup_date: '2024-10-25'
-                }
-            ];
-            
-            const tbody = document.getElementById('clientsTableBody');
-            tbody.innerHTML = mockClients.map(client => `
-                <tr>
-                    <td>${client.id}</td>
-                    <td>${client.name}</td>
-                    <td>${client.email}</td>
-                    <td>${client.plan_type}</td>
-                    <td>R${client.plan_price.toFixed(2)}</td>
-                    <td><span class="coupon-badge">${client.referred_by}</span></td>
-                    <td>${client.affiliate_name}</td>
-                    <td>R${client.commission_amount.toFixed(2)}</td>
-                    <td><span class="status-badge ${client.commission_status}">${client.commission_status}</span></td>
-                    <td>${new Date(client.signup_date).toLocaleDateString()}</td>
-                </tr>
-            `).join('');
-            
-            console.log('Loaded mock clients:', mockClients.length);
-            return;
-        }
-        
         const response = await fetch(`${API_BASE_URL}/affiliates/admin/clients`, {
             headers: {
                 'Authorization': `Bearer ${authToken}`
@@ -485,4 +345,95 @@ function logout() {
 
 function redirectToLogin() {
     window.location.href = 'login.html';
+}
+
+// Archive/Activate/Delete Affiliate Functions
+async function archiveAffiliate(affiliateId) {
+    if (!confirm('Are you sure you want to archive this affiliate? They will no longer be able to access their dashboard.')) {
+        return;
+    }
+
+    try {
+        const response = await fetch(`${API_BASE_URL}/affiliates/admin/affiliates/${affiliateId}/status`, {
+            method: 'PATCH',
+            headers: {
+                'Authorization': `Bearer ${authToken}`,
+                'Content-Type': 'application/json'
+            },
+            body: JSON.stringify({ status: 'archived' })
+        });
+
+        const data = await response.json();
+
+        if (data.success) {
+            alert('Affiliate archived successfully');
+            loadAffiliates(); // Reload the table
+        } else {
+            alert(`Error: ${data.message}`);
+        }
+    } catch (error) {
+        console.error('Error archiving affiliate:', error);
+        alert('Failed to archive affiliate. Please try again.');
+    }
+}
+
+async function activateAffiliate(affiliateId) {
+    if (!confirm('Are you sure you want to reactivate this affiliate?')) {
+        return;
+    }
+
+    try {
+        const response = await fetch(`${API_BASE_URL}/affiliates/admin/affiliates/${affiliateId}/status`, {
+            method: 'PATCH',
+            headers: {
+                'Authorization': `Bearer ${authToken}`,
+                'Content-Type': 'application/json'
+            },
+            body: JSON.stringify({ status: 'active' })
+        });
+
+        const data = await response.json();
+
+        if (data.success) {
+            alert('Affiliate activated successfully');
+            loadAffiliates(); // Reload the table
+        } else {
+            alert(`Error: ${data.message}`);
+        }
+    } catch (error) {
+        console.error('Error activating affiliate:', error);
+        alert('Failed to activate affiliate. Please try again.');
+    }
+}
+
+async function deleteAffiliate(affiliateId, username) {
+    if (!confirm(`⚠️ WARNING: This will permanently delete affiliate "${username}" and all their associated data (commissions, referrals, etc.).\n\nThis action CANNOT be undone!\n\nAre you absolutely sure?`)) {
+        return;
+    }
+
+    // Double confirmation for delete
+    if (!confirm('Please confirm one more time: Delete this affiliate permanently?')) {
+        return;
+    }
+
+    try {
+        const response = await fetch(`${API_BASE_URL}/affiliates/admin/affiliates/${affiliateId}`, {
+            method: 'DELETE',
+            headers: {
+                'Authorization': `Bearer ${authToken}`
+            }
+        });
+
+        const data = await response.json();
+
+        if (data.success) {
+            alert('Affiliate deleted successfully');
+            loadDashboardData(); // Reload all data including stats
+        } else {
+            alert(`Error: ${data.message}`);
+        }
+    } catch (error) {
+        console.error('Error deleting affiliate:', error);
+        alert('Failed to delete affiliate. Please try again.');
+    }
 }

@@ -242,16 +242,20 @@ async function loadClients() {
                 const clientStatus = client.status || 'active';
                 const isPaid = clientStatus === 'paid';
                 
+                // Convert string numbers to actual numbers
+                const planPrice = parseFloat(client.plan_price) || 0;
+                const commissionAmount = client.commission_amount ? parseFloat(client.commission_amount) : null;
+                
                 return `
                 <tr data-client-id="${client.id}">
                     <td>${client.id}</td>
                     <td>${client.name}</td>
                     <td>${client.email}</td>
                     <td>${client.plan_type}</td>
-                    <td>R${client.plan_price.toFixed(2)}</td>
+                    <td>R${planPrice.toFixed(2)}</td>
                     <td>${client.affiliate_name || 'N/A'}</td>
                     <td>${client.coupon_code ? `<span class="coupon-badge">${client.coupon_code}</span>` : 'N/A'}</td>
-                    <td>${client.commission_amount ? `R${client.commission_amount.toFixed(2)}` : 'N/A'}</td>
+                    <td>${commissionAmount ? `R${commissionAmount.toFixed(2)}` : 'N/A'}</td>
                     <td>${new Date(client.signup_date).toLocaleDateString()}</td>
                     <td><span class="status-badge ${clientStatus}">${clientStatus}</span></td>
                     <td class="action-buttons">
@@ -285,18 +289,24 @@ async function loadClients() {
                 return;
             }
 
-            commissionsBody.innerHTML = clientsWithCommissions.map(client => `
+            commissionsBody.innerHTML = clientsWithCommissions.map(client => {
+                // Convert string numbers to actual numbers
+                const planPrice = parseFloat(client.plan_price) || 0;
+                const commissionRate = parseFloat(client.commission_rate) || 0;
+                const commissionAmount = parseFloat(client.commission_amount) || 0;
+                
+                return `
                 <tr data-status="${client.commission_status}">
                     <td>${client.name}</td>
                     <td>${client.affiliate_name}</td>
                     <td>${client.plan_type}</td>
-                    <td>R${client.plan_price.toFixed(2)}</td>
-                    <td>${(client.commission_rate * 100).toFixed(0)}%</td>
-                    <td>R${client.commission_amount.toFixed(2)}</td>
+                    <td>R${planPrice.toFixed(2)}</td>
+                    <td>${(commissionRate * 100).toFixed(0)}%</td>
+                    <td>R${commissionAmount.toFixed(2)}</td>
                     <td><span class="status-badge ${client.commission_status}">${client.commission_status}</span></td>
                     <td>${new Date(client.signup_date).toLocaleDateString()}</td>
                 </tr>
-            `).join('');
+            `}).join('');
         }
     } catch (error) {
         console.error('Error loading clients:', error);
@@ -440,7 +450,9 @@ function loadTopPerformers(clients, affiliates) {
     clients.forEach(client => {
         if (client.affiliate_id && affiliateStats[client.affiliate_id]) {
             affiliateStats[client.affiliate_id].referrals++;
-            affiliateStats[client.affiliate_id].earnings += client.commission_amount || 0;
+            // Convert commission_amount to number before adding
+            const commissionAmount = parseFloat(client.commission_amount) || 0;
+            affiliateStats[client.affiliate_id].earnings += commissionAmount;
         }
     });
 
@@ -603,13 +615,13 @@ function loadRevenueTrends(clients) {
         return;
     }
 
-    // Average deal value
-    const totalRevenue = clients.reduce((sum, c) => sum + c.plan_price, 0);
+    // Average deal value - convert plan_price to number
+    const totalRevenue = clients.reduce((sum, c) => sum + (parseFloat(c.plan_price) || 0), 0);
     const avgDeal = totalRevenue / clients.length;
     document.getElementById('avgDealValue').textContent = `R${avgDeal.toFixed(2)}`;
 
-    // Average commission rate
-    const totalCommissions = clients.reduce((sum, c) => sum + (c.commission_amount || 0), 0);
+    // Average commission rate - convert commission_amount to number
+    const totalCommissions = clients.reduce((sum, c) => sum + (parseFloat(c.commission_amount) || 0), 0);
     const avgCommission = (totalCommissions / totalRevenue) * 100;
     document.getElementById('avgCommissionRate').textContent = `${avgCommission.toFixed(1)}%`;
 

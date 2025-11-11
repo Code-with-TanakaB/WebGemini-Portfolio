@@ -204,13 +204,28 @@ async function loadAffiliates() {
 
 async function loadClients() {
     try {
+        console.log('Fetching clients from:', `${API_BASE_URL}/affiliates/admin/clients`);
+        
         const response = await fetch(`${API_BASE_URL}/affiliates/admin/clients`, {
             headers: {
                 'Authorization': `Bearer ${authToken}`
             }
         });
 
+        console.log('Response status:', response.status);
+        
+        if (!response.ok) {
+            const errorText = await response.text();
+            console.error('Server error:', errorText);
+            throw new Error(`Server returned ${response.status}: ${errorText}`);
+        }
+
         const data = await response.json();
+        console.log('Clients data received:', data);
+
+        if (!data.success) {
+            throw new Error(data.message || 'Failed to load clients');
+        }
 
         if (data.success) {
             const tbody = document.getElementById('clientsTableBody');
@@ -285,8 +300,14 @@ async function loadClients() {
         }
     } catch (error) {
         console.error('Error loading clients:', error);
-        document.getElementById('clientsTableBody').innerHTML = 
-            '<tr><td colspan="9" class="error">Error loading clients</td></tr>';
+        const tbody = document.getElementById('clientsTableBody');
+        tbody.innerHTML = `<tr><td colspan="11" class="error">Error loading clients: ${error.message}</td></tr>`;
+        
+        // Also show error in commissions table
+        const commissionsBody = document.getElementById('commissionsTableBody');
+        if (commissionsBody) {
+            commissionsBody.innerHTML = `<tr><td colspan="8" class="error">Error loading commissions</td></tr>`;
+        }
     }
 }
 

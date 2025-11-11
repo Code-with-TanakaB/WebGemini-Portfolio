@@ -9,6 +9,9 @@
        <!-- Favicon -->
     <link rel="icon" type="image/png" href="image/logo.png">
     
+    <!-- Google reCAPTCHA -->
+    <script src="https://www.google.com/recaptcha/api.js" async defer></script>
+    
 </head>
 <body class="login-page">
     <div class="login-container">
@@ -110,6 +113,14 @@
                         Confirm Password
                     </label>
                     <input type="password" id="reg_confirm_password" name="confirm_password" required placeholder="Confirm your password">
+                </div>
+
+                <!-- reCAPTCHA -->
+                <div class="form-group">
+                    <div class="g-recaptcha" data-sitekey="6Lf7BgksAAAAAPPByVV0JbmaoV74W4Io0RFNt0Vr"></div>
+                    <small style="color: #888; font-size: 12px; display: block; margin-top: 8px;">
+                        <i class="fas fa-shield-alt"></i> Protected by reCAPTCHA
+                    </small>
                 </div>
 
                 <button type="submit" class="login-btn">
@@ -220,11 +231,20 @@
             // Hide previous messages
             errorMessage.style.display = 'none';
             successMessage.style.display = 'none';
+
+            // Verify reCAPTCHA
+            const recaptchaResponse = grecaptcha.getResponse();
+            if (!recaptchaResponse) {
+                errorMessage.textContent = '⚠️ Please complete the reCAPTCHA verification.';
+                errorMessage.style.display = 'block';
+                return;
+            }
             
             // Validate passwords match
             if (password !== confirmPassword) {
                 errorMessage.textContent = 'Passwords do not match';
                 errorMessage.style.display = 'block';
+                grecaptcha.reset();
                 return;
             }
             
@@ -232,6 +252,7 @@
             if (password.length < 8) {
                 errorMessage.textContent = 'Password must be at least 8 characters';
                 errorMessage.style.display = 'block';
+                grecaptcha.reset();
                 return;
             }
             
@@ -245,7 +266,8 @@
                         full_name: fullName,
                         username,
                         email,
-                        password
+                        password,
+                        recaptcha_token: recaptchaResponse
                     })
                 });
 
@@ -255,8 +277,9 @@
                     successMessage.textContent = `Registration successful! Your coupon code is: ${data.coupon_code}. Redirecting to login...`;
                     successMessage.style.display = 'block';
                     
-                    // Clear form
+                    // Clear form and reset reCAPTCHA
                     document.getElementById('registerForm').reset();
+                    grecaptcha.reset();
                     
                     // Redirect to login after 3 seconds
                     setTimeout(() => {
@@ -267,13 +290,15 @@
                         loginSuccessMsg.style.display = 'block';
                     }, 3000);
                 } else {
-                    errorMessage.textContent = data.message || 'Registration failed';
+                    errorMessage.textContent = data.message || 'Registration failed. Please try again.';
                     errorMessage.style.display = 'block';
+                    grecaptcha.reset(); // Reset on error
                 }
             } catch (error) {
                 console.error('Registration error:', error);
-                errorMessage.textContent = 'Connection error. Please make sure the server is running.';
+                errorMessage.textContent = 'Connection error. Please check your internet connection and try again.';
                 errorMessage.style.display = 'block';
+                grecaptcha.reset(); // Reset on error
             }
         });
 

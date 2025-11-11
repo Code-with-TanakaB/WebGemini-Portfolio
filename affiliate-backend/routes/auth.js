@@ -164,7 +164,7 @@ router.post('/register-affiliate', [
   body('email').isEmail().normalizeEmail().withMessage('Invalid email address'),
   body('password').isLength({ min: 8 }).withMessage('Password must be at least 8 characters'),
   body('full_name').trim().isLength({ min: 2, max: 100 }).withMessage('Full name must be 2-100 characters')
-], spamProtection, (req, res) => {
+], (req, res) => {
   // Check validation results
   const errors = validationResult(req);
   if (!errors.isEmpty()) {

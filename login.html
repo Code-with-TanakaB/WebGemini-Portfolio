@@ -112,15 +112,6 @@
                     <input type="password" id="reg_confirm_password" name="confirm_password" required placeholder="Confirm your password">
                 </div>
 
-                <!-- Honeypot field (hidden from humans, bots will fill it) -->
-                <input type="text" name="company_website" id="company_website" style="position: absolute; left: -9999px;" tabindex="-1" autocomplete="off">
-                
-                <div class="form-group">
-                    <small style="color: #888; font-size: 12px; display: block; margin-top: 8px;">
-                        <i class="fas fa-shield-alt"></i> Protected by spam filters
-                    </small>
-                </div>
-
                 <button type="submit" class="login-btn">
                     <i class="fas fa-user-plus"></i>
                     Register as Affiliate
@@ -139,9 +130,8 @@
     <script>
         // API Configuration - Points to Render backend
         const API_BASE_URL = 'https://webgemini-affiliate-backend.onrender.com/api';
-        let formStartTime = Date.now(); // Track when form was loaded
 
-        // Submit registration directly (no reCAPTCHA needed)
+        // Submit registration directly (no spam protection)
         async function submitRegistrationWithToken(regData) {
             const errorMessage = document.getElementById('registerErrorMessage');
             const successMessage = document.getElementById('registerSuccessMessage');
@@ -176,7 +166,6 @@
                 } else {
                     errorMessage.textContent = data.message || 'Registration failed. Please try again.';
                     errorMessage.style.display = 'block';
-                    grecaptcha.reset();
                 }
             } catch (error) {
                 console.error('Registration error:', error);
@@ -289,14 +278,12 @@
                 return;
             }
 
-            // Prepare registration data with anti-spam fields
+            // Prepare registration data - simple and straightforward
             const registrationData = { 
                 full_name: fullName,
                 username,
                 email,
-                password,
-                company_website: document.getElementById('company_website').value, // Honeypot field
-                form_start_time: formStartTime // Anti-bot timing
+                password
             };
 
             // Submit directly

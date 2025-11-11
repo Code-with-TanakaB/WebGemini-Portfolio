@@ -111,60 +111,163 @@ async function initializeDatabase() {
 // Helper functions - converted from SQLite to PostgreSQL
 const dbHelpers = {
   // Get affiliate by username or email
-  getAffiliateByUsername: (username) => {
-    return new Promise((resolve, reject) => {
+  getAffiliateByUsername: (username, callback) => {
+    if (callback) {
       pool.query(
         'SELECT * FROM affiliates WHERE username = $1 OR email = $1',
         [username],
         (err, results) => {
-          if (err) reject(err);
-          else resolve(results.rows[0]);
+          if (err) callback(err);
+          else callback(null, results.rows[0]);
         }
       );
-    });
+    } else {
+      return new Promise((resolve, reject) => {
+        pool.query(
+          'SELECT * FROM affiliates WHERE username = $1 OR email = $1',
+          [username],
+          (err, results) => {
+            if (err) reject(err);
+            else resolve(results.rows[0]);
+          }
+        );
+      });
+    }
   },
 
   // Get affiliate by ID
-  getAffiliateById: (id) => {
-    return new Promise((resolve, reject) => {
+  getAffiliateById: (id, callback) => {
+    if (callback) {
       pool.query(
         'SELECT * FROM affiliates WHERE id = $1',
         [id],
         (err, results) => {
-          if (err) reject(err);
-          else resolve(results.rows[0]);
+          if (err) callback(err);
+          else callback(null, results.rows[0]);
         }
       );
-    });
+    } else {
+      return new Promise((resolve, reject) => {
+        pool.query(
+          'SELECT * FROM affiliates WHERE id = $1',
+          [id],
+          (err, results) => {
+            if (err) reject(err);
+            else resolve(results.rows[0]);
+          }
+        );
+      });
+    }
   },
 
   // Get affiliate by coupon code
-  getAffiliateByCoupon: (couponCode) => {
-    return new Promise((resolve, reject) => {
+  getAffiliateByCoupon: (couponCode, callback) => {
+    if (callback) {
       pool.query(
         'SELECT * FROM affiliates WHERE coupon_code = $1',
         [couponCode],
         (err, results) => {
-          if (err) reject(err);
-          else resolve(results.rows[0]);
+          if (err) callback(err);
+          else callback(null, results.rows[0]);
         }
       );
-    });
+    } else {
+      return new Promise((resolve, reject) => {
+        pool.query(
+          'SELECT * FROM affiliates WHERE coupon_code = $1',
+          [couponCode],
+          (err, results) => {
+            if (err) reject(err);
+            else resolve(results.rows[0]);
+          }
+        );
+      });
+    }
   },
 
   // Create new affiliate
-  createAffiliate: (affiliateData) => {
-    return new Promise((resolve, reject) => {
-      const { username, email, password, full_name, coupon_code } = affiliateData;
+  createAffiliate: (affiliateData, callback) => {
+    const { username, email, password, full_name, coupon_code } = affiliateData;
+    
+    if (callback) {
       pool.query(
         'INSERT INTO affiliates (username, email, password, full_name, coupon_code) VALUES ($1, $2, $3, $4, $5) RETURNING *',
         [username, email, password, full_name, coupon_code],
         (err, results) => {
-          if (err) reject(err);
-          else resolve(results.rows[0]);
+          if (err) callback(err);
+          else callback(null, results.rows[0]);
         }
       );
-    });
+    } else {
+      return new Promise((resolve, reject) => {
+        pool.query(
+          'INSERT INTO affiliates (username, email, password, full_name, coupon_code) VALUES ($1, $2, $3, $4, $5) RETURNING *',
+          [username, email, password, full_name, coupon_code],
+          (err, results) => {
+            if (err) reject(err);
+            else resolve(results.rows[0]);
+          }
+        );
+      });
+    }
+  },
+
+  // Create new client
+  createClient: (data, callback) => {
+    const { name, email, phone, plan_type, plan_price, coupon_code, affiliate_id } = data;
+    
+    if (callback) {
+      pool.query(
+        'INSERT INTO clients (name, email, phone, plan_type, plan_price, coupon_code, affiliate_id) VALUES ($1, $2, $3, $4, $5, $6, $7) RETURNING *',
+        [name, email, phone, plan_type, plan_price, coupon_code, affiliate_id],
+        function(err, results) {
+          if (err) {
+            callback(err);
+          } else {
+            // Mimic SQLite's this.lastID for compatibility
+            callback.call({ lastID: results.rows[0].id }, null);
+          }
+        }
+      );
+    } else {
+      return new Promise((resolve, reject) => {
+        pool.query(
+          'INSERT INTO clients (name, email, phone, plan_type, plan_price, coupon_code, affiliate_id) VALUES ($1, $2, $3, $4, $5, $6, $7) RETURNING *',
+          [name, email, phone, plan_type, plan_price, coupon_code, affiliate_id],
+          (err, results) => {
+            if (err) reject(err);
+            else resolve(results.rows[0]);
+          }
+        );
+      });
+    }
+  },
+
+  // Create commission
+  createCommission: (data, callback) => {
+    const { affiliate_id, client_id, plan_type, plan_price, commission_rate, commission_amount } = data;
+    
+    if (callback) {
+      pool.query(
+        'INSERT INTO commissions (affiliate_id, client_id, plan_type, plan_price, commission_rate, commission_amount) VALUES ($1, $2, $3, $4, $5, $6) RETURNING *',
+        [affiliate_id, client_id, plan_type, plan_price, commission_rate, commission_amount],
+        (err, results) => {
+          if (err) callback(err);
+          else callback(null);
+        }
+      );
+    } else {
+      return new Promise((resolve, reject) => {
+        pool.query(
+          'INSERT INTO commissions (affiliate_id, client_id, plan_type, plan_price, commission_rate, commission_amount) VALUES ($1, $2, $3, $4, $5, $6) RETURNING *',
+          [affiliate_id, client_id, plan_type, plan_price, commission_rate, commission_amount],
+          (err, results) => {
+            if (err) reject(err);
+            else resolve(results.rows[0]);
+          }
+        );
+      });
+    }
   },
 
   // Track client signup
@@ -234,106 +337,175 @@ const dbHelpers = {
   },
 
   // Get affiliate stats
-  getAffiliateStats: (affiliateId) => {
-    return new Promise((resolve, reject) => {
-      pool.query(
-        `SELECT 
-          COUNT(DISTINCT c.id) as total_referrals,
-          COALESCE(SUM(cm.commission_amount), 0) as total_earnings,
-          COALESCE(SUM(CASE WHEN cm.status = 'pending' THEN cm.commission_amount ELSE 0 END), 0) as pending_earnings,
-          COALESCE(SUM(CASE WHEN cm.status = 'paid' THEN cm.commission_amount ELSE 0 END), 0) as paid_earnings
-        FROM affiliates a
-        LEFT JOIN clients c ON a.id = c.affiliate_id
-        LEFT JOIN commissions cm ON a.id = cm.affiliate_id
-        WHERE a.id = $1`,
-        [affiliateId],
-        (err, results) => {
+  getAffiliateStats: (affiliateId, callback) => {
+    const query = `SELECT 
+      COUNT(DISTINCT c.id) as total_referrals,
+      COALESCE(SUM(cm.commission_amount), 0) as total_earnings,
+      COALESCE(SUM(CASE WHEN cm.status = 'pending' THEN cm.commission_amount ELSE 0 END), 0) as pending_earnings,
+      COALESCE(SUM(CASE WHEN cm.status = 'paid' THEN cm.commission_amount ELSE 0 END), 0) as paid_earnings
+    FROM affiliates a
+    LEFT JOIN clients c ON a.id = c.affiliate_id
+    LEFT JOIN commissions cm ON a.id = cm.affiliate_id
+    WHERE a.id = $1`;
+    
+    if (callback) {
+      pool.query(query, [affiliateId], (err, results) => {
+        if (err) callback(err);
+        else callback(null, results.rows[0]);
+      });
+    } else {
+      return new Promise((resolve, reject) => {
+        pool.query(query, [affiliateId], (err, results) => {
           if (err) reject(err);
           else resolve(results.rows[0]);
-        }
-      );
-    });
+        });
+      });
+    }
   },
 
   // Get affiliate referrals
-  getAffiliateReferrals: (affiliateId) => {
-    return new Promise((resolve, reject) => {
-      pool.query(
-        `SELECT 
-          c.id,
-          c.name,
-          c.email,
-          c.plan_type,
-          c.plan_price,
-          c.signup_date,
-          cm.commission_rate,
-          cm.commission_amount,
-          cm.status as commission_status
-        FROM clients c
-        LEFT JOIN commissions cm ON c.id = cm.client_id
-        WHERE c.affiliate_id = $1
-        ORDER BY c.signup_date DESC`,
-        [affiliateId],
-        (err, results) => {
+  getAffiliateReferrals: (affiliateId, callback) => {
+    const query = `SELECT 
+      c.id,
+      c.name,
+      c.email,
+      c.plan_type,
+      c.plan_price,
+      c.signup_date,
+      cm.commission_rate,
+      cm.commission_amount,
+      cm.status as commission_status
+    FROM clients c
+    LEFT JOIN commissions cm ON c.id = cm.client_id
+    WHERE c.affiliate_id = $1
+    ORDER BY c.signup_date DESC`;
+    
+    if (callback) {
+      pool.query(query, [affiliateId], (err, results) => {
+        if (err) callback(err);
+        else callback(null, results.rows);
+      });
+    } else {
+      return new Promise((resolve, reject) => {
+        pool.query(query, [affiliateId], (err, results) => {
           if (err) reject(err);
           else resolve(results.rows);
-        }
-      );
-    });
+        });
+      });
+    }
   },
 
   // Get all affiliates (admin)
-  getAllAffiliates: () => {
-    return new Promise((resolve, reject) => {
+  getAllAffiliates: (callback) => {
+    if (callback) {
+      // Callback style for compatibility with routes
       pool.query(
         'SELECT id, username, email, full_name, coupon_code, status, created_at FROM affiliates ORDER BY created_at DESC',
         (err, results) => {
-          if (err) reject(err);
-          else resolve(results.rows);
+          if (err) callback(err);
+          else callback(null, results.rows);
         }
       );
-    });
+    } else {
+      // Promise style
+      return new Promise((resolve, reject) => {
+        pool.query(
+          'SELECT id, username, email, full_name, coupon_code, status, created_at FROM affiliates ORDER BY created_at DESC',
+          (err, results) => {
+            if (err) reject(err);
+            else resolve(results.rows);
+          }
+        );
+      });
+    }
   },
 
   // Get admin stats
-  getAdminStats: () => {
-    return new Promise((resolve, reject) => {
-      pool.query(
-        `SELECT 
-          (SELECT COUNT(*) FROM affiliates WHERE role = 'affiliate') as total_affiliates,
-          (SELECT COUNT(*) FROM clients) as total_clients,
-          (SELECT COALESCE(SUM(plan_price), 0) FROM clients) as total_revenue,
-          (SELECT COALESCE(SUM(commission_amount), 0) FROM commissions) as total_commissions,
-          (SELECT COALESCE(SUM(commission_amount), 0) FROM commissions WHERE status = 'pending') as pending_commissions,
-          (SELECT COALESCE(SUM(commission_amount), 0) FROM commissions WHERE status = 'paid') as paid_commissions`,
-        (err, results) => {
+  getAdminStats: (callback) => {
+    const query = `SELECT 
+      (SELECT COUNT(*) FROM affiliates WHERE role = 'affiliate') as total_affiliates,
+      (SELECT COUNT(*) FROM clients) as total_clients,
+      (SELECT COALESCE(SUM(plan_price), 0) FROM clients) as total_revenue,
+      (SELECT COALESCE(SUM(commission_amount), 0) FROM commissions) as total_commissions,
+      (SELECT COALESCE(SUM(commission_amount), 0) FROM commissions WHERE status = 'pending') as pending_commissions,
+      (SELECT COALESCE(SUM(commission_amount), 0) FROM commissions WHERE status = 'paid') as paid_commissions`;
+    
+    if (callback) {
+      pool.query(query, (err, results) => {
+        if (err) callback(err);
+        else callback(null, results.rows[0]);
+      });
+    } else {
+      return new Promise((resolve, reject) => {
+        pool.query(query, (err, results) => {
           if (err) reject(err);
           else resolve(results.rows[0]);
-        }
-      );
-    });
+        });
+      });
+    }
+  },
+
+  // Alias for compatibility
+  getOverallStats: function(callback) {
+    return this.getAdminStats(callback);
   },
 
   // Get all clients (admin)
-  getAllClients: () => {
-    return new Promise((resolve, reject) => {
-      pool.query(
-        `SELECT 
-          c.*,
-          a.full_name as affiliate_name,
-          cm.commission_rate,
-          cm.commission_amount,
-          cm.status as commission_status
-        FROM clients c
-        LEFT JOIN affiliates a ON c.affiliate_id = a.id
-        LEFT JOIN commissions cm ON c.id = cm.client_id
-        ORDER BY c.signup_date DESC`,
-        (err, results) => {
+  getAllClients: (callback) => {
+    const query = `SELECT 
+      c.*,
+      a.full_name as affiliate_name,
+      cm.commission_rate,
+      cm.commission_amount,
+      cm.status as commission_status
+    FROM clients c
+    LEFT JOIN affiliates a ON c.affiliate_id = a.id
+    LEFT JOIN commissions cm ON c.id = cm.client_id
+    ORDER BY c.signup_date DESC`;
+    
+    if (callback) {
+      pool.query(query, (err, results) => {
+        if (err) callback(err);
+        else callback(null, results.rows);
+      });
+    } else {
+      return new Promise((resolve, reject) => {
+        pool.query(query, (err, results) => {
           if (err) reject(err);
           else resolve(results.rows);
+        });
+      });
+    }
+  },
+
+  // Alias for compatibility with auth routes
+  getAllClientsWithAffiliates: function(callback) {
+    return this.getAllClients(callback);
+  },
+
+  // Get affiliate login info (for auth)
+  getAffiliateByLogin: (username, callback) => {
+    if (callback) {
+      pool.query(
+        'SELECT * FROM affiliates WHERE username = $1 OR email = $1',
+        [username],
+        (err, results) => {
+          if (err) callback(err);
+          else callback(null, results.rows[0]);
         }
       );
-    });
+    } else {
+      return new Promise((resolve, reject) => {
+        pool.query(
+          'SELECT * FROM affiliates WHERE username = $1 OR email = $1',
+          [username],
+          (err, results) => {
+            if (err) reject(err);
+            else resolve(results.rows[0]);
+          }
+        );
+      });
+    }
   }
 };
 

@@ -1,6 +1,6 @@
 const express = require('express');
 const { body, validationResult } = require('express-validator');
-const { dbHelpers } = require('../models/database');
+const { dbHelpers, pool } = require('../models');
 const { verifyToken, verifyAdmin, verifyAffiliate } = require('../middleware/auth');
 
 const router = express.Router();

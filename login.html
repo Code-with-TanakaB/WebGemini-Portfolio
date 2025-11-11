@@ -9,8 +9,8 @@
        <!-- Favicon -->
     <link rel="icon" type="image/png" href="image/logo.png">
     
-    <!-- Google reCAPTCHA Enterprise -->
-    <script src="https://www.google.com/recaptcha/enterprise.js" async defer></script>
+    <!-- Google reCAPTCHA v2 -->
+    <script src="https://www.google.com/recaptcha/api.js" async defer></script>
     
 </head>
 <body class="login-page">
@@ -115,10 +115,18 @@
                     <input type="password" id="reg_confirm_password" name="confirm_password" required placeholder="Confirm your password">
                 </div>
 
-                <!-- reCAPTCHA Enterprise (Invisible) -->
+                <!-- reCAPTCHA v2 (Invisible) -->
+                <div class="form-group" style="display: none;">
+                    <div class="g-recaptcha" 
+                         id="recaptcha-widget"
+                         data-sitekey="6Lf7BgksAAAAAPPByVV0JbmaoV74W4Io0RFNt0Vr" 
+                         data-size="invisible"
+                         data-callback="onRecaptchaSuccess">
+                    </div>
+                </div>
                 <div class="form-group">
                     <small style="color: #888; font-size: 12px; display: block; margin-top: 8px;">
-                        <i class="fas fa-shield-alt"></i> Protected by reCAPTCHA Enterprise
+                        <i class="fas fa-shield-alt"></i> Protected by reCAPTCHA
                     </small>
                 </div>
 
@@ -142,7 +150,16 @@
         const API_BASE_URL = 'https://webgemini-affiliate-backend.onrender.com/api';
         let registrationDataGlobal = null;
 
-        // Submit registration with reCAPTCHA Enterprise token
+        // reCAPTCHA success callback
+        function onRecaptchaSuccess(token) {
+            console.log('✅ reCAPTCHA token received');
+            if (registrationDataGlobal) {
+                registrationDataGlobal.recaptcha_token = token;
+                submitRegistrationWithToken(registrationDataGlobal);
+            }
+        }
+
+        // Submit registration with reCAPTCHA token
         async function submitRegistrationWithToken(regData) {
             const errorMessage = document.getElementById('registerErrorMessage');
             const successMessage = document.getElementById('registerSuccessMessage');
@@ -290,7 +307,7 @@
                 return;
             }
 
-            // Store registration data and trigger reCAPTCHA Enterprise
+            // Store registration data and trigger reCAPTCHA v2
             registrationDataGlobal = { 
                 full_name: fullName,
                 username,
@@ -298,22 +315,9 @@
                 password
             };
 
-            console.log('🔒 Executing reCAPTCHA Enterprise...');
+            console.log('🔒 Executing reCAPTCHA...');
             try {
-                grecaptcha.enterprise.ready(function() {
-                    grecaptcha.enterprise.execute('6Lf7BgksAAAAAPPByVV0JbmaoV74W4Io0RFNt0Vr', {
-                        action: 'affiliate_registration'
-                    }).then(function(token) {
-                        console.log('✅ reCAPTCHA token received');
-                        registrationDataGlobal.recaptcha_token = token;
-                        registrationDataGlobal.recaptcha_action = 'affiliate_registration';
-                        submitRegistrationWithToken(registrationDataGlobal);
-                    }).catch(function(error) {
-                        console.error('reCAPTCHA execution error:', error);
-                        errorMessage.textContent = '⚠️ Security verification failed. Please refresh and try again.';
-                        errorMessage.style.display = 'block';
-                    });
-                });
+                grecaptcha.execute(); // This will call onRecaptchaSuccess when done
             } catch (error) {
                 console.error('reCAPTCHA execution error:', error);
                 errorMessage.textContent = '⚠️ Security verification failed. Please refresh and try again.';

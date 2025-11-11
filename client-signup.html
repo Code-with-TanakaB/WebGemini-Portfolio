@@ -8,8 +8,8 @@
        <!-- Favicon -->
     <link rel="icon" type="image/png" href="image/logo.png">
     
-    <!-- Google reCAPTCHA Enterprise -->
-    <script src="https://www.google.com/recaptcha/enterprise.js" async defer></script>
+    <!-- Google reCAPTCHA v2 -->
+    <script src="https://www.google.com/recaptcha/api.js" async defer></script>
     
 </head>    <style>
         .signup-page {
@@ -212,10 +212,18 @@
                 <div id="couponStatus" class="coupon-status"></div>
             </div>
 
-            <!-- reCAPTCHA Enterprise (Invisible) -->
+            <!-- reCAPTCHA v2 (Invisible) -->
+            <div class="form-group" style="display: none;">
+                <div class="g-recaptcha" 
+                     id="recaptcha-widget"
+                     data-sitekey="6Lf7BgksAAAAAPPByVV0JbmaoV74W4Io0RFNt0Vr" 
+                     data-size="invisible"
+                     data-callback="onRecaptchaSuccess">
+                </div>
+            </div>
             <div class="form-group">
                 <small style="color: #64748b; display: block; margin-top: 8px;">
-                    <i class="fas fa-shield-alt"></i> Protected by reCAPTCHA Enterprise
+                    <i class="fas fa-shield-alt"></i> Protected by reCAPTCHA
                 </small>
             </div>
 
@@ -234,6 +242,15 @@
         let isCouponValid = false;
         let validatedCoupon = null;
         let formDataGlobal = null;
+
+        // reCAPTCHA success callback
+        function onRecaptchaSuccess(token) {
+            console.log('✅ reCAPTCHA token received');
+            if (formDataGlobal) {
+                formDataGlobal.recaptcha_token = token;
+                submitFormWithToken(formDataGlobal);
+            }
+        }
 
         // Submit form with reCAPTCHA token
         async function submitFormWithToken(formData) {
@@ -352,23 +369,10 @@
             successMsg.style.display = 'none';
             errorMsg.style.display = 'none';
 
-            // Execute reCAPTCHA Enterprise
-            console.log('🔒 Executing reCAPTCHA Enterprise...');
+            // Execute reCAPTCHA v2 invisible
+            console.log('🔒 Executing reCAPTCHA...');
             try {
-                grecaptcha.enterprise.ready(function() {
-                    grecaptcha.enterprise.execute('6Lf7BgksAAAAAPPByVV0JbmaoV74W4Io0RFNt0Vr', {
-                        action: 'client_signup'
-                    }).then(function(token) {
-                        console.log('✅ reCAPTCHA token received');
-                        formDataGlobal.recaptcha_token = token;
-                        formDataGlobal.recaptcha_action = 'client_signup';
-                        submitFormWithToken(formDataGlobal);
-                    }).catch(function(error) {
-                        console.error('reCAPTCHA execution error:', error);
-                        errorMsg.textContent = '⚠️ Security verification failed. Please refresh and try again.';
-                        errorMsg.style.display = 'block';
-                    });
-                });
+                grecaptcha.execute(); // This will call onRecaptchaSuccess when done
             } catch (error) {
                 console.error('reCAPTCHA execution error:', error);
                 errorMsg.textContent = '⚠️ Security verification failed. Please refresh and try again.';
@@ -378,3 +382,4 @@
     </script>
 </body>
 </html>
+

@@ -1,100 +1,29 @@
-const { RecaptchaEnterpriseServiceClient } = require('@google-cloud/recaptcha-enterprise');
+const axios = require('axios');
 
 /**
- * reCAPTCHA Enterprise Verification Middleware
- * Verifies Google reCAPTCHA Enterprise token and provides risk analysis
+ * reCAPTCHA v2 Verification Middleware
+ * Verifies Google reCAPTCHA v2 token from client requests
  * 
  * Usage: Add this middleware to routes that need reCAPTCHA protection
  * Example: router.post('/signup', verifyRecaptcha, (req, res) => { ... })
  */
 
-// Cache the client for better performance (recommended by Google)
-let recaptchaClient = null;
-
-function getRecaptchaClient() {
-  if (!recaptchaClient) {
-    recaptchaClient = new RecaptchaEnterpriseServiceClient();
-  }
-  return recaptchaClient;
-}
-
-/**
- * Create an assessment to analyze the risk of a UI action
- */
-async function createAssessment({
-  projectID,
-  recaptchaKey,
-  token,
-  recaptchaAction,
-}) {
-  const client = getRecaptchaClient();
-  const projectPath = client.projectPath(projectID);
-
-  // Build the assessment request
-  const request = {
-    assessment: {
-      event: {
-        token: token,
-        siteKey: recaptchaKey,
-      },
-    },
-    parent: projectPath,
-  };
-
-  try {
-    const [response] = await client.createAssessment(request);
-
-    // Check if the token is valid
-    if (!response.tokenProperties.valid) {
-      console.log(`❌ reCAPTCHA token invalid: ${response.tokenProperties.invalidReason}`);
-      return {
-        valid: false,
-        reason: response.tokenProperties.invalidReason,
-        score: 0
-      };
-    }
-
-    // Check if the expected action was executed
-    if (response.tokenProperties.action === recaptchaAction) {
-      const score = response.riskAnalysis.score;
-      console.log(`✅ reCAPTCHA score: ${score} (action: ${recaptchaAction})`);
-      
-      // Log any risk reasons
-      if (response.riskAnalysis.reasons && response.riskAnalysis.reasons.length > 0) {
-        console.log('Risk factors:', response.riskAnalysis.reasons);
-      }
-
-      return {
-        valid: true,
-        score: score,
-        reasons: response.riskAnalysis.reasons || []
-      };
-    } else {
-      console.log(`❌ Action mismatch: expected '${recaptchaAction}', got '${response.tokenProperties.action}'`);
-      return {
-        valid: false,
-        reason: 'ACTION_MISMATCH',
-        score: 0
-      };
-    }
-  } catch (error) {
-    console.error('reCAPTCHA Enterprise API error:', error.message);
-    throw error;
-  }
-}
-
 const verifyRecaptcha = async (req, res, next) => {
   const recaptchaToken = req.body.recaptcha_token;
-  const recaptchaAction = req.body.recaptcha_action || 'submit_form';
   
-  // Skip verification in development if project ID is not set
-  if (!process.env.RECAPTCHA_PROJECT_ID) {
-    console.warn('⚠️  RECAPTCHA_PROJECT_ID not set - skipping verification (development mode)');
+  // Skip verification in development if no secret key is set
+  if (!process.env.RECAPTCHA_SECRET_KEY) {
+    console.warn('⚠️  RECAPTCHA_SECRET_KEY not set - skipping verification (development mode)');
     return next();
   }
 
-  // Check if token exists
+  // Check if token exists - allow in development if missing
   if (!recaptchaToken) {
+    console.warn('⚠️  No reCAPTCHA token provided');
+    if (process.env.NODE_ENV !== 'production') {
+      console.warn('   Allowing request in development mode');
+      return next();
+    }
     return res.status(400).json({
       success: false,
       message: 'reCAPTCHA verification required. Please complete the CAPTCHA.'
@@ -102,47 +31,54 @@ const verifyRecaptcha = async (req, res, next) => {
   }
 
   try {
-    // Create assessment with reCAPTCHA Enterprise
-    const assessment = await createAssessment({
-      projectID: process.env.RECAPTCHA_PROJECT_ID,
-      recaptchaKey: process.env.RECAPTCHA_SITE_KEY,
-      token: recaptchaToken,
-      recaptchaAction: recaptchaAction
+    // Verify token with Google reCAPTCHA API
+    const verificationUrl = 'https://www.google.com/recaptcha/api/siteverify';
+    const response = await axios.post(verificationUrl, null, {
+      params: {
+        secret: process.env.RECAPTCHA_SECRET_KEY,
+        response: recaptchaToken,
+        remoteip: req.ip || req.connection.remoteAddress
+      }
     });
 
-    // Check if assessment is valid
-    if (!assessment.valid) {
-      console.error('reCAPTCHA verification failed:', assessment.reason);
+    const { success, score, 'error-codes': errorCodes } = response.data;
+
+    // Check if verification was successful
+    if (!success) {
+      console.error('reCAPTCHA verification failed:', errorCodes);
+      
+      // In development, log error but allow request
+      if (process.env.NODE_ENV !== 'production') {
+        console.warn('⚠️  reCAPTCHA failed but allowing in development mode');
+        return next();
+      }
+      
       return res.status(400).json({
         success: false,
         message: 'reCAPTCHA verification failed. Please try again.',
-        reason: assessment.reason
+        error_codes: errorCodes
       });
     }
 
-    // Check risk score (scores range from 0.0 to 1.0, higher is less risky)
-    // Recommended: Reject if score < 0.5 for sensitive actions
-    const MINIMUM_SCORE = parseFloat(process.env.RECAPTCHA_MINIMUM_SCORE || '0.5');
-    
-    if (assessment.score < MINIMUM_SCORE) {
-      console.warn(`⚠️  Low reCAPTCHA score: ${assessment.score} (minimum: ${MINIMUM_SCORE})`);
-      return res.status(400).json({
-        success: false,
-        message: 'reCAPTCHA verification failed. Suspicious activity detected.',
-        score: assessment.score
-      });
+    // For reCAPTCHA v3, check score (optional)
+    if (score !== undefined && score < 0.5) {
+      console.warn(`Low reCAPTCHA score: ${score}`);
+      // Still allow in development
+      if (process.env.NODE_ENV !== 'production') {
+        console.warn('⚠️  Low score but allowing in development mode');
+        return next();
+      }
     }
 
-    // Verification successful, attach score to request for logging
-    req.recaptchaScore = assessment.score;
-    console.log('✅ reCAPTCHA verified successfully (score:', assessment.score, ')');
+    // Verification successful
+    console.log('✅ reCAPTCHA verified successfully');
     next();
 
   } catch (error) {
     console.error('Error verifying reCAPTCHA:', error.message);
     
     // In production, fail closed (reject on error)
-    // In development, you might want to fail open (allow on error)
+    // In development, fail open (allow on error)
     if (process.env.NODE_ENV === 'production') {
       return res.status(500).json({
         success: false,
@@ -156,4 +92,4 @@ const verifyRecaptcha = async (req, res, next) => {
   }
 };
 
-module.exports = { verifyRecaptcha, createAssessment };
+module.exports = { verifyRecaptcha };

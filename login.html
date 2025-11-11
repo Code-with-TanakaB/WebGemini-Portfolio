@@ -9,9 +9,6 @@
        <!-- Favicon -->
     <link rel="icon" type="image/png" href="image/logo.png">
     
-    <!-- Google reCAPTCHA v2 -->
-    <script src="https://www.google.com/recaptcha/api.js" async defer></script>
-    
 </head>
 <body class="login-page">
     <div class="login-container">
@@ -115,18 +112,12 @@
                     <input type="password" id="reg_confirm_password" name="confirm_password" required placeholder="Confirm your password">
                 </div>
 
-                <!-- reCAPTCHA v2 (Invisible) -->
-                <div class="form-group" style="display: none;">
-                    <div class="g-recaptcha" 
-                         id="recaptcha-widget"
-                         data-sitekey="6Lf7BgksAAAAAPPByVV0JbmaoV74W4Io0RFNt0Vr" 
-                         data-size="invisible"
-                         data-callback="onRecaptchaSuccess">
-                    </div>
-                </div>
+                <!-- Honeypot field (hidden from humans, bots will fill it) -->
+                <input type="text" name="company_website" id="company_website" style="position: absolute; left: -9999px;" tabindex="-1" autocomplete="off">
+                
                 <div class="form-group">
                     <small style="color: #888; font-size: 12px; display: block; margin-top: 8px;">
-                        <i class="fas fa-shield-alt"></i> Protected by reCAPTCHA
+                        <i class="fas fa-shield-alt"></i> Protected by spam filters
                     </small>
                 </div>
 
@@ -148,18 +139,9 @@
     <script>
         // API Configuration - Points to Render backend
         const API_BASE_URL = 'https://webgemini-affiliate-backend.onrender.com/api';
-        let registrationDataGlobal = null;
+        let formStartTime = Date.now(); // Track when form was loaded
 
-        // reCAPTCHA success callback
-        function onRecaptchaSuccess(token) {
-            console.log('✅ reCAPTCHA token received');
-            if (registrationDataGlobal) {
-                registrationDataGlobal.recaptcha_token = token;
-                submitRegistrationWithToken(registrationDataGlobal);
-            }
-        }
-
-        // Submit registration with reCAPTCHA token
+        // Submit registration directly (no reCAPTCHA needed)
         async function submitRegistrationWithToken(regData) {
             const errorMessage = document.getElementById('registerErrorMessage');
             const successMessage = document.getElementById('registerSuccessMessage');
@@ -307,22 +289,18 @@
                 return;
             }
 
-            // Store registration data and trigger reCAPTCHA v2
-            registrationDataGlobal = { 
+            // Prepare registration data with anti-spam fields
+            const registrationData = { 
                 full_name: fullName,
                 username,
                 email,
-                password
+                password,
+                company_website: document.getElementById('company_website').value, // Honeypot field
+                form_start_time: formStartTime // Anti-bot timing
             };
 
-            console.log('🔒 Executing reCAPTCHA...');
-            try {
-                grecaptcha.execute(); // This will call onRecaptchaSuccess when done
-            } catch (error) {
-                console.error('reCAPTCHA execution error:', error);
-                errorMessage.textContent = '⚠️ Security verification failed. Please refresh and try again.';
-                errorMessage.style.display = 'block';
-            }
+            // Submit directly
+            submitRegistrationWithToken(registrationData);
         });
 
         // Check if already logged in

@@ -2,7 +2,7 @@ const express = require('express');
 const { body, validationResult } = require('express-validator');
 const { dbHelpers, pool } = require('../models');
 const { verifyToken, verifyAdmin, verifyAffiliate } = require('../middleware/auth');
-const { verifyRecaptcha } = require('../middleware/recaptcha');
+const { spamProtection } = require('../middleware/spam-protection');
 
 const router = express.Router();
 
@@ -154,7 +154,7 @@ router.get('/referrals', verifyToken, verifyAffiliate, (req, res) => {
 });
 
 // Track new client signup (public endpoint - called from signup form)
-router.post('/track-signup', clientSignupValidation, verifyRecaptcha, (req, res) => {
+router.post('/track-signup', clientSignupValidation, spamProtection, (req, res) => {
   // Check validation results
   const errors = validationResult(req);
   if (!errors.isEmpty()) {

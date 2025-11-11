@@ -3,6 +3,7 @@ const bcrypt = require('bcryptjs');
 const { body, validationResult } = require('express-validator');
 const { dbHelpers } = require('../models');
 const { generateToken, verifyToken } = require('../middleware/auth');
+const { verifyRecaptcha } = require('../middleware/recaptcha');
 
 const router = express.Router();
 
@@ -158,7 +159,7 @@ router.post('/register-affiliate', [
   body('email').isEmail().normalizeEmail().withMessage('Invalid email address'),
   body('password').isLength({ min: 8 }).withMessage('Password must be at least 8 characters'),
   body('full_name').trim().isLength({ min: 2, max: 100 }).withMessage('Full name must be 2-100 characters')
-], (req, res) => {
+], verifyRecaptcha, (req, res) => {
   // Check validation results
   const errors = validationResult(req);
   if (!errors.isEmpty()) {

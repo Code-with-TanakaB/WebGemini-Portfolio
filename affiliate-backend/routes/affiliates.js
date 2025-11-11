@@ -123,17 +123,23 @@ router.get('/admin/stats', verifyToken, verifyAdmin, (req, res) => {
 
 // Admin: Get all clients with affiliate information
 router.get('/admin/clients', verifyToken, verifyAdmin, (req, res) => {
+  console.log('📋 Admin requesting all clients...');
+  
   dbHelpers.getAllClientsWithAffiliates((err, clients) => {
     if (err) {
+      console.error('❌ Error fetching clients:', err);
       return res.status(500).json({ 
         success: false, 
-        message: 'Error fetching clients.' 
+        message: 'Error fetching clients.',
+        error: err.message 
       });
     }
 
+    console.log(`✅ Successfully fetched ${clients ? clients.length : 0} clients`);
+    
     res.json({
       success: true,
-      clients
+      clients: clients || []
     });
   });
 });

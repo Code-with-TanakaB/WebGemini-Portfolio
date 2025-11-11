@@ -9,8 +9,8 @@
        <!-- Favicon -->
     <link rel="icon" type="image/png" href="image/logo.png">
     
-    <!-- Google reCAPTCHA -->
-    <script src="https://www.google.com/recaptcha/api.js" async defer></script>
+    <!-- Google reCAPTCHA Enterprise -->
+    <script src="https://www.google.com/recaptcha/enterprise.js" async defer></script>
     
 </head>
 <body class="login-page">
@@ -115,11 +115,10 @@
                     <input type="password" id="reg_confirm_password" name="confirm_password" required placeholder="Confirm your password">
                 </div>
 
-                <!-- reCAPTCHA -->
+                <!-- reCAPTCHA Enterprise (Invisible) -->
                 <div class="form-group">
-                    <div class="g-recaptcha" data-sitekey="6Lf7BgksAAAAAPPByVV0JbmaoV74W4Io0RFNt0Vr"></div>
                     <small style="color: #888; font-size: 12px; display: block; margin-top: 8px;">
-                        <i class="fas fa-shield-alt"></i> Protected by reCAPTCHA
+                        <i class="fas fa-shield-alt"></i> Protected by reCAPTCHA Enterprise
                     </small>
                 </div>
 
@@ -141,6 +140,51 @@
     <script>
         // API Configuration - Points to Render backend
         const API_BASE_URL = 'https://webgemini-affiliate-backend.onrender.com/api';
+        let registrationDataGlobal = null;
+
+        // Submit registration with reCAPTCHA Enterprise token
+        async function submitRegistrationWithToken(regData) {
+            const errorMessage = document.getElementById('registerErrorMessage');
+            const successMessage = document.getElementById('registerSuccessMessage');
+
+            try {
+                const response = await fetch(`${API_BASE_URL}/auth/register-affiliate`, {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify(regData)
+                });
+
+                const data = await response.json();
+
+                if (data.success) {
+                    successMessage.textContent = `Registration successful! Your coupon code is: ${data.coupon_code}. Redirecting to login...`;
+                    successMessage.style.display = 'block';
+                    
+                    // Clear form
+                    document.getElementById('registerForm').reset();
+                    registrationDataGlobal = null;
+                    
+                    // Redirect to login after 3 seconds
+                    setTimeout(() => {
+                        document.querySelector('.login-box:first-of-type').style.display = 'block';
+                        document.getElementById('registerBox').style.display = 'none';
+                        const loginSuccessMsg = document.getElementById('successMessage');
+                        loginSuccessMsg.textContent = 'Registration successful! Please login with your credentials.';
+                        loginSuccessMsg.style.display = 'block';
+                    }, 3000);
+                } else {
+                    errorMessage.textContent = data.message || 'Registration failed. Please try again.';
+                    errorMessage.style.display = 'block';
+                    grecaptcha.reset();
+                }
+            } catch (error) {
+                console.error('Registration error:', error);
+                errorMessage.textContent = 'Connection error. Please check your internet connection and try again.';
+                errorMessage.style.display = 'block';
+            }
+        }
 
         // Toggle between login and register forms
         document.getElementById('showRegisterLink').addEventListener('click', (e) => {
@@ -231,20 +275,11 @@
             // Hide previous messages
             errorMessage.style.display = 'none';
             successMessage.style.display = 'none';
-
-            // Verify reCAPTCHA
-            const recaptchaResponse = grecaptcha.getResponse();
-            if (!recaptchaResponse) {
-                errorMessage.textContent = '⚠️ Please complete the reCAPTCHA verification.';
-                errorMessage.style.display = 'block';
-                return;
-            }
             
             // Validate passwords match
             if (password !== confirmPassword) {
                 errorMessage.textContent = 'Passwords do not match';
                 errorMessage.style.display = 'block';
-                grecaptcha.reset();
                 return;
             }
             
@@ -252,53 +287,37 @@
             if (password.length < 8) {
                 errorMessage.textContent = 'Password must be at least 8 characters';
                 errorMessage.style.display = 'block';
-                grecaptcha.reset();
                 return;
             }
-            
+
+            // Store registration data and trigger reCAPTCHA Enterprise
+            registrationDataGlobal = { 
+                full_name: fullName,
+                username,
+                email,
+                password
+            };
+
+            console.log('🔒 Executing reCAPTCHA Enterprise...');
             try {
-                const response = await fetch(`${API_BASE_URL}/auth/register-affiliate`, {
-                    method: 'POST',
-                    headers: {
-                        'Content-Type': 'application/json'
-                    },
-                    body: JSON.stringify({ 
-                        full_name: fullName,
-                        username,
-                        email,
-                        password,
-                        recaptcha_token: recaptchaResponse
-                    })
+                grecaptcha.enterprise.ready(function() {
+                    grecaptcha.enterprise.execute('6Lf7BgksAAAAAPPByVV0JbmaoV74W4Io0RFNt0Vr', {
+                        action: 'affiliate_registration'
+                    }).then(function(token) {
+                        console.log('✅ reCAPTCHA token received');
+                        registrationDataGlobal.recaptcha_token = token;
+                        registrationDataGlobal.recaptcha_action = 'affiliate_registration';
+                        submitRegistrationWithToken(registrationDataGlobal);
+                    }).catch(function(error) {
+                        console.error('reCAPTCHA execution error:', error);
+                        errorMessage.textContent = '⚠️ Security verification failed. Please refresh and try again.';
+                        errorMessage.style.display = 'block';
+                    });
                 });
-
-                const data = await response.json();
-
-                if (data.success) {
-                    successMessage.textContent = `Registration successful! Your coupon code is: ${data.coupon_code}. Redirecting to login...`;
-                    successMessage.style.display = 'block';
-                    
-                    // Clear form and reset reCAPTCHA
-                    document.getElementById('registerForm').reset();
-                    grecaptcha.reset();
-                    
-                    // Redirect to login after 3 seconds
-                    setTimeout(() => {
-                        document.querySelector('.login-box:first-of-type').style.display = 'block';
-                        document.getElementById('registerBox').style.display = 'none';
-                        const loginSuccessMsg = document.getElementById('successMessage');
-                        loginSuccessMsg.textContent = 'Registration successful! Please login with your credentials.';
-                        loginSuccessMsg.style.display = 'block';
-                    }, 3000);
-                } else {
-                    errorMessage.textContent = data.message || 'Registration failed. Please try again.';
-                    errorMessage.style.display = 'block';
-                    grecaptcha.reset(); // Reset on error
-                }
             } catch (error) {
-                console.error('Registration error:', error);
-                errorMessage.textContent = 'Connection error. Please check your internet connection and try again.';
+                console.error('reCAPTCHA execution error:', error);
+                errorMessage.textContent = '⚠️ Security verification failed. Please refresh and try again.';
                 errorMessage.style.display = 'block';
-                grecaptcha.reset(); // Reset on error
             }
         });
 

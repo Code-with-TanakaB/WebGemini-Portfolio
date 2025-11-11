@@ -8,10 +8,10 @@
        <!-- Favicon -->
     <link rel="icon" type="image/png" href="image/logo.png">
     
-    <!-- Google reCAPTCHA -->
-    <script src="https://www.google.com/recaptcha/api.js" async defer></script>
+    <!-- Google reCAPTCHA Enterprise -->
+    <script src="https://www.google.com/recaptcha/enterprise.js" async defer></script>
     
-    <style>
+</head>    <style>
         .signup-page {
             display: flex;
             align-items: center;
@@ -212,15 +212,14 @@
                 <div id="couponStatus" class="coupon-status"></div>
             </div>
 
-            <!-- reCAPTCHA -->
+            <!-- reCAPTCHA Enterprise (Invisible) -->
             <div class="form-group">
-                <div class="g-recaptcha" data-sitekey="6Lf7BgksAAAAAPPByVV0JbmaoV74W4Io0RFNt0Vr" style="transform:scale(0.9);transform-origin:0 0;"></div>
                 <small style="color: #64748b; display: block; margin-top: 8px;">
-                    <i class="fas fa-shield-alt"></i> Protected by reCAPTCHA to prevent spam and abuse
+                    <i class="fas fa-shield-alt"></i> Protected by reCAPTCHA Enterprise
                 </small>
             </div>
 
-            <button type="submit" class="submit-btn">Complete Signup</button>
+            <button type="submit" class="submit-btn" id="submitBtn">Complete Signup</button>
 
             <div id="successMessage" class="success-message"></div>
             <div id="errorMessage" class="error-message"></div>
@@ -234,6 +233,45 @@
         console.log('Client Signup using API:', API_BASE_URL);
         let isCouponValid = false;
         let validatedCoupon = null;
+        let formDataGlobal = null;
+
+        // Submit form with reCAPTCHA token
+        async function submitFormWithToken(formData) {
+            const successMsg = document.getElementById('successMessage');
+            const errorMsg = document.getElementById('errorMessage');
+
+            try {
+                const response = await fetch(`${API_BASE_URL}/affiliates/track-signup`, {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify(formData)
+                });
+
+                const data = await response.json();
+
+                if (data.success) {
+                    successMsg.textContent = `🎉 ${data.message}${data.affiliate ? ' Referred by ' + data.affiliate + '!' : ''}`;
+                    successMsg.style.display = 'block';
+                    document.getElementById('signupForm').reset();
+                    document.getElementById('couponStatus').style.display = 'none';
+                    formDataGlobal = null;
+                    
+                    // Scroll to success message
+                    successMsg.scrollIntoView({ behavior: 'smooth', block: 'center' });
+                } else {
+                    errorMsg.textContent = data.message || 'Signup failed. Please try again.';
+                    errorMsg.style.display = 'block';
+                    grecaptcha.reset(); // Reset for retry
+                }
+            } catch (error) {
+                console.error('Signup error:', error);
+                errorMsg.textContent = 'Connection error. Please make sure the server is running and try again.';
+                errorMsg.style.display = 'block';
+                grecaptcha.reset(); // Reset for retry
+            }
+        }
 
         // Plan prices mapping
         const planPrices = {
@@ -298,24 +336,14 @@
         document.getElementById('signupForm').addEventListener('submit', async (e) => {
             e.preventDefault();
 
-            // Verify reCAPTCHA
-            const recaptchaResponse = grecaptcha.getResponse();
-            if (!recaptchaResponse) {
-                const errorMsg = document.getElementById('errorMessage');
-                errorMsg.textContent = '⚠️ Please complete the reCAPTCHA verification.';
-                errorMsg.style.display = 'block';
-                errorMsg.scrollIntoView({ behavior: 'smooth', block: 'center' });
-                return;
-            }
-
-            const formData = {
+            // Prepare form data
+            formDataGlobal = {
                 name: document.getElementById('name').value,
                 email: document.getElementById('email').value,
                 phone: document.getElementById('phone').value,
                 plan_type: document.getElementById('planType').value,
                 plan_price: parseFloat(document.getElementById('planPrice').value),
-                coupon_code: document.getElementById('couponCode').value.trim() || null,
-                recaptcha_token: recaptchaResponse
+                coupon_code: document.getElementById('couponCode').value.trim() || null
             };
 
             const successMsg = document.getElementById('successMessage');
@@ -324,34 +352,26 @@
             successMsg.style.display = 'none';
             errorMsg.style.display = 'none';
 
+            // Execute reCAPTCHA Enterprise
+            console.log('🔒 Executing reCAPTCHA Enterprise...');
             try {
-                const response = await fetch(`${API_BASE_URL}/affiliates/track-signup`, {
-                    method: 'POST',
-                    headers: {
-                        'Content-Type': 'application/json'
-                    },
-                    body: JSON.stringify(formData)
+                grecaptcha.enterprise.ready(function() {
+                    grecaptcha.enterprise.execute('6Lf7BgksAAAAAPPByVV0JbmaoV74W4Io0RFNt0Vr', {
+                        action: 'client_signup'
+                    }).then(function(token) {
+                        console.log('✅ reCAPTCHA token received');
+                        formDataGlobal.recaptcha_token = token;
+                        formDataGlobal.recaptcha_action = 'client_signup';
+                        submitFormWithToken(formDataGlobal);
+                    }).catch(function(error) {
+                        console.error('reCAPTCHA execution error:', error);
+                        errorMsg.textContent = '⚠️ Security verification failed. Please refresh and try again.';
+                        errorMsg.style.display = 'block';
+                    });
                 });
-
-                const data = await response.json();
-
-                if (data.success) {
-                    successMsg.textContent = `🎉 ${data.message}${data.affiliate ? ' Referred by ' + data.affiliate + '!' : ''}`;
-                    successMsg.style.display = 'block';
-                    document.getElementById('signupForm').reset();
-                    grecaptcha.reset(); // Reset reCAPTCHA
-                    document.getElementById('couponStatus').style.display = 'none';
-                    
-                    // Scroll to success message
-                    successMsg.scrollIntoView({ behavior: 'smooth', block: 'center' });
-                } else {
-                    errorMsg.textContent = data.message || 'Signup failed. Please try again.';
-                    errorMsg.style.display = 'block';
-                    grecaptcha.reset(); // Reset reCAPTCHA on error
-                }
             } catch (error) {
-                console.error('Signup error:', error);
-                errorMsg.textContent = 'Connection error. Please make sure the server is running and try again.';
+                console.error('reCAPTCHA execution error:', error);
+                errorMsg.textContent = '⚠️ Security verification failed. Please refresh and try again.';
                 errorMsg.style.display = 'block';
             }
         });

@@ -198,4 +198,26 @@ process.on('unhandledRejection', (reason, promise) => {
   // Don't exit - keep server running
 });
 
+// Self-ping to keep Render service alive (free tier auto-sleeps after 15 min)
+if (process.env.NODE_ENV === 'production') {
+  const https = require('https');
+  const RENDER_URL = process.env.RENDER_EXTERNAL_URL || 'https://webgemini-affiliate-backend.onrender.com';
+  
+  // Ping every 14 minutes (before the 15-minute timeout)
+  const PING_INTERVAL = 14 * 60 * 1000; // 14 minutes in milliseconds
+  
+  setInterval(() => {
+    const url = `${RENDER_URL}/api/health`;
+    console.log(`🔄 Self-ping: ${url}`);
+    
+    https.get(url, (res) => {
+      console.log(`✅ Self-ping successful (status: ${res.statusCode})`);
+    }).on('error', (err) => {
+      console.error('❌ Self-ping failed:', err.message);
+    });
+  }, PING_INTERVAL);
+  
+  console.log(`🔔 Self-ping enabled: Will ping every 14 minutes to prevent sleep`);
+}
+
 module.exports = app;

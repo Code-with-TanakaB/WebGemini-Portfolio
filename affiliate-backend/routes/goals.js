@@ -1,14 +1,10 @@
 const express = require('express');
 const router = express.Router();
-const { authenticateToken } = require('../middleware/auth');
+const { verifyToken, verifyAffiliate } = require('../middleware/auth');
 const { db } = require('../models/index');
 
 // Get current goal for logged-in affiliate
-router.get('/current', authenticateToken, (req, res) => {
-  if (req.user.role !== 'affiliate') {
-    return res.status(403).json({ error: 'Only affiliates can access goals' });
-  }
-
+router.get('/current', verifyToken, verifyAffiliate, (req, res) => {
   // Update progress first
   db.updateGoalProgress(req.user.id, (err) => {
     if (err) {
@@ -41,11 +37,7 @@ router.get('/current', authenticateToken, (req, res) => {
 });
 
 // Get goal history
-router.get('/history', authenticateToken, (req, res) => {
-  if (req.user.role !== 'affiliate') {
-    return res.status(403).json({ error: 'Only affiliates can access goal history' });
-  }
-
+router.get('/history', verifyToken, verifyAffiliate, (req, res) => {
   db.getGoalHistory(req.user.id, (err, history) => {
     if (err) {
       console.error('Error fetching goal history:', err);
@@ -57,11 +49,7 @@ router.get('/history', authenticateToken, (req, res) => {
 });
 
 // Get bonus information
-router.get('/bonus', authenticateToken, (req, res) => {
-  if (req.user.role !== 'affiliate') {
-    return res.status(403).json({ error: 'Only affiliates can access bonus info' });
-  }
-
+router.get('/bonus', verifyToken, verifyAffiliate, (req, res) => {
   db.getAffiliateBonus(req.user.id, (err, bonusInfo) => {
     if (err) {
       console.error('Error fetching bonus info:', err);

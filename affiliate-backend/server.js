@@ -7,6 +7,7 @@ require('dotenv').config();
 
 const authRoutes = require('./routes/auth');
 const affiliateRoutes = require('./routes/affiliates');
+const goalRoutes = require('./routes/goals');
 
 const app = express();
 const PORT = process.env.PORT || 3001;
@@ -96,6 +97,7 @@ app.use(express.static(path.join(__dirname, '..')));
 // API Routes
 app.use('/api/auth', authRoutes);
 app.use('/api/affiliates', affiliateRoutes);
+app.use('/api/goals', goalRoutes);
 
 // Health check endpoint
 app.get('/api/health', (req, res) => {

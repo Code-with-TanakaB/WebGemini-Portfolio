@@ -173,8 +173,86 @@ async function verifyAuth() {
 async function loadDashboardData() {
     await Promise.all([
         loadStats(),
-        loadReferrals()
+        loadReferrals(),
+        loadGoalProgress()
     ]);
+}
+
+async function loadGoalProgress() {
+    try {
+        // Load current goal
+        const goalResponse = await fetch(`${API_BASE_URL}/goals/current`, {
+            headers: {
+                'Authorization': `Bearer ${authToken}`
+            }
+        });
+
+        const goalData = await goalResponse.json();
+
+        if (goalData) {
+            // Update goal display
+            document.getElementById('achievedReferrals').textContent = goalData.achieved_referrals || 0;
+            document.getElementById('targetReferrals').textContent = goalData.target_referrals || 10;
+            document.getElementById('daysRemaining').textContent = `${goalData.daysRemaining || 0} days left`;
+            
+            // Update progress bar
+            const progressPercentage = goalData.progress || 0;
+            const progressFill = document.getElementById('progressFill');
+            const progressPercentageText = document.getElementById('progressPercentage');
+            
+            progressFill.style.width = `${progressPercentage}%`;
+            progressPercentageText.textContent = `${progressPercentage}%`;
+            
+            // Update goal message based on status
+            const goalMessage = document.getElementById('goalMessage');
+            const goalMessageIcon = goalMessage.querySelector('i');
+            const goalMessageText = goalMessage.querySelector('span');
+            
+            if (goalData.status === 'completed') {
+                goalMessage.className = 'goal-message success';
+                goalMessageIcon.className = 'fas fa-trophy';
+                goalMessageText.textContent = `🎉 Congratulations! You've reached your goal!`;
+            } else if (goalData.status === 'failed') {
+                goalMessage.className = 'goal-message failed';
+                goalMessageIcon.className = 'fas fa-redo';
+                goalMessageText.textContent = `Nice try, ${currentUser.full_name}! You can go again.`;
+            } else {
+                goalMessage.className = 'goal-message';
+                goalMessageIcon.className = 'fas fa-fire';
+                if (progressPercentage >= 80) {
+                    goalMessageText.textContent = `You're almost there! Just ${goalData.target_referrals - goalData.achieved_referrals} more!`;
+                } else if (progressPercentage >= 50) {
+                    goalMessageText.textContent = `Great progress! Keep up the momentum!`;
+                } else {
+                    goalMessageText.textContent = `Keep going! You're doing great!`;
+                }
+            }
+        }
+
+        // Load bonus info
+        const bonusResponse = await fetch(`${API_BASE_URL}/goals/bonus`, {
+            headers: {
+                'Authorization': `Bearer ${authToken}`
+            }
+        });
+
+        const bonusData = await bonusResponse.json();
+
+        if (bonusData) {
+            document.getElementById('consecutiveWins').textContent = `${bonusData.consecutiveWins || 0} wins`;
+            
+            // Show bonus badge if active
+            const bonusInfo = document.getElementById('bonusInfo');
+            if (bonusData.hasBonus) {
+                bonusInfo.style.display = 'block';
+            } else {
+                bonusInfo.style.display = 'none';
+            }
+        }
+
+    } catch (error) {
+        console.error('Error loading goal progress:', error);
+    }
 }
 
 async function loadStats() {

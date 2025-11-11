@@ -408,6 +408,232 @@ body {
     opacity: 0.9;
 }
 
+/* Goal Progress Card */
+.goal-card {
+    background: linear-gradient(135deg, #1e293b 0%, #334155 100%);
+    border: 2px solid var(--primary-color);
+    position: relative;
+    overflow: hidden;
+}
+
+.goal-card::before {
+    content: '';
+    position: absolute;
+    top: -50%;
+    right: -50%;
+    width: 200%;
+    height: 200%;
+    background: radial-gradient(circle, rgba(99, 102, 241, 0.1) 0%, transparent 70%);
+    animation: pulse 3s ease-in-out infinite;
+}
+
+@keyframes pulse {
+    0%, 100% { transform: scale(1); opacity: 0.5; }
+    50% { transform: scale(1.1); opacity: 0.3; }
+}
+
+.goal-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-start;
+    margin-bottom: 25px;
+    position: relative;
+    z-index: 1;
+}
+
+.goal-header h3 {
+    color: var(--text-primary);
+    font-size: 24px;
+    margin-bottom: 5px;
+}
+
+.goal-subtitle {
+    color: var(--text-secondary);
+    font-size: 14px;
+}
+
+.goal-stats-mini {
+    display: flex;
+    gap: 15px;
+}
+
+.goal-stat-mini {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    background: rgba(99, 102, 241, 0.2);
+    padding: 8px 15px;
+    border-radius: 20px;
+    font-size: 14px;
+    color: var(--text-primary);
+}
+
+.goal-stat-mini i {
+    color: var(--primary-color);
+}
+
+.progress-container {
+    position: relative;
+    z-index: 1;
+    margin-bottom: 20px;
+}
+
+.progress-info {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 12px;
+}
+
+.progress-label {
+    font-weight: 600;
+    color: var(--text-primary);
+    font-size: 15px;
+}
+
+.progress-count {
+    color: var(--text-secondary);
+    font-size: 14px;
+}
+
+.progress-count span {
+    color: var(--primary-color);
+    font-weight: 700;
+    font-size: 16px;
+}
+
+.progress-bar-wrapper {
+    position: relative;
+}
+
+.progress-bar {
+    height: 40px;
+    background: rgba(15, 23, 42, 0.5);
+    border-radius: 20px;
+    overflow: hidden;
+    position: relative;
+    border: 2px solid var(--border-color);
+}
+
+.progress-fill {
+    height: 100%;
+    background: linear-gradient(90deg, var(--primary-color) 0%, var(--secondary-color) 100%);
+    border-radius: 18px;
+    transition: width 0.6s cubic-bezier(0.4, 0, 0.2, 1);
+    position: relative;
+    overflow: hidden;
+}
+
+.progress-fill::after {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background: linear-gradient(90deg, 
+        transparent 0%, 
+        rgba(255, 255, 255, 0.3) 50%, 
+        transparent 100%);
+    animation: shimmer 2s infinite;
+}
+
+@keyframes shimmer {
+    0% { transform: translateX(-100%); }
+    100% { transform: translateX(100%); }
+}
+
+.progress-percentage {
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    font-weight: 700;
+    font-size: 16px;
+    color: white;
+    text-shadow: 0 2px 4px rgba(0, 0, 0, 0.5);
+    z-index: 2;
+}
+
+.goal-message {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    padding: 15px 20px;
+    background: rgba(99, 102, 241, 0.15);
+    border-radius: 12px;
+    border-left: 4px solid var(--primary-color);
+    margin-bottom: 15px;
+    position: relative;
+    z-index: 1;
+}
+
+.goal-message i {
+    font-size: 20px;
+    color: var(--warning-color);
+}
+
+.goal-message span {
+    color: var(--text-primary);
+    font-weight: 500;
+}
+
+.goal-message.success {
+    background: rgba(16, 185, 129, 0.15);
+    border-left-color: var(--success-color);
+}
+
+.goal-message.success i {
+    color: var(--success-color);
+}
+
+.goal-message.failed {
+    background: rgba(239, 68, 68, 0.15);
+    border-left-color: var(--danger-color);
+}
+
+.goal-message.failed i {
+    color: var(--danger-color);
+}
+
+.goal-bonus-info {
+    position: relative;
+    z-index: 1;
+}
+
+.bonus-badge {
+    display: flex;
+    align-items: center;
+    gap: 15px;
+    padding: 20px;
+    background: linear-gradient(135deg, rgba(251, 191, 36, 0.2) 0%, rgba(245, 158, 11, 0.2) 100%);
+    border-radius: 12px;
+    border: 2px solid var(--warning-color);
+}
+
+.bonus-badge i {
+    font-size: 32px;
+    color: var(--warning-color);
+    animation: rotate 2s linear infinite;
+}
+
+@keyframes rotate {
+    0% { transform: rotate(0deg); }
+    100% { transform: rotate(360deg); }
+}
+
+.bonus-badge strong {
+    display: block;
+    color: var(--warning-color);
+    font-size: 18px;
+    margin-bottom: 5px;
+}
+
+.bonus-badge p {
+    color: var(--text-secondary);
+    margin: 0;
+}
+
 /* Stats Grid */
 .stats-grid {
     display: grid;

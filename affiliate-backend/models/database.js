@@ -78,6 +78,24 @@ function initializeDatabase() {
       )
     `);
 
+    // Goal tracking table - tracks 30-day referral goals
+    db.run(`
+      CREATE TABLE IF NOT EXISTS affiliate_goals (
+        id INTEGER PRIMARY KEY AUTOINCREMENT,
+        affiliate_id INTEGER NOT NULL,
+        goal_start_date DATETIME NOT NULL,
+        goal_end_date DATETIME NOT NULL,
+        target_referrals INTEGER DEFAULT 10,
+        achieved_referrals INTEGER DEFAULT 0,
+        status TEXT DEFAULT 'active',
+        completed_at DATETIME,
+        consecutive_wins INTEGER DEFAULT 0,
+        bonus_rate REAL DEFAULT 0,
+        created_at DATETIME DEFAULT CURRENT_TIMESTAMP,
+        FOREIGN KEY (affiliate_id) REFERENCES affiliates(id)
+      )
+    `);
+
     // Create default admin user (password: #01Admin@WG2024 - MUST be changed after first login)
     const bcrypt = require('bcryptjs');
     const adminPassword = bcrypt.hashSync('#01Admin@WG2024', 10);
@@ -221,6 +239,145 @@ const dbHelpers = {
        LEFT JOIN commissions com ON c.id = com.client_id
        WHERE a.role = 'affiliate'`,
       callback
+    );
+  },
+
+  // Goal tracking functions
+  
+  // Get or create current active goal for affiliate
+  getCurrentGoal: (affiliateId, callback) => {
+    db.get(
+      `SELECT * FROM affiliate_goals 
+       WHERE affiliate_id = ? AND status = 'active'
+       ORDER BY created_at DESC LIMIT 1`,
+      [affiliateId],
+      (err, goal) => {
+        if (err) return callback(err);
+        
+        // If no active goal or goal expired, create new one
+        if (!goal || new Date(goal.goal_end_date) < new Date()) {
+          const startDate = new Date();
+          const endDate = new Date();
+          endDate.setDate(endDate.getDate() + 30);
+          
+          db.run(
+            `INSERT INTO affiliate_goals (affiliate_id, goal_start_date, goal_end_date, target_referrals, achieved_referrals, status)
+             VALUES (?, ?, ?, 10, 0, 'active')`,
+            [affiliateId, startDate.toISOString(), endDate.toISOString()],
+            function(err) {
+              if (err) return callback(err);
+              
+              db.get(
+                `SELECT * FROM affiliate_goals WHERE id = ?`,
+                [this.lastID],
+                callback
+              );
+            }
+          );
+        } else {
+          callback(null, goal);
+        }
+      }
+    );
+  },
+
+  // Update goal progress
+  updateGoalProgress: (affiliateId, callback) => {
+    db.get(
+      `SELECT * FROM affiliate_goals 
+       WHERE affiliate_id = ? AND status = 'active'
+       ORDER BY created_at DESC LIMIT 1`,
+      [affiliateId],
+      (err, goal) => {
+        if (err || !goal) return callback(err);
+        
+        // Count referrals within goal period
+        db.get(
+          `SELECT COUNT(*) as count FROM clients 
+           WHERE affiliate_id = ? 
+           AND signup_date >= ? 
+           AND signup_date <= ?
+           AND status = 'active'`,
+          [affiliateId, goal.goal_start_date, goal.goal_end_date],
+          (err, result) => {
+            if (err) return callback(err);
+            
+            const achieved = result.count;
+            const now = new Date();
+            const endDate = new Date(goal.goal_end_date);
+            
+            // Check if goal is completed
+            if (achieved >= goal.target_referrals) {
+              // Goal achieved!
+              const newConsecutiveWins = goal.consecutive_wins + 1;
+              const newBonusRate = newConsecutiveWins >= 3 ? 5.0 : 0;
+              
+              db.run(
+                `UPDATE affiliate_goals 
+                 SET achieved_referrals = ?, 
+                     status = 'completed', 
+                     completed_at = ?,
+                     consecutive_wins = ?,
+                     bonus_rate = ?
+                 WHERE id = ?`,
+                [achieved, now.toISOString(), newConsecutiveWins, newBonusRate, goal.id],
+                callback
+              );
+            } else if (now > endDate) {
+              // Goal expired without reaching target
+              db.run(
+                `UPDATE affiliate_goals 
+                 SET achieved_referrals = ?, 
+                     status = 'failed', 
+                     consecutive_wins = 0
+                 WHERE id = ?`,
+                [achieved, goal.id],
+                callback
+              );
+            } else {
+              // Goal still in progress
+              db.run(
+                `UPDATE affiliate_goals 
+                 SET achieved_referrals = ?
+                 WHERE id = ?`,
+                [achieved, goal.id],
+                callback
+              );
+            }
+          }
+        );
+      }
+    );
+  },
+
+  // Get affiliate's goal history
+  getGoalHistory: (affiliateId, callback) => {
+    db.all(
+      `SELECT * FROM affiliate_goals 
+       WHERE affiliate_id = ?
+       ORDER BY created_at DESC
+       LIMIT 10`,
+      [affiliateId],
+      callback
+    );
+  },
+
+  // Get current bonus rate for affiliate
+  getAffiliateBonus: (affiliateId, callback) => {
+    db.get(
+      `SELECT consecutive_wins, bonus_rate FROM affiliate_goals 
+       WHERE affiliate_id = ? AND status = 'completed'
+       ORDER BY completed_at DESC LIMIT 1`,
+      [affiliateId],
+      (err, result) => {
+        if (err) return callback(err);
+        
+        if (result && result.consecutive_wins >= 3) {
+          callback(null, { hasBonus: true, bonusRate: 5.0, consecutiveWins: result.consecutive_wins });
+        } else {
+          callback(null, { hasBonus: false, bonusRate: 0, consecutiveWins: result ? result.consecutive_wins : 0 });
+        }
+      }
     );
   }
 };

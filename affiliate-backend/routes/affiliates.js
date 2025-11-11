@@ -23,7 +23,7 @@ const clientSignupValidation = [
 ];
 
 // Calculate commission based on plan type
-function calculateCommission(planType, planPrice) {
+function calculateCommission(planType, planPrice, affiliateId, callback) {
   const lowerPlanType = planType.toLowerCase();
   let commissionRate = 0;
 
@@ -44,12 +44,40 @@ function calculateCommission(planType, planPrice) {
     commissionRate = 0.10;
   }
 
-  const commissionAmount = planPrice * commissionRate;
-  
-  return {
-    rate: commissionRate,
-    amount: commissionAmount
-  };
+  // Check for bonus rate if affiliateId provided
+  if (affiliateId) {
+    dbHelpers.getAffiliateBonus(affiliateId, (err, bonusInfo) => {
+      if (err) {
+        console.error('Error getting bonus:', err);
+      }
+      
+      if (bonusInfo && bonusInfo.hasBonus) {
+        // Add 5% bonus to commission rate
+        commissionRate += 0.05;
+        console.log(`✨ Bonus applied! Affiliate #${affiliateId} earning ${(commissionRate * 100).toFixed(0)}% commission`);
+      }
+      
+      const commissionAmount = planPrice * commissionRate;
+      
+      if (callback) {
+        callback({
+          rate: commissionRate,
+          amount: commissionAmount,
+          hasBonus: bonusInfo && bonusInfo.hasBonus
+        });
+      }
+    });
+  } else {
+    const commissionAmount = planPrice * commissionRate;
+    
+    if (callback) {
+      callback({
+        rate: commissionRate,
+        amount: commissionAmount,
+        hasBonus: false
+      });
+    }
+  }
 }
 
 // Admin: Get all affiliates
@@ -248,29 +276,38 @@ router.post('/track-signup', clientSignupValidation, spamProtection, (req, res) 
 
       const clientId = this.lastID;
 
-      // Calculate commission
-      const commission = calculateCommission(plan_type, plan_price);
-
-      // Create commission record
-      dbHelpers.createCommission({
-        affiliate_id: affiliate.id,
-        client_id: clientId,
-        plan_type,
-        plan_price,
-        commission_rate: commission.rate,
-        commission_amount: commission.amount
-      }, (commErr) => {
-        if (commErr) {
-          console.error('Error creating commission:', commErr);
-          // Continue anyway, client is created
-        }
-
-        res.status(201).json({
-          success: true,
-          message: 'Client registered successfully with affiliate tracking.',
+      // Calculate commission with bonus check
+      calculateCommission(plan_type, plan_price, affiliate.id, (commission) => {
+        // Create commission record
+        dbHelpers.createCommission({
+          affiliate_id: affiliate.id,
           client_id: clientId,
-          affiliate: affiliate.full_name,
+          plan_type,
+          plan_price,
+          commission_rate: commission.rate,
           commission_amount: commission.amount
+        }, (commErr) => {
+          if (commErr) {
+            console.error('Error creating commission:', commErr);
+            // Continue anyway, client is created
+          }
+
+          // Update goal progress after successful signup
+          dbHelpers.updateGoalProgress(affiliate.id, (goalErr) => {
+            if (goalErr) {
+              console.error('Error updating goal progress:', goalErr);
+              // Continue anyway
+            }
+          });
+
+          res.status(201).json({
+            success: true,
+            message: 'Client registered successfully with affiliate tracking.',
+            client_id: clientId,
+            affiliate: affiliate.full_name,
+            commission_amount: commission.amount,
+            bonus_applied: commission.hasBonus
+          });
         });
       });
     });

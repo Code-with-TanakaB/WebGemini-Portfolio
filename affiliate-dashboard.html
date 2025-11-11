@@ -74,6 +74,56 @@
                     <p>Track your referrals and earnings in real-time</p>
                 </div>
 
+                <!-- Goal Progress Section -->
+                <div class="goal-card card">
+                    <div class="goal-header">
+                        <div>
+                            <h3>Monthly Referral Goal</h3>
+                            <p class="goal-subtitle">Reach 10 referrals in 30 days to complete your goal!</p>
+                        </div>
+                        <div class="goal-stats-mini">
+                            <div class="goal-stat-mini">
+                                <i class="fas fa-calendar-alt"></i>
+                                <span id="daysRemaining">-- days left</span>
+                            </div>
+                            <div class="goal-stat-mini">
+                                <i class="fas fa-trophy"></i>
+                                <span id="consecutiveWins">0 wins</span>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="progress-container">
+                        <div class="progress-info">
+                            <span class="progress-label">Progress</span>
+                            <span class="progress-count">
+                                <span id="achievedReferrals">0</span> / <span id="targetReferrals">10</span> referrals
+                            </span>
+                        </div>
+                        <div class="progress-bar-wrapper">
+                            <div class="progress-bar" id="progressBar">
+                                <div class="progress-fill" id="progressFill" style="width: 0%"></div>
+                                <span class="progress-percentage" id="progressPercentage">0%</span>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="goal-message" id="goalMessage">
+                        <i class="fas fa-fire"></i>
+                        <span>Keep going! You're doing great!</span>
+                    </div>
+
+                    <div class="goal-bonus-info" id="bonusInfo" style="display: none;">
+                        <div class="bonus-badge">
+                            <i class="fas fa-star"></i>
+                            <div>
+                                <strong>Bonus Active!</strong>
+                                <p>You're earning +5% commission for 3 consecutive wins! 🎉</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
                 <div class="stats-grid">
                     <div class="stat-card">
                         <div class="stat-icon blue">

@@ -133,12 +133,17 @@ router.post('/register', registerValidation, (req, res) => {
     coupon_code: coupon_code.toUpperCase()
   }, function(err) {
     if (err) {
-      if (err.message.includes('UNIQUE constraint failed')) {
+      // Handle both SQLite and PostgreSQL error formats
+      const errorMsg = err.message || '';
+      const errorCode = err.code || '';
+      
+      if (errorMsg.includes('UNIQUE constraint failed') || errorCode === '23505') {
         return res.status(409).json({ 
           success: false, 
           message: 'Username, email, or coupon code already exists.' 
         });
       }
+      console.error('Error creating affiliate:', err);
       return res.status(500).json({ 
         success: false, 
         message: 'Error creating affiliate account.' 
@@ -147,7 +152,7 @@ router.post('/register', registerValidation, (req, res) => {
 
     res.status(201).json({
       success: true,
-      message: 'Affiliate account created successfully.',
+      message: 'Affiliate created successfully!',
       affiliate_id: this.lastID
     });
   });
@@ -214,7 +219,13 @@ router.post('/register-affiliate', [
       coupon_code: finalCouponCode
     }, function(err) {
       if (err) {
-        if (err.message.includes('UNIQUE constraint failed: affiliates.coupon_code')) {
+        // Handle both SQLite and PostgreSQL error formats
+        const errorMsg = err.message || '';
+        const errorCode = err.code || '';
+        
+        // Check for coupon code collision (SQLite or PostgreSQL)
+        if (errorMsg.includes('UNIQUE constraint failed: affiliates.coupon_code') || 
+            (errorCode === '23505' && errorMsg.includes('coupon_code'))) {
           // Coupon code collision, try again with next number
           if (attemptNumber < 99) {
             checkAndCreateAffiliate(attemptNumber + 1);
@@ -224,12 +235,15 @@ router.post('/register-affiliate', [
               message: 'Unable to generate unique coupon code. Please try a different username.' 
             });
           }
-        } else if (err.message.includes('UNIQUE constraint failed')) {
+        } 
+        // Check for username/email collision (SQLite or PostgreSQL)
+        else if (errorMsg.includes('UNIQUE constraint failed') || errorCode === '23505') {
           return res.status(409).json({ 
             success: false, 
             message: 'Username or email already exists.' 
           });
         } else {
+          console.error('Error creating affiliate:', err);
           return res.status(500).json({ 
             success: false, 
             message: 'Error creating affiliate account.' 

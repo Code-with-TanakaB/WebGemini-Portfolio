@@ -210,9 +210,13 @@ const dbHelpers = {
       pool.query(
         'INSERT INTO affiliates (username, email, password, full_name, coupon_code) VALUES ($1, $2, $3, $4, $5) RETURNING *',
         [username, email, password, full_name, coupon_code],
-        (err, results) => {
-          if (err) callback(err);
-          else callback(null, results.rows[0]);
+        function(err, results) {
+          if (err) {
+            callback(err);
+          } else {
+            // Mimic SQLite's this.lastID for compatibility
+            callback.call({ lastID: results.rows[0].id }, null, results.rows[0]);
+          }
         }
       );
     } else {

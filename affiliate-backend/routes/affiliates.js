@@ -214,12 +214,17 @@ router.post('/track-signup', clientSignupValidation, spamProtection, (req, res) 
       affiliate_id: null
     }, function(err) {
       if (err) {
-        if (err.message.includes('UNIQUE constraint failed')) {
+        // Handle both SQLite and PostgreSQL error formats
+        const errorMsg = err.message || '';
+        const errorCode = err.code || '';
+        
+        if (errorMsg.includes('UNIQUE constraint failed') || errorCode === '23505') {
           return res.status(409).json({ 
             success: false, 
             message: 'Email already exists.' 
           });
         }
+        console.error('Error creating client:', err);
         return res.status(500).json({ 
           success: false, 
           message: 'Error creating client record.' 
@@ -262,12 +267,17 @@ router.post('/track-signup', clientSignupValidation, spamProtection, (req, res) 
       affiliate_id: affiliate.id
     }, function(clientErr) {
       if (clientErr) {
-        if (clientErr.message.includes('UNIQUE constraint failed')) {
+        // Handle both SQLite and PostgreSQL error formats
+        const errorMsg = clientErr.message || '';
+        const errorCode = clientErr.code || '';
+        
+        if (errorMsg.includes('UNIQUE constraint failed') || errorCode === '23505') {
           return res.status(409).json({ 
             success: false, 
             message: 'Email already exists.' 
           });
         }
+        console.error('Error creating client:', clientErr);
         return res.status(500).json({ 
           success: false, 
           message: 'Error creating client record.' 

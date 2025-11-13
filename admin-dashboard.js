@@ -23,8 +23,14 @@ document.addEventListener('DOMContentLoaded', () => {
     // Set up event listeners
     setupEventListeners();
     
-    // Load initial data
-    loadDashboardData();
+    // Load initial data (ensure currency rate is fetched first when available)
+    if (window.currencyConverter && typeof window.currencyConverter.getRate === 'function') {
+        window.currencyConverter.getRate().catch(() => {}).finally(() => {
+            loadDashboardData();
+        });
+    } else {
+        loadDashboardData();
+    }
 });
 
 function setupEventListeners() {
@@ -142,10 +148,32 @@ async function loadOverviewStats() {
             const stats = data.stats;
             document.getElementById('totalAffiliates').textContent = stats.total_affiliates;
             document.getElementById('totalClients').textContent = stats.total_clients;
-            document.getElementById('totalRevenue').textContent = `R${stats.total_revenue.toFixed(2)}`;
-            document.getElementById('totalCommissions').textContent = `R${stats.total_commissions.toFixed(2)}`;
-            document.getElementById('pendingCommissions').textContent = `R${stats.pending_commissions.toFixed(2)}`;
-            document.getElementById('paidCommissions').textContent = `R${stats.paid_commissions.toFixed(2)}`;
+
+            // Convert USD -> ZAR when currencyConverter is available
+            if (window.currencyConverter && typeof window.currencyConverter.convert === 'function') {
+                try {
+                    const totalRevenueZ = await window.currencyConverter.convert(stats.total_revenue || 0);
+                    const totalCommissionsZ = await window.currencyConverter.convert(stats.total_commissions || 0);
+                    const pendingZ = await window.currencyConverter.convert(stats.pending_commissions || 0);
+                    const paidZ = await window.currencyConverter.convert(stats.paid_commissions || 0);
+
+                    document.getElementById('totalRevenue').textContent = window.currencyConverter.formatZar(totalRevenueZ);
+                    document.getElementById('totalCommissions').textContent = window.currencyConverter.formatZar(totalCommissionsZ);
+                    document.getElementById('pendingCommissions').textContent = window.currencyConverter.formatZar(pendingZ);
+                    document.getElementById('paidCommissions').textContent = window.currencyConverter.formatZar(paidZ);
+                } catch (e) {
+                    // fallback formatting
+                    document.getElementById('totalRevenue').textContent = `R${(stats.total_revenue || 0).toFixed(2)}`;
+                    document.getElementById('totalCommissions').textContent = `R${(stats.total_commissions || 0).toFixed(2)}`;
+                    document.getElementById('pendingCommissions').textContent = `R${(stats.pending_commissions || 0).toFixed(2)}`;
+                    document.getElementById('paidCommissions').textContent = `R${(stats.paid_commissions || 0).toFixed(2)}`;
+                }
+            } else {
+                document.getElementById('totalRevenue').textContent = `R${(stats.total_revenue || 0).toFixed(2)}`;
+                document.getElementById('totalCommissions').textContent = `R${(stats.total_commissions || 0).toFixed(2)}`;
+                document.getElementById('pendingCommissions').textContent = `R${(stats.pending_commissions || 0).toFixed(2)}`;
+                document.getElementById('paidCommissions').textContent = `R${(stats.paid_commissions || 0).toFixed(2)}`;
+            }
         }
     } catch (error) {
         console.error('Error loading stats:', error);
@@ -245,6 +273,16 @@ async function loadClients() {
                 // Convert string numbers to actual numbers
                 const planPrice = parseFloat(client.plan_price) || 0;
                 const commissionAmount = client.commission_amount ? parseFloat(client.commission_amount) : null;
+
+                // Convert to ZAR using cached rate where possible (sync) and format
+                const planPriceZ = window.currencyConverter && window.currencyConverter.convertSync ? window.currencyConverter.convertSync(planPrice) : planPrice;
+                const planPriceText = window.currencyConverter && window.currencyConverter.formatZar ? window.currencyConverter.formatZar(planPriceZ) : `R${planPriceZ.toFixed(2)}`;
+
+                let commissionText = 'N/A';
+                if (commissionAmount !== null) {
+                    const commissionZ = window.currencyConverter && window.currencyConverter.convertSync ? window.currencyConverter.convertSync(commissionAmount) : commissionAmount;
+                    commissionText = window.currencyConverter && window.currencyConverter.formatZar ? window.currencyConverter.formatZar(commissionZ) : `R${commissionZ.toFixed(2)}`;
+                }
                 
                 return `
                 <tr data-client-id="${client.id}">
@@ -252,10 +290,10 @@ async function loadClients() {
                     <td>${client.name}</td>
                     <td>${client.email}</td>
                     <td>${client.plan_type}</td>
-                    <td>R${planPrice.toFixed(2)}</td>
+                    <td>${planPriceText}</td>
                     <td>${client.affiliate_name || 'N/A'}</td>
                     <td>${client.coupon_code ? `<span class="coupon-badge">${client.coupon_code}</span>` : 'N/A'}</td>
-                    <td>${commissionAmount ? `R${commissionAmount.toFixed(2)}` : 'N/A'}</td>
+                    <td>${commissionText}</td>
                     <td>${new Date(client.signup_date).toLocaleDateString()}</td>
                     <td><span class="status-badge ${clientStatus}">${clientStatus}</span></td>
                     <td class="action-buttons">
@@ -294,15 +332,21 @@ async function loadClients() {
                 const planPrice = parseFloat(client.plan_price) || 0;
                 const commissionRate = parseFloat(client.commission_rate) || 0;
                 const commissionAmount = parseFloat(client.commission_amount) || 0;
-                
+
+                const planPriceZ = window.currencyConverter && window.currencyConverter.convertSync ? window.currencyConverter.convertSync(planPrice) : planPrice;
+                const planPriceText = window.currencyConverter && window.currencyConverter.formatZar ? window.currencyConverter.formatZar(planPriceZ) : `R${planPriceZ.toFixed(2)}`;
+
+                const commissionZ = window.currencyConverter && window.currencyConverter.convertSync ? window.currencyConverter.convertSync(commissionAmount) : commissionAmount;
+                const commissionText = window.currencyConverter && window.currencyConverter.formatZar ? window.currencyConverter.formatZar(commissionZ) : `R${commissionZ.toFixed(2)}`;
+
                 return `
                 <tr data-status="${client.commission_status}">
                     <td>${client.name}</td>
                     <td>${client.affiliate_name}</td>
                     <td>${client.plan_type}</td>
-                    <td>R${planPrice.toFixed(2)}</td>
+                    <td>${planPriceText}</td>
                     <td>${(commissionRate * 100).toFixed(0)}%</td>
-                    <td>R${commissionAmount.toFixed(2)}</td>
+                    <td>${commissionText}</td>
                     <td><span class="status-badge ${client.commission_status}">${client.commission_status}</span></td>
                     <td>${new Date(client.signup_date).toLocaleDateString()}</td>
                 </tr>

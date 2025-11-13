@@ -25,8 +25,14 @@ document.addEventListener('DOMContentLoaded', () => {
     // Set up event listeners
     setupEventListeners();
     
-    // Load dashboard data
-    loadDashboardData();
+    // Load dashboard data (ensure currency rate fetched first when available)
+    if (window.currencyConverter && typeof window.currencyConverter.getRate === 'function') {
+        window.currencyConverter.getRate().catch(() => {}).finally(() => {
+            loadDashboardData();
+        });
+    } else {
+        loadDashboardData();
+    }
 });
 
 function setupEventListeners() {
@@ -268,16 +274,39 @@ async function loadStats() {
         if (data.success) {
             const stats = data.stats;
             
-            // Update overview stats
-            document.getElementById('totalReferrals').textContent = stats.total_referrals || 0;
-            document.getElementById('totalEarnings').textContent = `R${(stats.total_earnings || 0).toFixed(2)}`;
-            document.getElementById('pendingEarnings').textContent = `R${(stats.pending_earnings || 0).toFixed(2)}`;
-            document.getElementById('paidEarnings').textContent = `R${(stats.paid_earnings || 0).toFixed(2)}`;
-            
-            // Update earnings section
-            document.getElementById('earningsTotal').textContent = `R${(stats.total_earnings || 0).toFixed(2)}`;
-            document.getElementById('earningsPending').textContent = `R${(stats.pending_earnings || 0).toFixed(2)}`;
-            document.getElementById('earningsPaid').textContent = `R${(stats.paid_earnings || 0).toFixed(2)}`;
+                // Update overview stats
+                document.getElementById('totalReferrals').textContent = stats.total_referrals || 0;
+
+                if (window.currencyConverter && typeof window.currencyConverter.convert === 'function') {
+                    try {
+                        const totalZ = await window.currencyConverter.convert(stats.total_earnings || 0);
+                        const pendingZ = await window.currencyConverter.convert(stats.pending_earnings || 0);
+                        const paidZ = await window.currencyConverter.convert(stats.paid_earnings || 0);
+
+                        document.getElementById('totalEarnings').textContent = window.currencyConverter.formatZar(totalZ);
+                        document.getElementById('pendingEarnings').textContent = window.currencyConverter.formatZar(pendingZ);
+                        document.getElementById('paidEarnings').textContent = window.currencyConverter.formatZar(paidZ);
+
+                        // Update earnings section
+                        document.getElementById('earningsTotal').textContent = window.currencyConverter.formatZar(totalZ);
+                        document.getElementById('earningsPending').textContent = window.currencyConverter.formatZar(pendingZ);
+                        document.getElementById('earningsPaid').textContent = window.currencyConverter.formatZar(paidZ);
+                    } catch (e) {
+                        document.getElementById('totalEarnings').textContent = `R${(stats.total_earnings || 0).toFixed(2)}`;
+                        document.getElementById('pendingEarnings').textContent = `R${(stats.pending_earnings || 0).toFixed(2)}`;
+                        document.getElementById('paidEarnings').textContent = `R${(stats.paid_earnings || 0).toFixed(2)}`;
+                        document.getElementById('earningsTotal').textContent = `R${(stats.total_earnings || 0).toFixed(2)}`;
+                        document.getElementById('earningsPending').textContent = `R${(stats.pending_earnings || 0).toFixed(2)}`;
+                        document.getElementById('earningsPaid').textContent = `R${(stats.paid_earnings || 0).toFixed(2)}`;
+                    }
+                } else {
+                    document.getElementById('totalEarnings').textContent = `R${(stats.total_earnings || 0).toFixed(2)}`;
+                    document.getElementById('pendingEarnings').textContent = `R${(stats.pending_earnings || 0).toFixed(2)}`;
+                    document.getElementById('paidEarnings').textContent = `R${(stats.paid_earnings || 0).toFixed(2)}`;
+                    document.getElementById('earningsTotal').textContent = `R${(stats.total_earnings || 0).toFixed(2)}`;
+                    document.getElementById('earningsPending').textContent = `R${(stats.pending_earnings || 0).toFixed(2)}`;
+                    document.getElementById('earningsPaid').textContent = `R${(stats.paid_earnings || 0).toFixed(2)}`;
+                }
         }
     } catch (error) {
         console.error('Error loading stats:', error);
@@ -302,18 +331,28 @@ async function loadReferrals() {
                 return;
             }
 
-            tbody.innerHTML = data.referrals.map(referral => `
+            tbody.innerHTML = data.referrals.map(referral => {
+                const planPrice = parseFloat(referral.plan_price) || 0;
+                const commissionAmount = referral.commission_amount ? parseFloat(referral.commission_amount) : 0;
+
+                const planPriceZ = window.currencyConverter && window.currencyConverter.convertSync ? window.currencyConverter.convertSync(planPrice) : planPrice;
+                const planPriceText = window.currencyConverter && window.currencyConverter.formatZar ? window.currencyConverter.formatZar(planPriceZ) : `R${planPriceZ.toFixed(2)}`;
+
+                const commissionZ = window.currencyConverter && window.currencyConverter.convertSync ? window.currencyConverter.convertSync(commissionAmount) : commissionAmount;
+                const commissionText = window.currencyConverter && window.currencyConverter.formatZar ? window.currencyConverter.formatZar(commissionZ) : `R${commissionZ.toFixed(2)}`;
+
+                return `
                 <tr>
                     <td>${referral.name}</td>
                     <td>${referral.email}</td>
                     <td>${referral.plan_type}</td>
-                    <td>R${referral.plan_price.toFixed(2)}</td>
+                    <td>${planPriceText}</td>
                     <td>${referral.commission_rate ? (referral.commission_rate * 100).toFixed(0) + '%' : 'N/A'}</td>
-                    <td>R${referral.commission_amount ? referral.commission_amount.toFixed(2) : '0.00'}</td>
+                    <td>${commissionText}</td>
                     <td><span class="status-badge ${referral.commission_status}">${referral.commission_status || 'pending'}</span></td>
                     <td>${new Date(referral.signup_date).toLocaleDateString()}</td>
                 </tr>
-            `).join('');
+            `}).join('');
         }
     } catch (error) {
         console.error('Error loading referrals:', error);

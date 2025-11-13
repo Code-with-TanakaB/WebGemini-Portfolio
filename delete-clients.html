@@ -1,0 +1,220 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Delete All Clients - Admin Tool</title>
+    <link rel="stylesheet" href="dashboard-style.css">
+    <style>
+        body {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            min-height: 100vh;
+            background: linear-gradient(135deg, #1a1a2e 0%, #16213e 100%);
+        }
+        .delete-container {
+            max-width: 600px;
+            background: rgba(255, 255, 255, 0.05);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            border-radius: 20px;
+            padding: 40px;
+            text-align: center;
+        }
+        .warning-icon {
+            font-size: 80px;
+            color: #ff4444;
+            margin-bottom: 20px;
+        }
+        h1 {
+            color: white;
+            margin-bottom: 20px;
+        }
+        .warning-text {
+            color: #ff6b6b;
+            margin-bottom: 30px;
+            font-size: 18px;
+            font-weight: bold;
+        }
+        .info-text {
+            color: #aaa;
+            margin-bottom: 30px;
+            line-height: 1.6;
+        }
+        .btn-delete {
+            background: linear-gradient(135deg, #ff4444 0%, #cc0000 100%);
+            color: white;
+            border: none;
+            padding: 15px 40px;
+            border-radius: 10px;
+            font-size: 18px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            margin: 10px;
+        }
+        .btn-delete:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 10px 20px rgba(255, 68, 68, 0.3);
+        }
+        .btn-cancel {
+            background: rgba(255, 255, 255, 0.1);
+            color: white;
+            border: 1px solid rgba(255, 255, 255, 0.2);
+            padding: 15px 40px;
+            border-radius: 10px;
+            font-size: 18px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            margin: 10px;
+        }
+        .btn-cancel:hover {
+            background: rgba(255, 255, 255, 0.2);
+        }
+        #result {
+            margin-top: 20px;
+            padding: 20px;
+            border-radius: 10px;
+            display: none;
+        }
+        .success {
+            background: rgba(76, 175, 80, 0.2);
+            border: 1px solid #4CAF50;
+            color: #4CAF50;
+        }
+        .error {
+            background: rgba(244, 67, 54, 0.2);
+            border: 1px solid #f44336;
+            color: #f44336;
+        }
+        ul {
+            text-align: left;
+            color: #ccc;
+            margin: 20px auto;
+            max-width: 400px;
+        }
+        li {
+            margin: 10px 0;
+        }
+    </style>
+</head>
+<body>
+    <div class="delete-container">
+        <div class="warning-icon">⚠️</div>
+        <h1>Delete All Clients</h1>
+        <p class="warning-text">⚠️ WARNING: This action cannot be undone!</p>
+        
+        <div class="info-text">
+            <p>This will permanently delete:</p>
+            <ul>
+                <li>All client records</li>
+                <li>All commission records</li>
+                <li>All referral data</li>
+            </ul>
+            <p><strong>Why?</strong> Old clients have outdated prices (R4,000). After deletion, new signups will use updated prices (R4,999 for Enterprise).</p>
+        </div>
+
+        <div>
+            <button class="btn-delete" onclick="deleteAllClients()">
+                🗑️ Delete All Clients
+            </button>
+            <button class="btn-cancel" onclick="window.location.href='admin-dashboard.html'">
+                ← Back to Dashboard
+            </button>
+        </div>
+
+        <div id="result"></div>
+    </div>
+
+    <script>
+        // API Configuration
+        const API_BASE_URL = 'https://webgemini-affiliate-backend.onrender.com/api';
+        
+        async function deleteAllClients() {
+            if (!confirm('⚠️ FINAL WARNING: This will delete ALL clients permanently. Are you absolutely sure?')) {
+                return;
+            }
+
+            const resultDiv = document.getElementById('result');
+            resultDiv.style.display = 'block';
+            resultDiv.className = '';
+            resultDiv.innerHTML = '🔄 Deleting clients...';
+
+            try {
+                const authToken = localStorage.getItem('authToken');
+                
+                if (!authToken) {
+                    throw new Error('Not authenticated. Please login first.');
+                }
+
+                // Get all clients first
+                const getResponse = await fetch(`${API_BASE_URL}/affiliates/admin/clients`, {
+                    headers: {
+                        'Authorization': `Bearer ${authToken}`
+                    }
+                });
+
+                if (!getResponse.ok) {
+                    throw new Error('Failed to fetch clients');
+                }
+
+                const data = await getResponse.json();
+                const clients = data.clients || [];
+
+                if (clients.length === 0) {
+                    resultDiv.className = 'success';
+                    resultDiv.innerHTML = '✅ No clients found in the database.';
+                    return;
+                }
+
+                // Delete each client
+                let deletedCount = 0;
+                let failedCount = 0;
+
+                for (const client of clients) {
+                    try {
+                        const deleteResponse = await fetch(`${API_BASE_URL}/affiliates/admin/clients/${client.id}`, {
+                            method: 'DELETE',
+                            headers: {
+                                'Authorization': `Bearer ${authToken}`
+                            }
+                        });
+
+                        if (deleteResponse.ok) {
+                            deletedCount++;
+                        } else {
+                            failedCount++;
+                        }
+                    } catch (err) {
+                        failedCount++;
+                    }
+                }
+
+                resultDiv.className = 'success';
+                resultDiv.innerHTML = `
+                    <h3>✅ Deletion Complete!</h3>
+                    <p>Successfully deleted: ${deletedCount} client(s)</p>
+                    ${failedCount > 0 ? `<p style="color: #ff6b6b;">Failed: ${failedCount} client(s)</p>` : ''}
+                    <p style="margin-top: 20px;">New client signups will now use updated prices:</p>
+                    <ul style="color: #4CAF50;">
+                        <li>Starter: R1,500 (10% commission)</li>
+                        <li>Professional: R2,500 (15% commission)</li>
+                        <li>Enterprise: R4,999 (20% commission)</li>
+                    </ul>
+                    <button class="btn-cancel" onclick="window.location.href='admin-dashboard.html'" style="margin-top: 20px;">
+                        Go to Dashboard
+                    </button>
+                `;
+
+            } catch (error) {
+                console.error('Error:', error);
+                resultDiv.className = 'error';
+                resultDiv.innerHTML = `
+                    <h3>❌ Error</h3>
+                    <p>${error.message}</p>
+                    <p>Please make sure you're logged in as admin.</p>
+                `;
+            }
+        }
+    </script>
+</body>
+</html>

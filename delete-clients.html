@@ -169,37 +169,55 @@
                 // Delete each client
                 let deletedCount = 0;
                 let failedCount = 0;
+                let errors = [];
 
                 for (const client of clients) {
                     try {
                         const deleteResponse = await fetch(`${API_BASE_URL}/affiliates/admin/clients/${client.id}`, {
                             method: 'DELETE',
                             headers: {
-                                'Authorization': `Bearer ${authToken}`
+                                'Authorization': `Bearer ${authToken}`,
+                                'Content-Type': 'application/json'
                             }
                         });
 
-                        if (deleteResponse.ok) {
+                        const deleteData = await deleteResponse.json();
+
+                        if (deleteResponse.ok && deleteData.success) {
                             deletedCount++;
                         } else {
                             failedCount++;
+                            errors.push(`Client ${client.id}: ${deleteData.message || 'Unknown error'}`);
                         }
                     } catch (err) {
                         failedCount++;
+                        errors.push(`Client ${client.id}: ${err.message}`);
                     }
                 }
+
+                console.log('Errors:', errors);
 
                 resultDiv.className = 'success';
                 resultDiv.innerHTML = `
                     <h3>✅ Deletion Complete!</h3>
                     <p>Successfully deleted: ${deletedCount} client(s)</p>
-                    ${failedCount > 0 ? `<p style="color: #ff6b6b;">Failed: ${failedCount} client(s)</p>` : ''}
-                    <p style="margin-top: 20px;">New client signups will now use updated prices:</p>
-                    <ul style="color: #4CAF50;">
-                        <li>Starter: R1,500 (10% commission)</li>
-                        <li>Professional: R2,500 (15% commission)</li>
-                        <li>Enterprise: R4,999 (20% commission)</li>
-                    </ul>
+                    ${failedCount > 0 ? `
+                        <p style="color: #ff6b6b;">Failed: ${failedCount} client(s)</p>
+                        <div style="text-align: left; margin-top: 10px; padding: 10px; background: rgba(255,0,0,0.1); border-radius: 5px;">
+                            <strong>Errors:</strong>
+                            <ul style="margin: 10px 0;">
+                                ${errors.map(err => `<li style="color: #ff6b6b; font-size: 12px;">${err}</li>`).join('')}
+                            </ul>
+                        </div>
+                    ` : ''}
+                    ${deletedCount > 0 ? `
+                        <p style="margin-top: 20px;">New client signups will now use updated prices:</p>
+                        <ul style="color: #4CAF50;">
+                            <li>Starter: R1,500 (10% commission)</li>
+                            <li>Professional: R2,500 (15% commission)</li>
+                            <li>Enterprise: R4,999 (20% commission)</li>
+                        </ul>
+                    ` : ''}
                     <button class="btn-cancel" onclick="window.location.href='admin-dashboard.html'" style="margin-top: 20px;">
                         Go to Dashboard
                     </button>

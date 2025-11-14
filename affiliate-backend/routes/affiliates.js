@@ -647,7 +647,7 @@ router.patch('/admin/clients/:id/mark-paid', verifyToken, verifyAdmin, async (re
 });
 
 // Delete client permanently - Admin only
-router.delete('/admin/clients/:id', verifyAdmin, async (req, res) => {
+router.delete('/admin/clients/:id', verifyToken, verifyAdmin, async (req, res) => {
   const clientId = req.params.id;
 
   // Use PostgreSQL if available, otherwise SQLite

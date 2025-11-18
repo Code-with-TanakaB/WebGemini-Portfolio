@@ -750,5 +750,162 @@ router.delete('/admin/clients/:id', verifyToken, verifyAdmin, async (req, res) =
   }
 });
 
+// Admin: Reset affiliate password (for troubleshooting)
+router.post('/admin/reset-password/:affiliateId', verifyToken, verifyAdmin, async (req, res) => {
+  const affiliateId = req.params.affiliateId;
+  const { newPassword } = req.body;
+
+  // Validate password
+  if (!newPassword || newPassword.length < 8) {
+    return res.status(400).json({
+      success: false,
+      message: 'Password must be at least 8 characters'
+    });
+  }
+
+  try {
+    const bcrypt = require('bcryptjs');
+    const hashedPassword = await bcrypt.hash(newPassword, 10);
+
+    // Check if using PostgreSQL or SQLite
+    if (pool) {
+      // PostgreSQL
+      const result = await pool.query(
+        'UPDATE affiliates SET password = $1, updated_at = NOW() WHERE id = $2 AND role = $3 RETURNING username, email',
+        [hashedPassword, affiliateId, 'affiliate']
+      );
+
+      if (result.rows.length === 0) {
+        return res.status(404).json({
+          success: false,
+          message: 'Affiliate not found'
+        });
+      }
+
+      res.json({
+        success: true,
+        message: 'Password reset successfully',
+        affiliate: {
+          username: result.rows[0].username,
+          email: result.rows[0].email
+        }
+      });
+    } else {
+      // SQLite
+      const { db } = require('../models');
+      
+      db.run(
+        'UPDATE affiliates SET password = ?, updated_at = CURRENT_TIMESTAMP WHERE id = ? AND role = ?',
+        [hashedPassword, affiliateId, 'affiliate'],
+        function(err) {
+          if (err) {
+            return res.status(500).json({
+              success: false,
+              message: 'Error updating password'
+            });
+          }
+
+          if (this.changes === 0) {
+            return res.status(404).json({
+              success: false,
+              message: 'Affiliate not found'
+            });
+          }
+
+          // Get affiliate info
+          db.get(
+            'SELECT username, email FROM affiliates WHERE id = ?',
+            [affiliateId],
+            (err, affiliate) => {
+              if (err) {
+                return res.status(500).json({
+                  success: false,
+                  message: 'Password reset but error fetching affiliate info'
+                });
+              }
+
+              res.json({
+                success: true,
+                message: 'Password reset successfully',
+                affiliate: {
+                  username: affiliate.username,
+                  email: affiliate.email
+                }
+              });
+            }
+          );
+        }
+      );
+    }
+  } catch (error) {
+    console.error('Error resetting password:', error);
+    res.status(500).json({
+      success: false,
+      message: 'Error resetting password'
+    });
+  }
+});
+
+// Admin: Get affiliate credentials (username and email only)
+router.get('/admin/credentials/:affiliateId', verifyToken, verifyAdmin, (req, res) => {
+  const affiliateId = req.params.affiliateId;
+
+  if (pool) {
+    // PostgreSQL
+    pool.query(
+      'SELECT id, username, email, full_name, coupon_code, status FROM affiliates WHERE id = $1 AND role = $2',
+      [affiliateId, 'affiliate'],
+      (err, result) => {
+        if (err) {
+          return res.status(500).json({
+            success: false,
+            message: 'Error fetching credentials'
+          });
+        }
+
+        if (result.rows.length === 0) {
+          return res.status(404).json({
+            success: false,
+            message: 'Affiliate not found'
+          });
+        }
+
+        res.json({
+          success: true,
+          credentials: result.rows[0]
+        });
+      }
+    );
+  } else {
+    // SQLite
+    const { db } = require('../models');
+    
+    db.get(
+      'SELECT id, username, email, full_name, coupon_code, status FROM affiliates WHERE id = ? AND role = ?',
+      [affiliateId, 'affiliate'],
+      (err, affiliate) => {
+        if (err) {
+          return res.status(500).json({
+            success: false,
+            message: 'Error fetching credentials'
+          });
+        }
+
+        if (!affiliate) {
+          return res.status(404).json({
+            success: false,
+            message: 'Affiliate not found'
+          });
+        }
+
+        res.json({
+          success: true,
+          credentials: affiliate
+        });
+      }
+    );
+  }
+});
+
 module.exports = router;
 

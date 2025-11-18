@@ -60,6 +60,12 @@ function setupEventListeners() {
     document.getElementById('closeModal').addEventListener('click', closeModal);
     document.getElementById('cancelBtn').addEventListener('click', closeModal);
 
+    // Close credentials modal
+    document.getElementById('closeCredentialsModal').addEventListener('click', closeCredentialsModal);
+
+    // Reset password button
+    document.getElementById('resetPasswordBtn').addEventListener('click', handleResetPassword);
+
     // Add affiliate form
     document.getElementById('addAffiliateForm').addEventListener('submit', handleAddAffiliate);
 
@@ -216,6 +222,9 @@ async function loadAffiliates() {
                                 <i class="fas fa-check"></i>
                             </button>`
                         }
+                        <button class="btn-view" onclick="viewCredentials(${affiliate.id})" title="View Credentials">
+                            <i class="fas fa-key"></i>
+                        </button>
                         <button class="btn-delete" onclick="deleteAffiliate(${affiliate.id}, '${affiliate.username}')" title="Delete">
                             <i class="fas fa-trash"></i>
                         </button>
@@ -894,5 +903,138 @@ async function deleteClient(clientId, clientName) {
         console.error('Error deleting client:', error);
         alert('Failed to delete client. Please try again.');
     }
+}
+
+// View Credentials Functions
+let currentAffiliateId = null;
+
+async function viewCredentials(affiliateId) {
+    currentAffiliateId = affiliateId;
+    
+    try {
+        const response = await fetch(`${API_BASE_URL}/affiliates/admin/credentials/${affiliateId}`, {
+            headers: {
+                'Authorization': `Bearer ${authToken}`
+            }
+        });
+
+        const data = await response.json();
+
+        if (data.success) {
+            const cred = data.credentials;
+            
+            // Populate modal
+            document.getElementById('credFullName').textContent = cred.full_name;
+            document.getElementById('credUsername').textContent = cred.username;
+            document.getElementById('credEmail').textContent = cred.email;
+            document.getElementById('credCouponCode').textContent = cred.coupon_code;
+            
+            const statusBadge = document.getElementById('credStatus');
+            statusBadge.textContent = cred.status;
+            statusBadge.className = `status-badge ${cred.status}`;
+            
+            // Clear password field
+            document.getElementById('newPassword').value = '';
+            
+            // Show modal
+            document.getElementById('viewCredentialsModal').style.display = 'flex';
+        } else {
+            alert('Error fetching credentials: ' + data.message);
+        }
+    } catch (error) {
+        console.error('Error viewing credentials:', error);
+        alert('Failed to load credentials. Please try again.');
+    }
+}
+
+function closeCredentialsModal() {
+    document.getElementById('viewCredentialsModal').style.display = 'none';
+    currentAffiliateId = null;
+}
+
+function generateRandomPassword() {
+    const chars = 'ABCDEFGHJKLMNPQRSTUVWXYZabcdefghjkmnpqrstuvwxyz23456789!@#$%';
+    let password = '';
+    
+    // Ensure at least one of each type
+    password += 'ABCDEFGHJKLMNPQRSTUVWXYZ'[Math.floor(Math.random() * 24)]; // Uppercase
+    password += 'abcdefghjkmnpqrstuvwxyz'[Math.floor(Math.random() * 23)]; // Lowercase
+    password += '23456789'[Math.floor(Math.random() * 8)]; // Number
+    password += '!@#$%'[Math.floor(Math.random() * 5)]; // Special char
+    
+    // Fill the rest (total 12 chars)
+    for (let i = 4; i < 12; i++) {
+        password += chars[Math.floor(Math.random() * chars.length)];
+    }
+    
+    // Shuffle the password
+    password = password.split('').sort(() => Math.random() - 0.5).join('');
+    
+    document.getElementById('newPassword').value = password;
+}
+
+async function handleResetPassword() {
+    if (!currentAffiliateId) {
+        alert('No affiliate selected');
+        return;
+    }
+
+    const newPassword = document.getElementById('newPassword').value;
+    
+    if (!newPassword || newPassword.length < 8) {
+        alert('Please enter a password with at least 8 characters');
+        return;
+    }
+
+    if (!confirm(`Are you sure you want to reset the password for this affiliate?\n\nNew password: ${newPassword}\n\nMake sure to save this password and share it securely with the affiliate.`)) {
+        return;
+    }
+
+    try {
+        const response = await fetch(`${API_BASE_URL}/affiliates/admin/reset-password/${currentAffiliateId}`, {
+            method: 'POST',
+            headers: {
+                'Authorization': `Bearer ${authToken}`,
+                'Content-Type': 'application/json'
+            },
+            body: JSON.stringify({ newPassword })
+        });
+
+        const data = await response.json();
+
+        if (data.success) {
+            alert(`✅ Password reset successfully!\n\nUsername: ${data.affiliate.username}\nNew Password: ${newPassword}\n\nPlease share these credentials securely with the affiliate.`);
+            
+            // Copy to clipboard
+            const credentials = `Username: ${data.affiliate.username}\nPassword: ${newPassword}`;
+            navigator.clipboard.writeText(credentials).then(() => {
+                console.log('Credentials copied to clipboard');
+            }).catch(err => {
+                console.error('Failed to copy:', err);
+            });
+        } else {
+            alert('Error resetting password: ' + data.message);
+        }
+    } catch (error) {
+        console.error('Error resetting password:', error);
+        alert('Failed to reset password. Please try again.');
+    }
+}
+
+function copyToClipboard(text) {
+    navigator.clipboard.writeText(text).then(() => {
+        // Show temporary feedback
+        const tooltip = document.createElement('div');
+        tooltip.textContent = 'Copied!';
+        tooltip.style.cssText = 'position: fixed; top: 50%; left: 50%; transform: translate(-50%, -50%); background: #10b981; color: white; padding: 10px 20px; border-radius: 6px; z-index: 10000; font-weight: 600;';
+        document.body.appendChild(tooltip);
+        
+        setTimeout(() => {
+            tooltip.remove();
+        }, 1500);
+    }).catch(err => {
+        console.error('Failed to copy:', err);
+        alert('Failed to copy to clipboard');
+    });
 }
 

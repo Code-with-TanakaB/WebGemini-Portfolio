@@ -1362,6 +1362,7 @@ body {
 .btn-archive,
 .btn-activate,
 .btn-delete,
+.btn-view,
 .btn-paid {
     padding: 6px 12px;
     border: none;
@@ -1372,6 +1373,17 @@ body {
     display: inline-flex;
     align-items: center;
     justify-content: center;
+}
+
+.btn-view {
+    background: #3b82f6;
+    color: white;
+}
+
+.btn-view:hover {
+    background: #2563eb;
+    transform: translateY(-2px);
+    box-shadow: 0 4px 8px rgba(59, 130, 246, 0.3);
 }
 
 .btn-paid {
@@ -1552,6 +1564,99 @@ body {
 
 .revenue-icon.purple {
     background: linear-gradient(135deg, #8b5cf6, #a78bfa);
+}
+
+/* Credentials Modal Styles */
+.credentials-info {
+    display: flex;
+    flex-direction: column;
+    gap: 20px;
+}
+
+.info-section {
+    background: var(--hover-bg);
+    padding: 20px;
+    border-radius: 12px;
+}
+
+.info-section h3 {
+    margin: 0 0 15px 0;
+    color: var(--text-primary);
+    font-size: 18px;
+    border-bottom: 2px solid var(--border-color);
+    padding-bottom: 10px;
+}
+
+.info-section h4 {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+}
+
+.info-item {
+    display: flex;
+    align-items: center;
+    padding: 12px;
+    margin-bottom: 10px;
+    background: var(--dark-bg);
+    border-radius: 8px;
+    gap: 10px;
+}
+
+.info-item label {
+    font-weight: 600;
+    color: var(--text-secondary);
+    min-width: 120px;
+}
+
+.info-item span {
+    color: var(--text-primary);
+    flex: 1;
+}
+
+.info-item .copyable {
+    cursor: pointer;
+    user-select: all;
+}
+
+.info-item .copyable:hover {
+    color: var(--primary-color);
+}
+
+.copy-icon {
+    color: var(--text-secondary);
+    cursor: pointer;
+    font-size: 16px;
+    transition: all 0.3s;
+}
+
+.copy-icon:hover {
+    color: var(--primary-color);
+    transform: scale(1.2);
+}
+
+.btn-generate {
+    background: var(--secondary-color);
+    color: white;
+    border: none;
+    padding: 10px 15px;
+    border-radius: 8px;
+    cursor: pointer;
+    font-size: 14px;
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    transition: all 0.3s;
+}
+
+.btn-generate:hover {
+    background: #7c3aed;
+    transform: translateY(-2px);
+    box-shadow: 0 4px 8px rgba(139, 92, 246, 0.3);
+}
+
+.btn-generate i {
+    font-size: 16px;
 }
 
 .revenue-info .revenue-label {

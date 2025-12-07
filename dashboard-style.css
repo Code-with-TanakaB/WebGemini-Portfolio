@@ -237,6 +237,12 @@ body {
     border-bottom: 1px solid var(--border-color);
 }
 
+.logo-icon {
+    width: 40px;
+    height: 40px;
+    flex-shrink: 0;
+}
+
 .logo i {
     font-size: 28px;
     color: var(--primary-color);

@@ -19,6 +19,9 @@
     </linearGradient>
   </defs>
   
+  <!-- White Background -->
+  <rect width="200" height="200" fill="#FFFFFF"/>
+  
   <!-- MAIN FACETED GEMSTONE (Refined) -->
   <g id="gemstone">
     <!-- Top Crown Facet (Peak) -->

@@ -1,0 +1,30 @@
+<svg viewBox="0 0 200 200" xmlns="http://www.w3.org/2000/svg">
+  <!-- BLACK VERSION - For light backgrounds -->
+  
+  <!-- Faceted Gemstone -->
+  <polygon points="100,40 130,75 100,65 70,75" fill="#000000" opacity="0.95"/>
+  <polygon points="70,75 100,65 100,100 55,100" fill="#000000" opacity="0.85"/>
+  <polygon points="130,75 145,100 100,100 100,65" fill="#000000" opacity="0.75"/>
+  <polygon points="55,100 100,100 100,160" fill="#000000" opacity="0.65"/>
+  <polygon points="145,100 100,160 100,100" fill="#000000" opacity="0.70"/>
+  
+  <!-- Highlights in lighter black/gray -->
+  <polygon points="100,65 110,85 100,100 90,85" fill="#000000" opacity="0.4"/>
+  
+  <!-- Code brackets -->
+  <path d="M 75 85 L 68 92 L 75 99" stroke="#000000" stroke-width="2" fill="none" stroke-linecap="round" opacity="0.9"/>
+  <path d="M 125 85 L 132 92 L 125 99" stroke="#000000" stroke-width="2" fill="none" stroke-linecap="round" opacity="0.9"/>
+  
+  <!-- Twin lines -->
+  <line x1="95" y1="75" x2="95" y2="120" stroke="#000000" stroke-width="1.5" opacity="0.5"/>
+  <line x1="105" y1="75" x2="105" y2="120" stroke="#000000" stroke-width="1.5" opacity="0.5"/>
+  
+  <!-- Shine effect -->
+  <line x1="100" y1="40" x2="100" y2="55" stroke="#000000" stroke-width="2" opacity="0.9" stroke-linecap="round"/>
+  
+  <!-- Connectivity nodes -->
+  <circle cx="100" cy="25" r="2.5" fill="#000000" opacity="0.7"/>
+  <circle cx="160" cy="100" r="2.5" fill="#000000" opacity="0.7"/>
+  <circle cx="100" cy="175" r="2.5" fill="#000000" opacity="0.7"/>
+  <circle cx="40" cy="100" r="2.5" fill="#000000" opacity="0.7"/>
+</svg>

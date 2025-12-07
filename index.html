@@ -15,6 +15,9 @@
     <title>WebGemini | Transform Your Business with Premium Web Design</title>
     <meta name="description" content="Get a custom, high-converting website built in 7 days. Specializing in modern, 3D interactive web experiences that drive results. Free consultation & quote.">
     
+    <!-- Favicon -->
+    <link rel="icon" type="image/svg+xml" href="image/logo-professional.svg">
+    
     <!-- SEO Keywords -->
     <meta name="keywords" content="webgemini, aws, how to create website, website builder near me, south africa website maker, woocommerce website, godaddy website, web hosting, website domain free, free website builder, website on google, shopify website maker, fiverr website freelancer, upwork website designer, free web designer, hostinger, cheap website agency, web design, web development, website design, website development, custom website, responsive web design, mobile-friendly website, professional web design, affordable web design, web design company, web design services, web design agency, web developer, front-end development, back-end development, full-stack development, UI design, UX design, user interface design, user experience design, 3D web design, interactive website, modern web design, creative web design, business website, corporate website, portfolio website, e-commerce website, online store, shopping cart, web application, progressive web app, PWA, single page application, SPA, React website, WordPress development, custom WordPress, WordPress themes, website builder, drag and drop builder, website templates, landing page design, conversion optimization, CRO, sales funnel, lead generation website, marketing website, SEO services, search engine optimization, on-page SEO, off-page SEO, technical SEO, local SEO, Google ranking, SEO agency, SEO expert, keyword research, content marketing, digital marketing, social media marketing, online marketing, internet marketing, web analytics, Google Analytics, website traffic, bounce rate optimization, page speed optimization, website performance, fast loading website, mobile optimization, mobile-first design, tablet-friendly, cross-browser compatibility, HTML5, CSS3, JavaScript, TypeScript, React, Angular, Vue.js, Next.js, Node.js, Express.js, MongoDB, MySQL, PostgreSQL, REST API, GraphQL, responsive design, adaptive design, flexible layouts, grid system, Tailwind CSS, Bootstrap, Material UI, Sass, SCSS, web hosting, domain registration, website maintenance, website support, 24/7 support, website security, SSL certificate, HTTPS, web security, data protection, GDPR compliance, accessibility, WCAG compliance, ADA compliance, screen reader friendly, website redesign, website refresh, website upgrade, website migration, CMS development, content management system, headless CMS, Strapi, Contentful, blogging platform, blog design, news website, magazine website, photography website, video website, streaming platform, membership website, subscription website, booking website, reservation system, appointment scheduling, event website, conference website, nonprofit website, charity website, educational website, school website, university website, healthcare website, medical website, real estate website, property listing, restaurant website, food delivery, hotel website, travel website, fitness website, gym website, spa website, salon website, fashion website, jewelry website, automotive website, car dealership, construction website, architecture website, interior design website, legal website, law firm website, financial website, banking website, insurance website, consulting website, agency website, startup website, small business website, enterprise website, B2B website, B2C website, SaaS website, software company, tech startup, web solutions, digital solutions, online presence, brand identity, logo design, graphic design, website branding, color scheme, typography, custom fonts, animation, scroll effects, parallax scrolling, hover effects, transition effects, micro-interactions, loading animations, skeleton screens, lazy loading, image optimization, video optimization, CDN integration, cloud hosting, VPS hosting, dedicated server, website scalability, high traffic website, database optimization, caching, Redis, website backup, disaster recovery, conversion tracking, A/B testing, heat mapping, user testing, usability testing, wireframing, prototyping, mockups, Figma design, Adobe XD, Sketch, web standards, clean code, semantic HTML, schema markup, structured data, rich snippets, meta tags, Open Graph, Twitter Cards, social sharing, email integration, newsletter signup, contact forms, chatbot, live chat, customer support, payment integration, Stripe, PayPal, secure checkout, PCI compliance, South Africa web design, Johannesburg web developer, Cape Town website, Durban web services, Pretoria web agency, Limpopo web design, Mokopane website, African web development, international web design, global website, multilingual website, translation services, localization">
     
@@ -72,7 +75,8 @@
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&family=Plus+Jakarta+Sans:wght@300;400;500;600;700;800;900&family=Bitcount+Single:wght@100..900&display=swap" rel="stylesheet">
     
     <!-- Favicon -->
-    <link rel="icon" type="image/png" href="image/logo.png">
+    <link rel="icon" type="image/svg+xml" href="image/favicon.svg">
+    <link rel="apple-touch-icon" href="image/logo-professional.svg">
     
     <!-- Three.js for 3D Effects -->
     <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
@@ -163,9 +167,31 @@
         <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
             <div class="flex justify-between items-center py-4">
                 <!-- Logo -->
-                <a href="index.html" class="flex items-center space-x-2 text-2xl font-bold">
-                    <i class="fa-brands fa-connectdevelop text-primary"></i>
-                    <span class="bg-gradient-to-r from-primary to-accent bg-clip-text text-transparent logo-text">WEBGEMINI</span>
+                <a href="index.html" class="flex items-center space-x-2 text-2xl font-bold group">
+                    <div class="w-10 h-10">
+                        <svg viewBox="0 0 200 200" xmlns="http://www.w3.org/2000/svg" class="w-full h-full">
+                            <defs>
+                                <linearGradient id="nav-grad-1" x1="0%" y1="0%" x2="100%" y2="100%">
+                                    <stop offset="0%" style="stop-color:#1E3A8A;stop-opacity:1" />
+                                    <stop offset="100%" style="stop-color:#3B82F6;stop-opacity:1" />
+                                </linearGradient>
+                                <linearGradient id="nav-grad-2" x1="0%" y1="0%" x2="100%" y2="100%">
+                                    <stop offset="0%" style="stop-color:#60A5FA;stop-opacity:1" />
+                                    <stop offset="100%" style="stop-color:#93C5FD;stop-opacity:1" />
+                                </linearGradient>
+                            </defs>
+                            <!-- Faceted Gem -->
+                            <polygon points="100,40 130,75 100,65 70,75" fill="url(#nav-grad-1)" opacity="0.95"/>
+                            <polygon points="70,75 100,65 100,100 55,100" fill="url(#nav-grad-1)" opacity="0.85"/>
+                            <polygon points="130,75 145,100 100,100 100,65" fill="url(#nav-grad-2)" opacity="0.9"/>
+                            <polygon points="55,100 100,100 100,160" fill="url(#nav-grad-1)" opacity="0.75"/>
+                            <polygon points="145,100 100,160 100,100" fill="url(#nav-grad-2)" opacity="0.8"/>
+                            <!-- Code brackets -->
+                            <path d="M 75 85 L 68 92 L 75 99" stroke="#FFFFFF" stroke-width="2" fill="none" stroke-linecap="round" opacity="0.6"/>
+                            <path d="M 125 85 L 132 92 L 125 99" stroke="#FFFFFF" stroke-width="2" fill="none" stroke-linecap="round" opacity="0.6"/>
+                        </svg>
+                    </div>
+                    <span class="bg-gradient-to-r from-blue-900 to-blue-500 bg-clip-text text-transparent logo-text">WEBGEMINI</span>
                 </a>
                 
                 <!-- Desktop Menu -->
@@ -1351,7 +1377,29 @@
                 <!-- Company Info -->
                 <div class="space-y-4">
                     <div class="flex items-center space-x-2 text-2xl font-bold mb-4">
-                        <i class="fa-brands fa-connectdevelop text-primary"></i>
+                        <div class="w-8 h-8">
+                            <svg viewBox="0 0 200 200" xmlns="http://www.w3.org/2000/svg">
+                                <defs>
+                                    <linearGradient id="footer-grad-1" x1="0%" y1="0%" x2="100%" y2="100%">
+                                        <stop offset="0%" style="stop-color:#1E3A8A;stop-opacity:1" />
+                                        <stop offset="100%" style="stop-color:#3B82F6;stop-opacity:1" />
+                                    </linearGradient>
+                                    <linearGradient id="footer-grad-2" x1="0%" y1="0%" x2="100%" y2="100%">
+                                        <stop offset="0%" style="stop-color:#60A5FA;stop-opacity:1" />
+                                        <stop offset="100%" style="stop-color:#93C5FD;stop-opacity:1" />
+                                    </linearGradient>
+                                </defs>
+                                <!-- Faceted Gem -->
+                                <polygon points="100,40 130,75 100,65 70,75" fill="url(#footer-grad-1)" opacity="0.95"/>
+                                <polygon points="70,75 100,65 100,100 55,100" fill="url(#footer-grad-1)" opacity="0.85"/>
+                                <polygon points="130,75 145,100 100,100 100,65" fill="url(#footer-grad-2)" opacity="0.9"/>
+                                <polygon points="55,100 100,100 100,160" fill="url(#footer-grad-1)" opacity="0.75"/>
+                                <polygon points="145,100 100,160 100,100" fill="url(#footer-grad-2)" opacity="0.8"/>
+                                <!-- Code brackets -->
+                                <path d="M 75 85 L 68 92 L 75 99" stroke="#FFFFFF" stroke-width="2" fill="none" stroke-linecap="round" opacity="0.6"/>
+                                <path d="M 125 85 L 132 92 L 125 99" stroke="#FFFFFF" stroke-width="2" fill="none" stroke-linecap="round" opacity="0.6"/>
+                            </svg>
+                        </div>
                         <span class="logo-text">WEBGEMINI</span>
                     </div>
                     <p class="text-gray-400 leading-relaxed">

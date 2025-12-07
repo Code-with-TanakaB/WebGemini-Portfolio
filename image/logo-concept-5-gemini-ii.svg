@@ -1,0 +1,46 @@
+<svg viewBox="0 0 200 200" xmlns="http://www.w3.org/2000/svg">
+  <defs>
+    <linearGradient id="roman-grad" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" style="stop-color:#1E3A8A;stop-opacity:1" />
+      <stop offset="100%" style="stop-color:#3B82F6;stop-opacity:1" />
+    </linearGradient>
+  </defs>
+  
+  <!-- CONCEPT 5: Modern Gemini II (Roman Numeral) with Tech Elements -->
+  
+  <!-- Left pillar (first I) with faceted gem top -->
+  <g>
+    <rect x="75" y="90" width="12" height="60" fill="url(#roman-grad)" rx="2"/>
+    <!-- Gem facet top -->
+    <polygon points="81,70 91,85 81,90 71,85" fill="url(#roman-grad)" opacity="0.9"/>
+    <polygon points="81,90 91,85 91,90" fill="#60A5FA" opacity="0.7"/>
+    <polygon points="81,90 71,85 71,90" fill="#3B82F6" opacity="0.7"/>
+  </g>
+  
+  <!-- Right pillar (second I) with faceted gem top -->
+  <g>
+    <rect x="113" y="90" width="12" height="60" fill="url(#roman-grad)" rx="2"/>
+    <!-- Gem facet top -->
+    <polygon points="119,70 129,85 119,90 109,85" fill="url(#roman-grad)" opacity="0.9"/>
+    <polygon points="119,90 129,85 129,90" fill="#60A5FA" opacity="0.7"/>
+    <polygon points="119,90 109,85 109,90" fill="#3B82F6" opacity="0.7"/>
+  </g>
+  
+  <!-- Digital connection bridge -->
+  <rect x="87" y="108" width="26" height="3" fill="#60A5FA" opacity="0.4" rx="1"/>
+  <circle cx="100" cy="110" r="5" fill="#93C5FD" opacity="0.7"/>
+  
+  <!-- Code brackets around the II -->
+  <path d="M 60 95 L 52 110 L 60 125" stroke="url(#roman-grad)" stroke-width="2.5" fill="none" stroke-linecap="round" opacity="0.5"/>
+  <path d="M 140 95 L 148 110 L 140 125" stroke="url(#roman-grad)" stroke-width="2.5" fill="none" stroke-linecap="round" opacity="0.5"/>
+  
+  <!-- Web connectivity nodes -->
+  <circle cx="100" cy="60" r="3" fill="#93C5FD" opacity="0.6"/>
+  <circle cx="100" cy="160" r="3" fill="#93C5FD" opacity="0.6"/>
+  <line x1="81" y1="70" x2="100" y2="60" stroke="#60A5FA" stroke-width="1" opacity="0.3"/>
+  <line x1="119" y1="70" x2="100" y2="60" stroke="#60A5FA" stroke-width="1" opacity="0.3"/>
+  
+  <!-- Subtle circuit pattern -->
+  <line x1="75" y1="120" x2="65" y2="120" stroke="#60A5FA" stroke-width="1" opacity="0.3" stroke-dasharray="2,2"/>
+  <line x1="125" y1="120" x2="135" y2="120" stroke="#60A5FA" stroke-width="1" opacity="0.3" stroke-dasharray="2,2"/>
+</svg>

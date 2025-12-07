@@ -1,59 +1,65 @@
 <svg viewBox="0 0 200 200" xmlns="http://www.w3.org/2000/svg">
   <defs>
+    <!-- Primary gradient: deep navy to bright blue -->
     <linearGradient id="gradientPrimary" x1="0%" y1="0%" x2="100%" y2="100%">
       <stop offset="0%" style="stop-color:#1E3A8A;stop-opacity:1" />
       <stop offset="100%" style="stop-color:#3B82F6;stop-opacity:1" />
     </linearGradient>
+    
+    <!-- Accent gradient: light blue to cyan -->
     <linearGradient id="gradientAccent" x1="0%" y1="0%" x2="100%" y2="100%">
       <stop offset="0%" style="stop-color:#60A5FA;stop-opacity:1" />
       <stop offset="100%" style="stop-color:#93C5FD;stop-opacity:1" />
     </linearGradient>
-    <filter id="shine" x="-50%" y="-50%" width="200%" height="200%">
-      <feGaussianBlur stdDeviation="2" result="blur"/>
-      <feComposite in="blur" in2="SourceGraphic" operator="over"/>
-    </filter>
+    
+    <!-- Highlight gradient for internal shine -->
+    <linearGradient id="shineGradient" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" style="stop-color:#FFFFFF;stop-opacity:0.8" />
+      <stop offset="100%" style="stop-color:#93C5FD;stop-opacity:0.3" />
+    </linearGradient>
   </defs>
   
-  <!-- Faceted Gemstone with Digital Elements -->
-  <g filter="url(#shine)">
-    <!-- Main Diamond/Gem Shape -->
-    <!-- Top Facet -->
-    <polygon points="100,40 130,75 100,65 70,75" fill="url(#gradientPrimary)" opacity="0.95"/>
+  <!-- MAIN FACETED GEMSTONE (Refined) -->
+  <g id="gemstone">
+    <!-- Top Crown Facet (Peak) -->
+    <polygon points="100,35 125,65 75,65" fill="url(#gradientPrimary)" opacity="0.98"/>
     
-    <!-- Left Facet -->
-    <polygon points="70,75 100,65 100,100 55,100" fill="url(#gradientPrimary)" opacity="0.85"/>
+    <!-- Upper Left Facet -->
+    <polygon points="75,65 100,50 130,85 105,100" fill="url(#gradientPrimary)" opacity="0.92"/>
     
-    <!-- Right Facet -->
-    <polygon points="130,75 145,100 100,100 100,65" fill="url(#gradientAccent)" opacity="0.9"/>
+    <!-- Upper Right Facet -->
+    <polygon points="125,65 150,85 125,100 100,50" fill="url(#gradientAccent)" opacity="0.95"/>
     
-    <!-- Bottom Left -->
-    <polygon points="55,100 100,100 100,160" fill="url(#gradientPrimary)" opacity="0.75"/>
+    <!-- Middle Left Facet -->
+    <polygon points="75,65 105,100 65,115" fill="url(#gradientPrimary)" opacity="0.85"/>
     
-    <!-- Bottom Right -->
-    <polygon points="145,100 100,160 100,100" fill="url(#gradientAccent)" opacity="0.8"/>
+    <!-- Middle Center Core (Depth) -->
+    <polygon points="100,50 130,85 105,100 75,65" fill="url(#shineGradient)" opacity="0.4"/>
     
-    <!-- Center Highlight (gem shine) -->
-    <polygon points="100,65 110,85 100,100 90,85" fill="#93C5FD" opacity="0.4"/>
+    <!-- Middle Right Facet -->
+    <polygon points="125,100 150,85 160,115" fill="url(#gradientAccent)" opacity="0.88"/>
     
-    <!-- Digital/Code Elements Overlaid on Gem -->
-    <!-- Code Brackets integrated into facets -->
-    <path d="M 75 85 L 68 92 L 75 99" stroke="#FFFFFF" stroke-width="2" fill="none" stroke-linecap="round" opacity="0.6"/>
-    <path d="M 125 85 L 132 92 L 125 99" stroke="#FFFFFF" stroke-width="2" fill="none" stroke-linecap="round" opacity="0.6"/>
+    <!-- Bottom Left Facet -->
+    <polygon points="65,115 105,100 100,155" fill="url(#gradientPrimary)" opacity="0.78"/>
     
-    <!-- Twin/Gemini Elements - Dual Lines -->
-    <line x1="95" y1="75" x2="95" y2="120" stroke="#FFFFFF" stroke-width="1.5" opacity="0.3"/>
-    <line x1="105" y1="75" x2="105" y2="120" stroke="#FFFFFF" stroke-width="1.5" opacity="0.3"/>
+    <!-- Bottom Right Facet -->
+    <polygon points="105,100 160,115 125,155" fill="url(#gradientAccent)" opacity="0.82"/>
     
-    <!-- Top shine lines -->
-    <line x1="100" y1="40" x2="100" y2="55" stroke="#FFFFFF" stroke-width="2" opacity="0.8" stroke-linecap="round"/>
+    <!-- Bottom Point Facet -->
+    <polygon points="100,155 125,155 112,175" fill="url(#gradientPrimary)" opacity="0.72"/>
+    
+    <!-- TOP SHINE HIGHLIGHT (Premium polish effect) -->
+    <line x1="95" y1="40" x2="105" y2="40" stroke="#FFFFFF" stroke-width="2.5" opacity="0.9" stroke-linecap="round"/>
+    
+    <!-- DIGITAL/CODE ELEMENTS -->
+    <!-- Left Code Bracket < -->
+    <path d="M 70 90 Q 60 100 70 110" stroke="#FFFFFF" stroke-width="2.5" fill="none" stroke-linecap="round" stroke-linejoin="round" opacity="0.75"/>
+    
+    <!-- Right Code Bracket > -->
+    <path d="M 130 90 Q 140 100 130 110" stroke="#FFFFFF" stroke-width="2.5" fill="none" stroke-linecap="round" stroke-linejoin="round" opacity="0.75"/>
+    
+    <!-- GEMINI DUALITY - Twin Parallel Lines (Vertical) -->
+    <line x1="96" y1="65" x2="96" y2="145" stroke="#FFFFFF" stroke-width="1.8" opacity="0.4"/>
+    <line x1="104" y1="65" x2="104" y2="145" stroke="#FFFFFF" stroke-width="1.8" opacity="0.4"/>
   </g>
-  
-  <!-- Subtle outer ring suggesting connectivity -->
-  <circle cx="100" cy="100" r="85" fill="none" stroke="url(#gradientPrimary)" stroke-width="1" opacity="0.2"/>
-  
-  <!-- Connection nodes at cardinal points (web connectivity) -->
-  <circle cx="100" cy="25" r="3" fill="url(#gradientAccent)" opacity="0.6"/>
-  <circle cx="175" cy="100" r="3" fill="url(#gradientAccent)" opacity="0.6"/>
-  <circle cx="100" cy="175" r="3" fill="url(#gradientAccent)" opacity="0.6"/>
-  <circle cx="25" cy="100" r="3" fill="url(#gradientAccent)" opacity="0.6"/>
 </svg>

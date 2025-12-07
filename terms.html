@@ -46,182 +46,295 @@
     <link rel="shortcut icon" href="favicon.svg?v=2025.12.07">
     <link rel="apple-touch-icon" href="image/logo-professional.svg">
 
-	<link rel="stylesheet" href="style.css">
-	<script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
-	<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/7.0.0/css/all.min.css" integrity="sha512-DxV+EoADOkOygM4IR9yXP8Sb2qwgidEmeqAEmDKIOfPRQZOWbXCzLC6vjbZyy0vPisbH2SyW27+ddLVCN+OMzQ==" crossorigin="anonymous" referrerpolicy="no-referrer" />
+	<!-- Tailwind CSS CDN -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    colors: {
+                        primary: '#0066FF',
+                        secondary: '#0044CC',
+                        accent: '#00FFFF',
+                        dark: '#0A0E27',
+                    }
+                }
+            }
+        }
+    </script>
+	
+	<!-- Font Awesome -->
+	<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/7.0.0/css/all.min.css" />
+	
+	<!-- Google Fonts -->
 	<link rel="preconnect" href="https://fonts.googleapis.com">
 	<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-	<link href="https://fonts.googleapis.com/css2?family=EB+Garamond:ital,wght@0,400..800;1,400..800&display=swap" rel="stylesheet">
-	<script defer src="script.js"></script>
-<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link href="https://fonts.googleapis.com/css2?family=Bitcount+Single:wght@100..900&display=swap" rel="stylesheet">
+	<link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&family=Plus+Jakarta+Sans:wght@300;400;500;600;700;800;900&family=Bitcount+Single:wght@100..900&display=swap" rel="stylesheet">
+	
+	<style>
+        body {
+            font-family: 'Inter', sans-serif;
+        }
+        h1, h2, h3, h4, h5, h6 {
+            font-family: 'Plus Jakarta Sans', sans-serif;
+        }
+        .logo-text {
+            font-family: 'Bitcount Single', monospace;
+            font-weight: 700;
+            letter-spacing: 0.05em;
+        }
+    </style>
 </head>
 
-<body>
-  <nav class="navbar">
-		<div class="nav-container">
-			<a href="#" class="nav-logo">
-				<svg viewBox="0 0 200 200" xmlns="http://www.w3.org/2000/svg" width="32" height="32" style="vertical-align: middle; margin-right: 8px;">
-					<defs>
-						<linearGradient id="terms-nav-grad-1" x1="0%" y1="0%" x2="100%" y2="100%">
-							<stop offset="0%" style="stop-color:#1E3A8A;stop-opacity:1" />
-							<stop offset="100%" style="stop-color:#3B82F6;stop-opacity:1" />
-						</linearGradient>
-						<linearGradient id="terms-nav-grad-2" x1="0%" y1="0%" x2="100%" y2="100%">
-							<stop offset="0%" style="stop-color:#60A5FA;stop-opacity:1" />
-							<stop offset="100%" style="stop-color:#93C5FD;stop-opacity:1" />
-						</linearGradient>
-					</defs>
-					<polygon points="100,40 130,75 100,65 70,75" fill="url(#terms-nav-grad-1)" opacity="0.95"/>
-					<polygon points="70,75 100,65 100,100 55,100" fill="url(#terms-nav-grad-1)" opacity="0.85"/>
-					<polygon points="130,75 145,100 100,100 100,65" fill="url(#terms-nav-grad-2)" opacity="0.9"/>
-					<polygon points="55,100 100,100 100,160" fill="url(#terms-nav-grad-1)" opacity="0.75"/>
-					<polygon points="145,100 100,160 100,100" fill="url(#terms-nav-grad-2)" opacity="0.8"/>
-					<path d="M 75 85 L 68 92 L 75 99" stroke="#FFFFFF" stroke-width="2" fill="none" stroke-linecap="round" opacity="0.6"/>
-					<path d="M 125 85 L 132 92 L 125 99" stroke="#FFFFFF" stroke-width="2" fill="none" stroke-linecap="round" opacity="0.6"/>
-				</svg>
-				WEBGEMINI
-			</a>
-			<button class="nav-toggle" aria-label="Open navigation menu">
-				<span class="bar"></span>
-				<span class="bar"></span>
-				<span class="bar"></span>
-			</button>
-      <ul class="nav-links">
-        <li><a href="index.html">Home</a></li>
-		<li><a href="index.html#pricing">Pricing</a></li>
-		<li><a href="#services">Services</a></li>
-        <li><a href="index.html#projects">Projects</a></li>
-        <li><a href="index.html#about">About</a></li>
-        <li><a href="index.html#contact">Contact</a></li>
-		<li><a href="blog.html">Blog</a></li>
-      </ul>
-    </div>
-  </nav>
-  <main style="max-width: 900px; margin: 120px auto 2rem auto; padding: 2rem; background: rgba(255,255,255,0.97); border-radius: 18px; box-shadow: 0 2px 16px rgba(0,0,0,0.10);">
-    <h1 style="font-family: 'Playfair Display', serif; font-size: 2.2rem; color: #493c3c;">Terms and Conditions</h1>
-    <p>Welcome to WebGemini. By accessing or using this website, you agree to be bound by the following terms and conditions. Please read them carefully.</p>
-    <h2>1. Acceptance of Terms</h2>
-    <p>By using this website, you agree to comply with and be legally bound by these terms. If you do not agree, please do not use this site.</p>
-    <h2>2. Intellectual Property</h2>
-    <p>All content, designs, graphics, and code on this site are the property of WebGemini unless otherwise stated. Unauthorized use is prohibited.</p>
-    <h2>3. User Conduct</h2>
-    <p>You agree not to use this site or any sites we build/design for any unlawful purpose or in any way that may harm the site or its users.</p>
-    <h2>4. Limitation of Liability</h2>
-    <p>WebGemini is not liable for any damages arising from the use or inability to use this website or any website we build/design.</p>
+<body class="bg-dark text-white">
 
-			<h2 id="privacy-policy">5. Privacy Policy</h2>
-			<p>Your privacy is important to us. This Privacy Policy explains how we collect, use, and protect your personal information when you use our website or services.</p>
-			<ul style="margin-bottom:1.2rem;">
-				<li><strong>Information Collection:</strong> We collect information you provide directly (such as your name, email, and message when you fill out forms) and basic analytics data (such as browser type, device, and pages visited).</li>
-				<li><strong>Use of Information:</strong> Your information is used solely to respond to your inquiries, provide services, and improve our website. We do not sell or share your personal data with third parties except as required by law.</li>
-				<li><strong>Cookies:</strong> Our website may use cookies for analytics and to enhance your browsing experience. You can disable cookies in your browser settings.</li>
-				<li><strong>Data Security:</strong> We implement reasonable security measures to protect your data, but cannot guarantee absolute security.</li>
-				<li><strong>Third-Party Links:</strong> Our site may contain links to external sites. We are not responsible for the privacy practices or content of those sites.</li>
-				<li><strong>Contact:</strong> For privacy-related questions, please <a href="index.html#contact">contact us</a>.</li>
-			</ul>
-			<p>By using this website, you consent to this Privacy Policy. We may update this policy from time to time; please review it periodically.</p>
-	<h2>6. Payment Policy</h2>
-	<p>Some services provided by WebGemini may require recurring monthly service fees (such as hosting, maintenance, or other ongoing services). By engaging in these services, you agree to pay all recurring fees on time as invoiced.</p>
-	<ul style="margin-bottom:1.2rem;">
-		<li><strong>Late or Missed Payments:</strong> Failure to pay recurring monthly service fees by the due date may result in suspension or termination of your website, hosting, or related services without further notice.</li>
-		<li><strong>Service Restoration:</strong> Suspended services may be restored at WebGemini's discretion upon full payment of outstanding fees and any applicable reactivation charges.</li>
-		<li><strong>Data Loss:</strong> WebGemini is not responsible for any data loss or business interruption resulting from non-payment and subsequent suspension or termination of services.</li>
-		<li><strong>Communication:</strong> It is your responsibility to ensure your contact and billing information is up to date to receive invoices and payment reminders.</li>
-	</ul>
-	<p>By using our recurring services, you acknowledge and accept these payment terms and consequences of non-payment.</p>
-
-	<h2>7. No Refund Policy</h2>
-	<p>All payments made for services rendered by WebGemini are final and non-refundable. By engaging our services, you acknowledge and agree to this no refund policy.</p>
-	
-	<h2 id="cookie-policy">8. Cookie Policy</h2>
-	<p>WebGemini uses cookies to enhance your browsing experience and analyze website traffic. This Cookie Policy explains what cookies are, how we use them, and your choices regarding their use.</p>
-	<ul style="margin-bottom:1.2rem;">
-		<li><strong>What Are Cookies:</strong> Cookies are small text files stored on your device by your web browser. They help websites remember your preferences and track site usage.</li>
-		<li><strong>Types of Cookies We Use:</strong>
-			<ul style="margin-top:0.5rem; margin-left:1.5rem;">
-				<li><em>Essential Cookies:</em> Required for the website to function properly.</li>
-				<li><em>Analytics Cookies:</em> Help us understand how visitors interact with our site (e.g., Google Analytics).</li>
-				<li><em>Marketing Cookies:</em> Track your activity to provide relevant ads and measure campaign effectiveness (e.g., Google Ads).</li>
-			</ul>
-		</li>
-		<li><strong>Third-Party Cookies:</strong> We use Google Analytics and Google Tag Manager to collect anonymous usage data. These services may set cookies on your device.</li>
-		<li><strong>Managing Cookies:</strong> You can control or delete cookies through your browser settings. However, disabling cookies may affect your experience on our website.</li>
-		<li><strong>Consent:</strong> By continuing to use our website, you consent to our use of cookies as described in this policy.</li>
-	</ul>
-	<p>For more information about how we protect your data, please refer to our <a href="#privacy-policy">Privacy Policy</a>.</p>
-	
-	<h2>9. Changes to Terms</h2>
-	<p>We reserve the right to update these terms at any time. Continued use of the site constitutes acceptance of the new terms.</p>
-    <p>If you have any questions about these terms, please contact us.</p>
-			<div style="margin: 1.2rem 0 2rem 0;">
-				<a href="index.html#contact" style="color: #0066FF; text-decoration: none; font-weight: 600;">Go to Contact Form</a>
+  <!-- Navigation -->
+  <nav class="fixed w-full z-50 transition-all duration-300 bg-dark/80 backdrop-blur-lg border-b border-white/10">
+		<div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+			<div class="flex justify-between items-center py-4">
+				<a href="index.html" class="flex items-center space-x-2 text-2xl font-bold group">
+					<div class="w-10 h-10">
+						<svg viewBox="0 0 200 200" xmlns="http://www.w3.org/2000/svg" class="w-full h-full">
+							<defs>
+								<linearGradient id="terms-nav-grad-1" x1="0%" y1="0%" x2="100%" y2="100%">
+									<stop offset="0%" style="stop-color:#1E3A8A;stop-opacity:1" />
+									<stop offset="100%" style="stop-color:#3B82F6;stop-opacity:1" />
+								</linearGradient>
+								<linearGradient id="terms-nav-grad-2" x1="0%" y1="0%" x2="100%" y2="100%">
+									<stop offset="0%" style="stop-color:#60A5FA;stop-opacity:1" />
+									<stop offset="100%" style="stop-color:#93C5FD;stop-opacity:1" />
+								</linearGradient>
+							</defs>
+							<polygon points="100,40 130,75 100,65 70,75" fill="url(#terms-nav-grad-1)" opacity="0.95"/>
+							<polygon points="70,75 100,65 100,100 55,100" fill="url(#terms-nav-grad-1)" opacity="0.85"/>
+							<polygon points="130,75 145,100 100,100 100,65" fill="url(#terms-nav-grad-2)" opacity="0.9"/>
+							<polygon points="55,100 100,100 100,160" fill="url(#terms-nav-grad-1)" opacity="0.75"/>
+							<polygon points="145,100 100,160 100,100" fill="url(#terms-nav-grad-2)" opacity="0.8"/>
+							<path d="M 75 85 L 68 92 L 75 99" stroke="#FFFFFF" stroke-width="2" fill="none" stroke-linecap="round" opacity="0.6"/>
+							<path d="M 125 85 L 132 92 L 125 99" stroke="#FFFFFF" stroke-width="2" fill="none" stroke-linecap="round" opacity="0.6"/>
+						</svg>
+					</div>
+					<span class="bg-gradient-to-r from-blue-900 to-blue-500 bg-clip-text text-transparent logo-text">WEBGEMINI</span>
+				</a>
+				
+				<!-- Desktop Menu -->
+				<div class="hidden md:flex items-center space-x-8">
+					<a href="index.html" class="hover:text-primary transition">Home</a>
+					<a href="index.html#pricing" class="hover:text-primary transition">Pricing</a>
+					<a href="index.html#services" class="hover:text-primary transition">Services</a>
+					<a href="index.html#projects" class="hover:text-primary transition">Projects</a>
+					<a href="index.html#about" class="hover:text-primary transition">About</a>
+					<a href="index.html#contact" class="hover:text-primary transition">Contact</a>
+					<a href="blog.html" class="hover:text-primary transition">Blog</a>
+				</div>
+				
+				<!-- Mobile Menu Button -->
+				<button class="md:hidden text-white" id="mobile-menu-btn">
+					<i class="fas fa-bars text-2xl"></i>
+				</button>
 			</div>
-    <form action="https://formspree.io/f/mnnbqkvv" method="POST" style="margin:2rem 0; padding:1.2rem; background:#f8fafd; border-radius:12px; box-shadow:0 2px 8px #0001; max-width:400px;">
-      <label style="display:block; margin-bottom:0.7rem; font-weight:600; color:#493c3c;">
-        <input type="checkbox" name="agree" value="agree" required>
-        I have read and agree to the Terms and Conditions
-      </label>
-      <label style="display:block; margin-bottom:1.2rem; font-weight:600; color:#493c3c;">
-        <input type="checkbox" name="disagree" value="disagree">
-        I do not agree to the Terms and Conditions
-      </label>
-      <input type="hidden" name="_subject" value="Terms and Conditions Agreement">
-      <button type="submit" style="background:linear-gradient(90deg,#00c3ff,#ff1c68);color:#fff;border:none;border-radius:30px;font-size:1.1rem;font-weight:700;padding:0.7rem 2.2rem;cursor:pointer;box-shadow:0 4px 24px rgba(0,0,0,0.13);transition:background 0.2s,transform 0.2s;">Submit</button>
-    </form>
+		</div>
+		
+		<!-- Mobile Menu -->
+		<div class="md:hidden hidden bg-dark/95 backdrop-blur-lg" id="mobile-menu">
+			<div class="px-4 py-6 space-y-4">
+				<a href="index.html" class="block py-2 hover:text-primary transition">Home</a>
+				<a href="index.html#pricing" class="block py-2 hover:text-primary transition">Pricing</a>
+				<a href="index.html#services" class="block py-2 hover:text-primary transition">Services</a>
+				<a href="index.html#projects" class="block py-2 hover:text-primary transition">Projects</a>
+				<a href="index.html#about" class="block py-2 hover:text-primary transition">About</a>
+				<a href="index.html#contact" class="block py-2 hover:text-primary transition">Contact</a>
+				<a href="blog.html" class="block py-2 hover:text-primary transition">Blog</a>
+			</div>
+		</div>
+  </nav>
+
+  <!-- Hero Section -->
+  <section class="relative pt-32 pb-20 overflow-hidden">
+	  <div class="absolute inset-0 bg-gradient-to-br from-dark via-dark/90 to-primary/20"></div>
+	  <div class="absolute inset-0 opacity-30">
+		  <div class="absolute top-20 left-10 w-72 h-72 bg-primary rounded-full filter blur-3xl"></div>
+		  <div class="absolute bottom-20 right-10 w-96 h-96 bg-accent rounded-full filter blur-3xl"></div>
+	  </div>
+	  
+	  <div class="relative max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 text-center">
+		  <h1 class="text-5xl md:text-6xl font-bold mb-6">
+			  <span class="bg-gradient-to-r from-blue-400 to-cyan-400 bg-clip-text text-transparent">Terms & Conditions</span>
+		  </h1>
+		  <p class="text-xl text-gray-300 max-w-3xl mx-auto">
+			  Please read our terms, privacy policy, and cookie policy carefully
+		  </p>
+	  </div>
+  </section>
+
+  <!-- Terms Content -->
+  <main class="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 py-20">
+	  <div class="bg-white/5 backdrop-blur-sm border border-white/10 rounded-2xl p-8 md:p-12">
+		  
+		  <div class="prose prose-invert max-w-none">
+			  <p class="text-gray-300 mb-8">Welcome to WebGemini. By accessing or using this website, you agree to be bound by the following terms and conditions. Please read them carefully.</p>
+			  
+			  <h2 id="terms" class="text-3xl font-bold text-white mt-12 mb-4">1. Acceptance of Terms</h2>
+			  <p class="text-gray-300 mb-6">By using this website, you agree to comply with and be legally bound by these terms. If you do not agree, please do not use this site.</p>
+			  
+			  <h2 class="text-3xl font-bold text-white mt-12 mb-4">2. Intellectual Property</h2>
+			  <p class="text-gray-300 mb-6">All content, designs, graphics, and code on this site are the property of WebGemini unless otherwise stated. Unauthorized use is prohibited.</p>
+			  
+			  <h2 class="text-3xl font-bold text-white mt-12 mb-4">3. User Conduct</h2>
+			  <p class="text-gray-300 mb-6">You agree not to use this site or any sites we build/design for any unlawful purpose or in any way that may harm the site or its users.</p>
+			  
+			  <h2 class="text-3xl font-bold text-white mt-12 mb-4">4. Limitation of Liability</h2>
+			  <p class="text-gray-300 mb-6">WebGemini is not liable for any damages arising from the use or inability to use this website or any website we build/design.</p>
+			  
+			  <h2 id="privacy" class="text-3xl font-bold text-white mt-12 mb-4">5. Privacy Policy</h2>
+			  <p class="text-gray-300 mb-6">Your privacy is important to us. This Privacy Policy explains how we collect, use, and protect your personal information when you use our website or services.</p>
+			  <ul class="space-y-4 text-gray-300 mb-6 list-disc list-inside">
+				  <li><strong class="text-white">Information Collection:</strong> We collect information you provide directly (such as your name, email, and message when you fill out forms) and basic analytics data (such as browser type, device, and pages visited).</li>
+				  <li><strong class="text-white">Use of Information:</strong> Your information is used solely to respond to your inquiries, provide services, and improve our website. We do not sell or share your personal data with third parties except as required by law.</li>
+				  <li><strong class="text-white">Cookies:</strong> Our website may use cookies for analytics and to enhance your browsing experience. You can disable cookies in your browser settings.</li>
+				  <li><strong class="text-white">Data Security:</strong> We implement reasonable security measures to protect your data, but cannot guarantee absolute security.</li>
+				  <li><strong class="text-white">Third-Party Links:</strong> Our site may contain links to external sites. We are not responsible for the privacy practices or content of those sites.</li>
+				  <li><strong class="text-white">Contact:</strong> For privacy-related questions, please <a href="index.html#contact" class="text-primary hover:text-accent underline">contact us</a>.</li>
+			  </ul>
+			  <p class="text-gray-300 mb-6">By using this website, you consent to this Privacy Policy. We may update this policy from time to time; please review it periodically.</p>
+			  
+			  <h2 class="text-3xl font-bold text-white mt-12 mb-4">6. Payment Policy</h2>
+			  <p class="text-gray-300 mb-6">Some services provided by WebGemini may require recurring monthly service fees (such as hosting, maintenance, or other ongoing services). By engaging in these services, you agree to pay all recurring fees on time as invoiced.</p>
+			  <ul class="space-y-4 text-gray-300 mb-6 list-disc list-inside">
+				  <li><strong class="text-white">Late or Missed Payments:</strong> Failure to pay recurring monthly service fees by the due date may result in suspension or termination of your website, hosting, or related services without further notice.</li>
+				  <li><strong class="text-white">Service Restoration:</strong> Suspended services may be restored at WebGemini's discretion upon full payment of outstanding fees and any applicable reactivation charges.</li>
+				  <li><strong class="text-white">Data Loss:</strong> WebGemini is not responsible for any data loss or business interruption resulting from non-payment and subsequent suspension or termination of services.</li>
+				  <li><strong class="text-white">Communication:</strong> It is your responsibility to ensure your contact and billing information is up to date to receive invoices and payment reminders.</li>
+			  </ul>
+			  <p class="text-gray-300 mb-6">By using our recurring services, you acknowledge and accept these payment terms and consequences of non-payment.</p>
+			  
+			  <h2 class="text-3xl font-bold text-white mt-12 mb-4">7. No Refund Policy</h2>
+			  <p class="text-gray-300 mb-6">All payments made for services rendered by WebGemini are final and non-refundable. By engaging our services, you acknowledge and agree to this no refund policy.</p>
+			  
+			  <h2 id="cookies" class="text-3xl font-bold text-white mt-12 mb-4">8. Cookie Policy</h2>
+			  <p class="text-gray-300 mb-6">WebGemini uses cookies to enhance your browsing experience and analyze website traffic. This Cookie Policy explains what cookies are, how we use them, and your choices regarding their use.</p>
+			  <ul class="space-y-4 text-gray-300 mb-6 list-disc list-inside">
+				  <li><strong class="text-white">What Are Cookies:</strong> Cookies are small text files stored on your device by your web browser. They help websites remember your preferences and track site usage.</li>
+				  <li><strong class="text-white">Types of Cookies We Use:</strong>
+					  <ul class="mt-2 ml-8 space-y-2 list-circle">
+						  <li><em>Essential Cookies:</em> Required for the website to function properly.</li>
+						  <li><em>Analytics Cookies:</em> Help us understand how visitors interact with our site (e.g., Google Analytics).</li>
+						  <li><em>Marketing Cookies:</em> Track your activity to provide relevant ads and measure campaign effectiveness (e.g., Google Ads).</li>
+					  </ul>
+				  </li>
+				  <li><strong class="text-white">Third-Party Cookies:</strong> We use Google Analytics and Google Tag Manager to collect anonymous usage data. These services may set cookies on your device.</li>
+				  <li><strong class="text-white">Managing Cookies:</strong> You can control or delete cookies through your browser settings. However, disabling cookies may affect your experience on our website.</li>
+				  <li><strong class="text-white">Consent:</strong> By continuing to use our website, you consent to our use of cookies as described in this policy.</li>
+			  </ul>
+			  <p class="text-gray-300 mb-6">For more information about how we protect your data, please refer to our <a href="#privacy" class="text-primary hover:text-accent underline">Privacy Policy</a>.</p>
+			  
+			  <h2 class="text-3xl font-bold text-white mt-12 mb-4">9. Changes to Terms</h2>
+			  <p class="text-gray-300 mb-6">We reserve the right to update these terms at any time. Continued use of the site constitutes acceptance of the new terms.</p>
+			  <p class="text-gray-300 mb-8">If you have any questions about these terms, please contact us.</p>
+			  
+			  <div class="mt-8 mb-8">
+				  <a href="index.html#contact" class="inline-flex items-center px-6 py-3 bg-gradient-to-r from-primary to-secondary rounded-full font-semibold hover:shadow-lg hover:shadow-primary/50 transition">
+					  Go to Contact Form <i class="fas fa-arrow-right ml-2"></i>
+				  </a>
+			  </div>
+			  
+			  <!-- Agreement Form -->
+			  <div class="mt-12 bg-gradient-to-r from-primary/10 to-secondary/10 border border-white/20 rounded-xl p-6">
+				  <form action="https://formspree.io/f/mnnbqkvv" method="POST" class="max-w-md">
+					  <div class="space-y-4 mb-6">
+						  <label class="flex items-start space-x-3 cursor-pointer">
+							  <input type="checkbox" name="agree" value="agree" required class="mt-1 w-5 h-5 rounded border-gray-300 text-primary focus:ring-primary">
+							  <span class="text-gray-300">I have read and agree to the Terms and Conditions</span>
+						  </label>
+						  <label class="flex items-start space-x-3 cursor-pointer">
+							  <input type="checkbox" name="disagree" value="disagree" class="mt-1 w-5 h-5 rounded border-gray-300 text-red-500 focus:ring-red-500">
+							  <span class="text-gray-300">I do not agree to the Terms and Conditions</span>
+						  </label>
+					  </div>
+					  <input type="hidden" name="_subject" value="Terms and Conditions Agreement">
+					  <button type="submit" class="w-full px-6 py-3 bg-gradient-to-r from-primary to-secondary rounded-full font-semibold hover:shadow-lg hover:shadow-primary/50 transition">
+						  Submit
+					  </button>
+				  </form>
+			  </div>
+		  </div>
+		  
+	  </div>
   </main>
-<footer class="site-footer">
-  <div class="footer-top container">
-    <section class="newsletter">
-      <h3>Stay in the loop</h3>
-      <p>Join the newsletter for tips, updates, and offers.</p>
-      <form id="newsletter-form" class="newsletter-form" novalidate>
-        <label class="visually-hidden" for="newsletter-email">Email address</label>
-        <input type="email" id="newsletter-email" name="email" placeholder="Enter your email" required>
-        <button type="submit" class="btn-subscribe">Subscribe</button>
-        <small class="form-msg" aria-live="polite"></small>
-      </form>
-    </section>
 
-    <nav class="footer-links" aria-label="Footer">
-      <div class="link-col">
-        <h4>Quick Links</h4>
-        <ul>
-          <li><a href="#top">Home</a></li>
-          <li><a href="#about">About</a></li>
-          <li><a href="#projects">Projects</a></li>
-          <li><a href="#services">Services</a></li>
-          <li><a href="#contact">Contact</a></li>
-        </ul>
-      </div>
+  <!-- Footer -->
+  <footer class="border-t border-white/10 bg-dark/50 backdrop-blur-lg">
+	  <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12">
+		  <div class="grid grid-cols-1 md:grid-cols-4 gap-8 mb-8">
+			  <!-- Quick Links -->
+			  <div>
+				  <h4 class="text-lg font-semibold mb-4">Quick Links</h4>
+				  <ul class="space-y-2">
+					  <li><a href="index.html" class="text-gray-400 hover:text-primary transition">Home</a></li>
+					  <li><a href="index.html#about" class="text-gray-400 hover:text-primary transition">About</a></li>
+					  <li><a href="index.html#projects" class="text-gray-400 hover:text-primary transition">Projects</a></li>
+					  <li><a href="index.html#services" class="text-gray-400 hover:text-primary transition">Services</a></li>
+					  <li><a href="index.html#contact" class="text-gray-400 hover:text-primary transition">Contact</a></li>
+				  </ul>
+			  </div>
+			  
+			  <!-- Resources -->
+			  <div>
+				  <h4 class="text-lg font-semibold mb-4">Resources</h4>
+				  <ul class="space-y-2">
+					  <li><a href="index.html#reviews" class="text-gray-400 hover:text-primary transition">Reviews</a></li>
+					  <li><a href="index.html#pricing" class="text-gray-400 hover:text-primary transition">Pricing</a></li>
+					  <li><a href="blog.html" class="text-gray-400 hover:text-primary transition">Blog</a></li>
+				  </ul>
+			  </div>
+			  
+			  <!-- Legal -->
+			  <div>
+				  <h4 class="text-lg font-semibold mb-4">Legal</h4>
+				  <ul class="space-y-2">
+					  <li><a href="terms.html#privacy" class="text-gray-400 hover:text-primary transition">Privacy Policy</a></li>
+					  <li><a href="terms.html#terms" class="text-gray-400 hover:text-primary transition">Terms of Service</a></li>
+					  <li><a href="terms.html#cookies" class="text-gray-400 hover:text-primary transition">Cookie Policy</a></li>
+				  </ul>
+			  </div>
+			  
+			  <!-- Contact -->
+			  <div>
+				  <h4 class="text-lg font-semibold mb-4">Connect</h4>
+				  <div class="flex space-x-4">
+					  <a href="#" class="w-10 h-10 rounded-full bg-white/5 border border-white/10 flex items-center justify-center hover:bg-primary/20 transition">
+						  <i class="fab fa-facebook"></i>
+					  </a>
+					  <a href="#" class="w-10 h-10 rounded-full bg-white/5 border border-white/10 flex items-center justify-center hover:bg-primary/20 transition">
+						  <i class="fab fa-twitter"></i>
+					  </a>
+					  <a href="#" class="w-10 h-10 rounded-full bg-white/5 border border-white/10 flex items-center justify-center hover:bg-primary/20 transition">
+						  <i class="fab fa-linkedin"></i>
+					  </a>
+				  </div>
+			  </div>
+		  </div>
+		  
+		  <div class="border-t border-white/10 pt-8 flex flex-col md:flex-row justify-between items-center">
+			  <p class="text-gray-400 text-sm">&copy; 2025 WebGemini. All rights reserved.</p>
+			  <div class="flex space-x-6 mt-4 md:mt-0">
+				  <a href="terms.html#privacy" class="text-gray-400 hover:text-primary transition text-sm">Privacy</a>
+				  <a href="terms.html#terms" class="text-gray-400 hover:text-primary transition text-sm">Terms</a>
+			  </div>
+		  </div>
+	  </div>
+  </footer>
 
-      <div class="link-col">
-        <h4>Resources</h4>
-        <ul>
-          <li><a href="#reviews">Reviews</a></li>
-          <li><a href="#pricing">Pricing</a></li>
-          <li><a href="blog.html">Blog</a></li>
-        </ul>
-      </div>
-
-      <div class="link-col">
-        <h4>Legal</h4>
-        <ul>
-          <li><a href="terms.html#privacy-policy">Privacy Policy</a></li>
-          <li><a href="terms.html#terms">Terms of Service</a></li>
-          <li><a href="terms.html#privacy-policy">Cookie Policy</a></li>
-        </ul>
-      </div>
-    </nav>
-  </div>
-
-  <div class="footer-bottom container">
-    <p>© 2025 Tanaka. All rights reserved.</p>
-    <ul class="footer-bottom-links">
-      <li><a href="#privacy">Privacy</a></li>
-      <li><a href="#terms">Terms</a></li>
-    </ul>
-  </div>
-</footer>
+  <script>
+	  // Mobile menu toggle
+	  const mobileMenuBtn = document.getElementById('mobile-menu-btn');
+	  const mobileMenu = document.getElementById('mobile-menu');
+	  
+	  if (mobileMenuBtn && mobileMenu) {
+		  mobileMenuBtn.addEventListener('click', () => {
+			  mobileMenu.classList.toggle('hidden');
+		  });
+	  }
+  </script>
 </body>
 </html>

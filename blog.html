@@ -46,129 +46,273 @@
     <link rel="shortcut icon" href="favicon.svg?v=2025.12.07">
     <link rel="apple-touch-icon" href="image/logo-professional.svg">
 
-	<link rel="stylesheet" href="style.css">
-	<script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
-	<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/7.0.0/css/all.min.css" integrity="sha512-DxV+EoADOkOygM4IR9yXP8Sb2qwgidEmeqAEmDKIOfPRQZOWbXCzLC6vjbZyy0vPisbH2SyW27+ddLVCN+OMzQ==" crossorigin="anonymous" referrerpolicy="no-referrer" />
+	<!-- Tailwind CSS CDN -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    colors: {
+                        primary: '#0066FF',
+                        secondary: '#0044CC',
+                        accent: '#00FFFF',
+                        dark: '#0A0E27',
+                    }
+                }
+            }
+        }
+    </script>
+	
+	<!-- Font Awesome -->
+	<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/7.0.0/css/all.min.css" />
+	
+	<!-- Google Fonts -->
 	<link rel="preconnect" href="https://fonts.googleapis.com">
 	<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-	<link href="https://fonts.googleapis.com/css2?family=EB+Garamond:ital,wght@0,400..800;1,400..800&display=swap" rel="stylesheet">
-	<script defer src="script.js"></script>
-<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link href="https://fonts.googleapis.com/css2?family=Bitcount+Single:wght@100..900&display=swap" rel="stylesheet">
+	<link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&family=Plus+Jakarta+Sans:wght@300;400;500;600;700;800;900&family=Bitcount+Single:wght@100..900&display=swap" rel="stylesheet">
+	
+	<style>
+        body {
+            font-family: 'Inter', sans-serif;
+        }
+        h1, h2, h3, h4, h5, h6 {
+            font-family: 'Plus Jakarta Sans', sans-serif;
+        }
+        .logo-text {
+            font-family: 'Bitcount Single', monospace;
+            font-weight: 700;
+            letter-spacing: 0.05em;
+        }
+    </style>
 </head>
 
-<body>
-  <nav class="navbar">
-		<div class="nav-container">
-			<a href="#" class="nav-logo">
-				<svg viewBox="0 0 200 200" xmlns="http://www.w3.org/2000/svg" width="32" height="32" style="vertical-align: middle; margin-right: 8px;">
-					<defs>
-						<linearGradient id="blog-nav-grad-1" x1="0%" y1="0%" x2="100%" y2="100%">
-							<stop offset="0%" style="stop-color:#1E3A8A;stop-opacity:1" />
-							<stop offset="100%" style="stop-color:#3B82F6;stop-opacity:1" />
-						</linearGradient>
-						<linearGradient id="blog-nav-grad-2" x1="0%" y1="0%" x2="100%" y2="100%">
-							<stop offset="0%" style="stop-color:#60A5FA;stop-opacity:1" />
-							<stop offset="100%" style="stop-color:#93C5FD;stop-opacity:1" />
-						</linearGradient>
-					</defs>
-					<polygon points="100,40 130,75 100,65 70,75" fill="url(#blog-nav-grad-1)" opacity="0.95"/>
-					<polygon points="70,75 100,65 100,100 55,100" fill="url(#blog-nav-grad-1)" opacity="0.85"/>
-					<polygon points="130,75 145,100 100,100 100,65" fill="url(#blog-nav-grad-2)" opacity="0.9"/>
-					<polygon points="55,100 100,100 100,160" fill="url(#blog-nav-grad-1)" opacity="0.75"/>
-					<polygon points="145,100 100,160 100,100" fill="url(#blog-nav-grad-2)" opacity="0.8"/>
-					<path d="M 75 85 L 68 92 L 75 99" stroke="#FFFFFF" stroke-width="2" fill="none" stroke-linecap="round" opacity="0.6"/>
-					<path d="M 125 85 L 132 92 L 125 99" stroke="#FFFFFF" stroke-width="2" fill="none" stroke-linecap="round" opacity="0.6"/>
-				</svg>
-				WEBGEMINI
-			</a>
-			<button class="nav-toggle" aria-label="Open navigation menu">
-				<span class="bar"></span>
-				<span class="bar"></span>
-				<span class="bar"></span>
-			</button>
-      <ul class="nav-links">
-        <li><a href="index.html">Home</a></li>
-		<li><a href="index.html#pricing">Pricing</a></li>
-		<li><a href="index.html#services">Services</a></li>
-        <li><a href="index.html#projects">Projects</a></li>
-        <li><a href="index.html#about">About</a></li>
-        <li><a href="index.html#contact">Contact</a></li>
-        <li><a href="terms.html">Terms</a></li>
-      </ul>
-    </div>
+<body class="bg-dark text-white">
+
+  <!-- Navigation -->
+  <nav class="fixed w-full z-50 transition-all duration-300 bg-dark/80 backdrop-blur-lg border-b border-white/10">
+		<div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+			<div class="flex justify-between items-center py-4">
+				<a href="index.html" class="flex items-center space-x-2 text-2xl font-bold group">
+					<div class="w-10 h-10">
+						<svg viewBox="0 0 200 200" xmlns="http://www.w3.org/2000/svg" class="w-full h-full">
+							<defs>
+								<linearGradient id="blog-nav-grad-1" x1="0%" y1="0%" x2="100%" y2="100%">
+									<stop offset="0%" style="stop-color:#1E3A8A;stop-opacity:1" />
+									<stop offset="100%" style="stop-color:#3B82F6;stop-opacity:1" />
+								</linearGradient>
+								<linearGradient id="blog-nav-grad-2" x1="0%" y1="0%" x2="100%" y2="100%">
+									<stop offset="0%" style="stop-color:#60A5FA;stop-opacity:1" />
+									<stop offset="100%" style="stop-color:#93C5FD;stop-opacity:1" />
+								</linearGradient>
+							</defs>
+							<polygon points="100,40 130,75 100,65 70,75" fill="url(#blog-nav-grad-1)" opacity="0.95"/>
+							<polygon points="70,75 100,65 100,100 55,100" fill="url(#blog-nav-grad-1)" opacity="0.85"/>
+							<polygon points="130,75 145,100 100,100 100,65" fill="url(#blog-nav-grad-2)" opacity="0.9"/>
+							<polygon points="55,100 100,100 100,160" fill="url(#blog-nav-grad-1)" opacity="0.75"/>
+							<polygon points="145,100 100,160 100,100" fill="url(#blog-nav-grad-2)" opacity="0.8"/>
+							<path d="M 75 85 L 68 92 L 75 99" stroke="#FFFFFF" stroke-width="2" fill="none" stroke-linecap="round" opacity="0.6"/>
+							<path d="M 125 85 L 132 92 L 125 99" stroke="#FFFFFF" stroke-width="2" fill="none" stroke-linecap="round" opacity="0.6"/>
+						</svg>
+					</div>
+					<span class="bg-gradient-to-r from-blue-900 to-blue-500 bg-clip-text text-transparent logo-text">WEBGEMINI</span>
+				</a>
+				
+				<!-- Desktop Menu -->
+				<div class="hidden md:flex items-center space-x-8">
+					<a href="index.html" class="hover:text-primary transition">Home</a>
+					<a href="index.html#pricing" class="hover:text-primary transition">Pricing</a>
+					<a href="index.html#services" class="hover:text-primary transition">Services</a>
+					<a href="index.html#projects" class="hover:text-primary transition">Projects</a>
+					<a href="index.html#about" class="hover:text-primary transition">About</a>
+					<a href="index.html#contact" class="hover:text-primary transition">Contact</a>
+					<a href="terms.html" class="hover:text-primary transition">Terms</a>
+				</div>
+				
+				<!-- Mobile Menu Button -->
+				<button class="md:hidden text-white" id="mobile-menu-btn">
+					<i class="fas fa-bars text-2xl"></i>
+				</button>
+			</div>
+		</div>
+		
+		<!-- Mobile Menu -->
+		<div class="md:hidden hidden bg-dark/95 backdrop-blur-lg" id="mobile-menu">
+			<div class="px-4 py-6 space-y-4">
+				<a href="index.html" class="block py-2 hover:text-primary transition">Home</a>
+				<a href="index.html#pricing" class="block py-2 hover:text-primary transition">Pricing</a>
+				<a href="index.html#services" class="block py-2 hover:text-primary transition">Services</a>
+				<a href="index.html#projects" class="block py-2 hover:text-primary transition">Projects</a>
+				<a href="index.html#about" class="block py-2 hover:text-primary transition">About</a>
+				<a href="index.html#contact" class="block py-2 hover:text-primary transition">Contact</a>
+				<a href="terms.html" class="block py-2 hover:text-primary transition">Terms</a>
+			</div>
+		</div>
   </nav>
 
-  <main style="max-width:80%; margin:2.5rem auto; padding:0 1.2rem; background: #fff; border-radius: 12px; box-shadow: 0 2px 12px rgba(0,0,0,0.1); font-family: 'EB Garamond', serif; font-weight: 450;">
-    <article class="blog-post" style="margin-bottom:2.5rem;">
-      <h2 style="color:#493c3c;">How to Transform Your Business with Modern Technologies</h2>
-      <p style="color:#444;">Discover how adopting the latest digital tools and platforms can streamline your operations, boost productivity, and open new revenue streams. From cloud computing to AI-driven analytics, learn practical steps to future-proof your business and stay ahead of the competition.</p>
-      
-    </article>
-    <article class="blog-post" style="margin-bottom:2.5rem;">
-      <h2 style="color:#493c3c;">Web Development: The Foundation of Your Online Success</h2>
-      <p style="color:#444;">A modern, responsive website is essential for credibility and growth. Explore the latest trends in web development, including 3D interfaces, mobile-first design, and performance optimization. See how WebGemini can help you build a site that stands out and converts visitors into customers.</p>
-      
-    </article>
-    <article class="blog-post">
-      <h2 style="color:#493c3c;">Inside WebGemini: Our Mission & Values</h2>
-      <p style="color:#444;">Get to know the team behind WebGemini. Learn about our commitment to innovation, client success, and building long-term partnerships. Discover how our unique approach and passion for technology drive everything we do.</p>
-      
-    </article>
+  <!-- Hero Section -->
+  <section class="relative pt-32 pb-20 overflow-hidden">
+	  <div class="absolute inset-0 bg-gradient-to-br from-dark via-dark/90 to-primary/20"></div>
+	  <div class="absolute inset-0 opacity-30">
+		  <div class="absolute top-20 left-10 w-72 h-72 bg-primary rounded-full filter blur-3xl"></div>
+		  <div class="absolute bottom-20 right-10 w-96 h-96 bg-accent rounded-full filter blur-3xl"></div>
+	  </div>
+	  
+	  <div class="relative max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 text-center">
+		  <h1 class="text-5xl md:text-6xl font-bold mb-6">
+			  <span class="bg-gradient-to-r from-blue-400 to-cyan-400 bg-clip-text text-transparent">WebGemini Blog</span>
+		  </h1>
+		  <p class="text-xl text-gray-300 max-w-3xl mx-auto">
+			  Insights, tips, and updates on web development, digital transformation, and modern technologies
+		  </p>
+	  </div>
+  </section>
+
+  <!-- Blog Posts -->
+  <main class="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 py-20">
+	  <div class="grid gap-8 md:grid-cols-2 lg:grid-cols-3">
+		  
+		  <!-- Blog Post 1 -->
+		  <article class="bg-white/5 backdrop-blur-sm border border-white/10 rounded-2xl p-6 hover:bg-white/10 transition-all duration-300 hover:scale-105">
+			  <div class="w-12 h-12 bg-gradient-to-br from-primary to-secondary rounded-lg flex items-center justify-center mb-4">
+				  <i class="fas fa-rocket text-white text-xl"></i>
+			  </div>
+			  <h2 class="text-2xl font-bold mb-4 text-white">How to Transform Your Business with Modern Technologies</h2>
+			  <p class="text-gray-300 mb-6">Discover how adopting the latest digital tools and platforms can streamline your operations, boost productivity, and open new revenue streams. From cloud computing to AI-driven analytics, learn practical steps to future-proof your business and stay ahead of the competition.</p>
+			  <a href="index.html#contact" class="inline-flex items-center text-primary hover:text-accent transition">
+				  Learn more <i class="fas fa-arrow-right ml-2"></i>
+			  </a>
+		  </article>
+
+		  <!-- Blog Post 2 -->
+		  <article class="bg-white/5 backdrop-blur-sm border border-white/10 rounded-2xl p-6 hover:bg-white/10 transition-all duration-300 hover:scale-105">
+			  <div class="w-12 h-12 bg-gradient-to-br from-primary to-secondary rounded-lg flex items-center justify-center mb-4">
+				  <i class="fas fa-code text-white text-xl"></i>
+			  </div>
+			  <h2 class="text-2xl font-bold mb-4 text-white">Web Development: The Foundation of Your Online Success</h2>
+			  <p class="text-gray-300 mb-6">A modern, responsive website is essential for credibility and growth. Explore the latest trends in web development, including 3D interfaces, mobile-first design, and performance optimization. See how WebGemini can help you build a site that stands out and converts visitors into customers.</p>
+			  <a href="index.html#contact" class="inline-flex items-center text-primary hover:text-accent transition">
+				  Learn more <i class="fas fa-arrow-right ml-2"></i>
+			  </a>
+		  </article>
+
+		  <!-- Blog Post 3 -->
+		  <article class="bg-white/5 backdrop-blur-sm border border-white/10 rounded-2xl p-6 hover:bg-white/10 transition-all duration-300 hover:scale-105">
+			  <div class="w-12 h-12 bg-gradient-to-br from-primary to-secondary rounded-lg flex items-center justify-center mb-4">
+				  <i class="fas fa-heart text-white text-xl"></i>
+			  </div>
+			  <h2 class="text-2xl font-bold mb-4 text-white">Inside WebGemini: Our Mission & Values</h2>
+			  <p class="text-gray-300 mb-6">Get to know the team behind WebGemini. Learn about our commitment to innovation, client success, and building long-term partnerships. Discover how our unique approach and passion for technology drive everything we do.</p>
+			  <a href="index.html#about" class="inline-flex items-center text-primary hover:text-accent transition">
+				  Learn more <i class="fas fa-arrow-right ml-2"></i>
+			  </a>
+		  </article>
+
+	  </div>
+
+	  <!-- Newsletter Section -->
+	  <section class="mt-20 bg-gradient-to-r from-primary/20 to-secondary/20 border border-white/10 rounded-2xl p-8 md:p-12">
+		  <div class="max-w-2xl mx-auto text-center">
+			  <h3 class="text-3xl font-bold mb-4">Stay in the Loop</h3>
+			  <p class="text-gray-300 mb-8">Join our newsletter for tips, updates, and exclusive offers delivered straight to your inbox.</p>
+			  <form id="newsletter-form" class="flex flex-col sm:flex-row gap-4 justify-center">
+				  <input type="email" id="newsletter-email" name="email" placeholder="Enter your email" required
+						 class="flex-1 max-w-md px-6 py-3 rounded-full bg-white/10 border border-white/20 text-white placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-primary">
+				  <button type="submit" class="px-8 py-3 bg-gradient-to-r from-primary to-secondary rounded-full font-semibold hover:shadow-lg hover:shadow-primary/50 transition">
+					  Subscribe
+				  </button>
+			  </form>
+			  <small class="form-msg block mt-4 text-sm" aria-live="polite"></small>
+		  </div>
+	  </section>
   </main>
 
-<footer class="site-footer">
-  <div class="footer-top container">
-    <section class="newsletter">
-      <h3>Stay in the loop</h3>
-      <p>Join the newsletter for tips, updates, and offers.</p>
-      <form id="newsletter-form" class="newsletter-form" novalidate>
-        <label class="visually-hidden" for="newsletter-email">Email address</label>
-        <input type="email" id="newsletter-email" name="email" placeholder="Enter your email" required>
-        <button type="submit" class="btn-subscribe">Subscribe</button>
-        <small class="form-msg" aria-live="polite"></small>
-      </form>
-    </section>
+  <!-- Footer -->
+  <footer class="border-t border-white/10 bg-dark/50 backdrop-blur-lg">
+	  <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12">
+		  <div class="grid grid-cols-1 md:grid-cols-4 gap-8 mb-8">
+			  <!-- Quick Links -->
+			  <div>
+				  <h4 class="text-lg font-semibold mb-4">Quick Links</h4>
+				  <ul class="space-y-2">
+					  <li><a href="index.html" class="text-gray-400 hover:text-primary transition">Home</a></li>
+					  <li><a href="index.html#about" class="text-gray-400 hover:text-primary transition">About</a></li>
+					  <li><a href="index.html#projects" class="text-gray-400 hover:text-primary transition">Projects</a></li>
+					  <li><a href="index.html#services" class="text-gray-400 hover:text-primary transition">Services</a></li>
+					  <li><a href="index.html#contact" class="text-gray-400 hover:text-primary transition">Contact</a></li>
+				  </ul>
+			  </div>
+			  
+			  <!-- Resources -->
+			  <div>
+				  <h4 class="text-lg font-semibold mb-4">Resources</h4>
+				  <ul class="space-y-2">
+					  <li><a href="index.html#reviews" class="text-gray-400 hover:text-primary transition">Reviews</a></li>
+					  <li><a href="index.html#pricing" class="text-gray-400 hover:text-primary transition">Pricing</a></li>
+					  <li><a href="blog.html" class="text-gray-400 hover:text-primary transition">Blog</a></li>
+				  </ul>
+			  </div>
+			  
+			  <!-- Legal -->
+			  <div>
+				  <h4 class="text-lg font-semibold mb-4">Legal</h4>
+				  <ul class="space-y-2">
+					  <li><a href="terms.html#privacy" class="text-gray-400 hover:text-primary transition">Privacy Policy</a></li>
+					  <li><a href="terms.html#terms" class="text-gray-400 hover:text-primary transition">Terms of Service</a></li>
+					  <li><a href="terms.html#cookies" class="text-gray-400 hover:text-primary transition">Cookie Policy</a></li>
+				  </ul>
+			  </div>
+			  
+			  <!-- Contact -->
+			  <div>
+				  <h4 class="text-lg font-semibold mb-4">Connect</h4>
+				  <div class="flex space-x-4">
+					  <a href="#" class="w-10 h-10 rounded-full bg-white/5 border border-white/10 flex items-center justify-center hover:bg-primary/20 transition">
+						  <i class="fab fa-facebook"></i>
+					  </a>
+					  <a href="#" class="w-10 h-10 rounded-full bg-white/5 border border-white/10 flex items-center justify-center hover:bg-primary/20 transition">
+						  <i class="fab fa-twitter"></i>
+					  </a>
+					  <a href="#" class="w-10 h-10 rounded-full bg-white/5 border border-white/10 flex items-center justify-center hover:bg-primary/20 transition">
+						  <i class="fab fa-linkedin"></i>
+					  </a>
+				  </div>
+			  </div>
+		  </div>
+		  
+		  <div class="border-t border-white/10 pt-8 flex flex-col md:flex-row justify-between items-center">
+			  <p class="text-gray-400 text-sm">&copy; 2025 WebGemini. All rights reserved.</p>
+			  <div class="flex space-x-6 mt-4 md:mt-0">
+				  <a href="terms.html#privacy" class="text-gray-400 hover:text-primary transition text-sm">Privacy</a>
+				  <a href="terms.html#terms" class="text-gray-400 hover:text-primary transition text-sm">Terms</a>
+			  </div>
+		  </div>
+	  </div>
+  </footer>
 
-    <nav class="footer-links" aria-label="Footer">
-      <div class="link-col">
-        <h4>Quick Links</h4>
-        <ul>
-          <li><a href="#top">Home</a></li>
-          <li><a href="#about">About</a></li>
-          <li><a href="#projects">Projects</a></li>
-          <li><a href="#services">Services</a></li>
-          <li><a href="#contact">Contact</a></li>
-        </ul>
-      </div>
-
-      <div class="link-col">
-        <h4>Resources</h4>
-        <ul>
-          <li><a href="#reviews">Reviews</a></li>
-          <li><a href="#pricing">Pricing</a></li>
-          <li><a href="blog.html">Blog</a></li>
-        </ul>
-      </div>
-
-      <div class="link-col">
-        <h4>Legal</h4>
-        <ul>
-          <li><a href="terms.html#privacy">Privacy Policy</a></li>
-          <li><a href="terms.html#terms">Terms of Service</a></li>
-          <li><a href="terms.html#cookies">Cookie Policy</a></li>
-        </ul>
-      </div>
-    </nav>
-  </div>
-
-  <div class="footer-bottom container">
-    <p>© 2025 Tanaka. All rights reserved.</p>
-    <ul class="footer-bottom-links">
-      <li><a href="#privacy">Privacy</a></li>
-      <li><a href="#terms">Terms</a></li>
-    </ul>
-  </div>
-</footer>
+  <script>
+	  // Mobile menu toggle
+	  const mobileMenuBtn = document.getElementById('mobile-menu-btn');
+	  const mobileMenu = document.getElementById('mobile-menu');
+	  
+	  if (mobileMenuBtn && mobileMenu) {
+		  mobileMenuBtn.addEventListener('click', () => {
+			  mobileMenu.classList.toggle('hidden');
+		  });
+	  }
+	  
+	  // Newsletter form
+	  const newsletterForm = document.getElementById('newsletter-form');
+	  if (newsletterForm) {
+		  newsletterForm.addEventListener('submit', (e) => {
+			  e.preventDefault();
+			  const formMsg = document.querySelector('.form-msg');
+			  if (formMsg) {
+				  formMsg.textContent = 'Thank you for subscribing!';
+				  formMsg.classList.add('text-green-400');
+				  newsletterForm.reset();
+			  }
+		  });
+	  }
+  </script>
 </body>
 </html>
